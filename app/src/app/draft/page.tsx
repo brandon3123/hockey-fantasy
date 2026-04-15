@@ -20,13 +20,22 @@ export default function DraftPage() {
   const [playersPerTeam, setPlayersPerTeam] = useState(10);
 
   useEffect(() => {
-    fetch('/players.json')
-      .then(res => {
-        if (!res.ok) throw new Error(`Failed to load players: ${res.status}`);
-        return res.json();
-      })
-      .then(data => setPlayers(data))
-      .catch(err => console.error(err));
+    const controller = new AbortController();
+
+    const loadPlayers = async () => {
+      try {
+        const response = await fetch('/players.json', { signal: controller.signal });
+        if (!response.ok) throw new Error(`Failed to load players: ${response.status}`);
+        const data = await response.json();
+        setPlayers(data);
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
+          console.error(err);
+        }
+      }
+    };
+
+    loadPlayers();
 
     // Restore draft state if it exists
     try {
@@ -42,6 +51,8 @@ export default function DraftPage() {
     } catch (e) {
       console.error('Failed to restore draft state:', e);
     }
+
+    return () => controller.abort();
   }, []);
 
   const handleSetupDraft = () => {

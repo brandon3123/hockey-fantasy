@@ -24,6 +24,9 @@ export default function RostersPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+
     try {
       const savedDraft = localStorage.getItem('draftState');
       if (!savedDraft) {
@@ -32,24 +35,19 @@ export default function RostersPage() {
       }
 
       const draftState = JSON.parse(savedDraft);
-      const managersCount = draftState.managers;
 
-      // Load full player data to get projections
-      fetch('/players.json')
+      fetch('/players.json', { signal: controller.signal })
         .then(res => {
           if (!res.ok) throw new Error(`Failed to load players: ${res.status}`);
           return res.json();
         })
         .then((allPlayers: Player[]) => {
-          const playerMap = new Map<string, Player>(
-            allPlayers.map((p: Player) => [p.name, p])
-          );
+          const playerMap = new Map(allPlayers.map((p: Player) => [p.name, p]));
 
           const managerRosters: ManagerRoster[] = Array.from(
-            { length: managersCount },
+            { length: draftState.managers },
             (_, i) => {
               const picks = draftState.picks.filter((p: { managerIndex: number }) => p.managerIndex === i);
-
               const rosterPlayers: RosterPlayer[] = picks.map((p: { playerName: string }) => {
                 const playerData = playerMap.get(p.playerName);
                 return {
@@ -80,16 +78,21 @@ export default function RostersPage() {
           );
 
           setRosters(managerRosters);
-          setLoading(false);
         })
         .catch(err => {
-          console.error(err);
+          if (err.name !== 'AbortError') {
+            console.error(err);
+          }
+        })
+        .finally(() => {
           setLoading(false);
         });
     } catch (e) {
       console.error('Failed to load draft state:', e);
       setLoading(false);
     }
+
+    return () => controller.abort();
   }, []);
 
   if (loading) {
@@ -119,9 +122,11 @@ export default function RostersPage() {
     );
   }
 
-  const winner = rosters.reduce((max, roster) =>
-    roster.totalProjectedPoints > max.totalProjectedPoints ? roster : max
-  );
+  const winner = rosters.length > 0
+    ? rosters.reduce((max, roster) =>
+        roster.totalProjectedPoints > max.totalProjectedPoints ? roster : max
+      )
+    : null;
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -136,19 +141,21 @@ export default function RostersPage() {
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Winner announcement */}
-        <div className="mb-8 p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <h2 className="text-xl font-bold text-yellow-900">
-            Projected Winner: {winner.name}
-          </h2>
-          <p className="text-yellow-800">
-            {winner.totalProjectedPoints.toFixed(1)} projected points
-          </p>
-        </div>
+        {winner && (
+          <div className="mb-8 p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <h2 className="text-xl font-bold text-yellow-900">
+              Projected Winner: {winner.name}
+            </h2>
+            <p className="text-yellow-800">
+              {winner.totalProjectedPoints.toFixed(1)} projected points
+            </p>
+          </div>
+        )}
 
         {/* Rosters side by side */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {rosters.map((roster) => (
-            <div key={roster.name} className="bg-white rounded-lg shadow-sm overflow-hidden">
+          {rosters.map((roster, i) => (
+            <div key={i} className="bg-white rounded-lg shadow-sm overflow-hidden">
               <div className={`px-4 py-3 border-b ${roster.name === 'You' ? 'bg-blue-50' : 'bg-gray-100'}`}>
                 <h3 className="font-bold text-lg">{roster.name}</h3>
                 <p className="text-sm text-gray-600">
