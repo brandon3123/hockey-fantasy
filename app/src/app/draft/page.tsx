@@ -21,47 +21,46 @@ export default function DraftPage() {
 
   useEffect(() => {
     fetch('/players.json')
-      .then(res => res.json())
-      .then(data => setPlayers(data));
+      .then(res => {
+        if (!res.ok) throw new Error(`Failed to load players: ${res.status}`);
+        return res.json();
+      })
+      .then(data => setPlayers(data))
+      .catch(err => console.error(err));
 
     // Restore draft state if it exists
-    const savedDraft = localStorage.getItem('draftState');
-    const savedNames = localStorage.getItem('managerNames');
-    if (savedDraft) {
-      setDraftState(JSON.parse(savedDraft));
-      setSetupComplete(true);
-    }
-    if (savedNames) {
-      setManagerNames(JSON.parse(savedNames));
+    try {
+      const savedDraft = localStorage.getItem('draftState');
+      const savedNames = localStorage.getItem('managerNames');
+      if (savedDraft) {
+        setDraftState(JSON.parse(savedDraft));
+        setSetupComplete(true);
+      }
+      if (savedNames) {
+        setManagerNames(JSON.parse(savedNames));
+      }
+    } catch (e) {
+      console.error('Failed to restore draft state:', e);
     }
   }, []);
 
   const handleSetupDraft = () => {
     const state = initializeDraft({ managers, yourPosition, playersPerTeam }, players);
-    setDraftState(state);
-    setManagerNames(
-      Array.from({ length: managers }, (_, i) =>
-        i === yourPosition - 1 ? 'You' : `Manager ${i + 1}`
-      )
+    const names = Array.from({ length: managers }, (_, i) =>
+      i === yourPosition - 1 ? 'You' : `Manager ${i + 1}`
     );
-    // Save to localStorage
+    setDraftState(state);
+    setManagerNames(names);
     localStorage.setItem('draftState', JSON.stringify(state));
-    localStorage.setItem('managerNames', JSON.stringify(
-      Array.from({ length: managers }, (_, i) =>
-        i === yourPosition - 1 ? 'You' : `Manager ${i + 1}`
-      )
-    ));
+    localStorage.setItem('managerNames', JSON.stringify(names));
     setSetupComplete(true);
   };
 
   const handleDraftPlayer = (player: Player) => {
     if (!draftState) return;
 
-    const newState = assignPlayerToManager(
-      draftState,
-      player.name,
-      player.name
-    );
+    // Player.name is the unique identifier in this app (no separate id field)
+    const newState = assignPlayerToManager(draftState, player.name, player.name);
     setDraftState(newState);
     // Save to localStorage
     localStorage.setItem('draftState', JSON.stringify(newState));
@@ -80,7 +79,7 @@ export default function DraftPage() {
               </label>
               <select
                 value={managers}
-                onChange={(e) => setManagers(parseInt(e.target.value))}
+                onChange={(e) => setManagers(parseInt(e.target.value, 10))}
                 className="w-full px-3 py-2 border rounded-md"
               >
                 {Array.from({ length: 10 }, (_, i) => (
@@ -95,7 +94,7 @@ export default function DraftPage() {
               </label>
               <select
                 value={yourPosition}
-                onChange={(e) => setYourPosition(parseInt(e.target.value))}
+                onChange={(e) => setYourPosition(parseInt(e.target.value, 10))}
                 className="w-full px-3 py-2 border rounded-md"
               >
                 {Array.from({ length: managers }, (_, i) => (
@@ -115,7 +114,7 @@ export default function DraftPage() {
                 min={5}
                 max={20}
                 value={playersPerTeam}
-                onChange={(e) => setPlayersPerTeam(parseInt(e.target.value))}
+                onChange={(e) => setPlayersPerTeam(parseInt(e.target.value, 10))}
                 className="w-full px-3 py-2 border rounded-md"
               />
             </div>

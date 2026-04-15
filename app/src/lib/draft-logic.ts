@@ -85,7 +85,8 @@ export function getTeamStackScore(state: DraftState, team: string): number {
   const yourPicks = getManagerPicks(state, state.yourPosition - 1);
   return yourPicks.filter(p => {
     const player = state.availablePlayers.find(ap => ap.name === p.playerName);
-    return 0; // Placeholder
+    // TeamStackPanel uses getAvailableTeammates from utils.ts instead
+    return 0; // placeholder — not currently used
   }).length;
 }
 
