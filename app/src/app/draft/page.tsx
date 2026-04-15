@@ -70,11 +70,19 @@ export default function DraftPage() {
   const handleDraftPlayer = (player: Player) => {
     if (!draftState) return;
 
+    console.log('Drafting player:', player.name, 'from', player.team);
+
     // Player.name is the unique identifier in this app (no separate id field)
     const newState = assignPlayerToManager(draftState, player.name, player.name);
     setDraftState(newState);
     // Save to localStorage
     localStorage.setItem('draftState', JSON.stringify(newState));
+
+    console.log('Draft complete. New state:', {
+      round: newState.currentRound,
+      pick: newState.currentPick,
+      totalPicks: newState.picks.length
+    });
   };
 
   if (!setupComplete) {
