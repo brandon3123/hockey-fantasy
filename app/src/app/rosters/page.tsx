@@ -21,11 +21,15 @@ interface ManagerRoster {
 
 export default function RostersPage() {
   const [rosters, setRosters] = useState<ManagerRoster[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     try {
       const savedDraft = localStorage.getItem('draftState');
-      if (!savedDraft) return;
+      if (!savedDraft) {
+        setLoading(false);
+        return;
+      }
 
       const draftState = JSON.parse(savedDraft);
       const managersCount = draftState.managers;
@@ -53,7 +57,7 @@ export default function RostersPage() {
                   team: playerData?.team ?? '',
                   position: playerData?.position ?? '',
                   projectedPoints: playerData?.projectedPlayoffPoints ?? 0,
-                  injury: playerData?.injury.status ?? 'healthy',
+                  injury: playerData?.injury?.status ?? 'healthy',
                 };
               });
 
@@ -76,12 +80,25 @@ export default function RostersPage() {
           );
 
           setRosters(managerRosters);
+          setLoading(false);
         })
-        .catch(err => console.error(err));
+        .catch(err => {
+          console.error(err);
+          setLoading(false);
+        });
     } catch (e) {
       console.error('Failed to load draft state:', e);
+      setLoading(false);
     }
   }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-xl">Loading draft results...</div>
+      </div>
+    );
+  }
 
   if (rosters.length === 0) {
     return (
