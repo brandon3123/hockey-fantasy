@@ -1,16 +1,13 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import type { Metadata } from 'next';
+import './globals.css';
+import { ReactNode } from 'react';
 
 export const metadata: Metadata = {
-  title: "Hockey Fantasy Playoff Draft",
-  description: "Data-driven edge for your NHL playoff fantasy draft",
+  title: 'Hockey Playoff Draft Helper',
+  description: 'Data-driven NHL playoff fantasy draft assistant',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>{children}</body>
