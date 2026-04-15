@@ -85,6 +85,16 @@ export default function DraftPage() {
     });
   };
 
+  const handleResetDraft = () => {
+    if (confirm('Are you sure you want to reset the draft? This will clear all draft progress and cannot be undone.')) {
+      localStorage.removeItem('draftState');
+      localStorage.removeItem('managerNames');
+      setDraftState(null);
+      setManagerNames([]);
+      setSetupComplete(false);
+    }
+  };
+
   if (!setupComplete) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -165,9 +175,17 @@ export default function DraftPage() {
           <h1 className="text-2xl font-bold text-gray-900">
             Draft Board
           </h1>
-          <Link href="/" className="text-blue-600">
-            Back to Rankings
-          </Link>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleResetDraft}
+              className="px-4 py-2 text-sm font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors"
+            >
+              Reset Draft
+            </button>
+            <Link href="/" className="text-blue-600">
+              Back to Rankings
+            </Link>
+          </div>
         </div>
       </header>
 
