@@ -1,3 +1,177 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Player, DraftState } from '@/types/player';
+import { initializeDraft, assignPlayerToManager, getManagerPicks, getCurrentManager, getCurrentPickNumber } from '@/lib/draft-logic';
+import DraftGrid from '@/components/DraftGrid';
+import BestAvailable from '@/components/BestAvailable';
+import TeamStackPanel from '@/components/TeamStackPanel';
+import Link from 'next/link';
+
 export default function DraftPage() {
-  return <div>Draft page - coming soon</div>;
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [draftState, setDraftState] = useState<DraftState | null>(null);
+  const [setupComplete, setSetupComplete] = useState(false);
+  const [managerNames, setManagerNames] = useState<string[]>([]);
+
+  // Setup form state
+  const [managers, setManagers] = useState(7);
+  const [yourPosition, setYourPosition] = useState(1);
+  const [playersPerTeam, setPlayersPerTeam] = useState(10);
+
+  useEffect(() => {
+    // Load players
+    fetch('/players.json')
+      .then(res => res.json())
+      .then(data => setPlayers(data));
+  }, []);
+
+  const handleSetupDraft = () => {
+    const state = initializeDraft({ managers, yourPosition, playersPerTeam }, players);
+    setDraftState(state);
+    setManagerNames(
+      Array.from({ length: managers }, (_, i) =>
+        i === yourPosition - 1 ? 'You' : `Manager ${i + 1}`
+      )
+    );
+    // Save to localStorage
+    localStorage.setItem('draftState', JSON.stringify(state));
+    setSetupComplete(true);
+  };
+
+  const handleDraftPlayer = (player: Player) => {
+    if (!draftState) return;
+
+    const newState = assignPlayerToManager(
+      draftState,
+      player.name,
+      player.name
+    );
+    setDraftState(newState);
+    // Save to localStorage
+    localStorage.setItem('draftState', JSON.stringify(newState));
+  };
+
+  if (!setupComplete) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
+          <h1 className="text-2xl font-bold mb-6">Draft Setup</h1>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Number of Managers
+              </label>
+              <input
+                type="number"
+                min={3}
+                max={12}
+                value={managers}
+                onChange={(e) => setManagers(parseInt(e.target.value))}
+                className="w-full px-3 py-2 border rounded-md"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Your Draft Position
+              </label>
+              <select
+                value={yourPosition}
+                onChange={(e) => setYourPosition(parseInt(e.target.value))}
+                className="w-full px-3 py-2 border rounded-md"
+              >
+                {Array.from({ length: managers }, (_, i) => (
+                  <option key={i} value={i + 1}>
+                    Pick {i + 1}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Players Per Team
+              </label>
+              <input
+                type="number"
+                min={5}
+                max={20}
+                value={playersPerTeam}
+                onChange={(e) => setPlayersPerTeam(parseInt(e.target.value))}
+                className="w-full px-3 py-2 border rounded-md"
+              />
+            </div>
+
+            <button
+              onClick={handleSetupDraft}
+              className="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700"
+            >
+              Start Draft
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!draftState) return null;
+
+  const yourPicks = getManagerPicks(draftState, draftState.yourPosition - 1);
+  const currentPickNumber = getCurrentPickNumber(draftState);
+  const currentManager = getCurrentManager(draftState);
+  const isYourTurn = currentManager === draftState.yourPosition;
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-gray-900">
+            Draft Board
+          </h1>
+          <Link href="/" className="text-blue-600">
+            Back to Rankings
+          </Link>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        {isYourTurn && (
+          <div className="mb-4 p-4 bg-blue-100 border border-blue-300 rounded-lg text-blue-900 font-semibold">
+            It&apos;s your turn! Pick #{currentPickNumber}
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Main draft grid */}
+          <div className="lg:col-span-3">
+            <DraftGrid draftState={draftState} managerNames={managerNames} />
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Best Available */}
+            <div className="bg-white p-4 rounded-lg shadow-sm">
+              <BestAvailable
+                availablePlayers={draftState.availablePlayers}
+                currentPick={currentPickNumber}
+                onDraftPlayer={handleDraftPlayer}
+              />
+            </div>
+
+            {/* Team Stack */}
+            <div className="bg-white p-4 rounded-lg shadow-sm">
+              <TeamStackPanel
+                yourPicks={yourPicks}
+                availablePlayers={draftState.availablePlayers}
+                allPlayers={players}
+                onDraftPlayer={handleDraftPlayer}
+              />
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
 }
