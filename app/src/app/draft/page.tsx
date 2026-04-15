@@ -20,10 +20,20 @@ export default function DraftPage() {
   const [playersPerTeam, setPlayersPerTeam] = useState(10);
 
   useEffect(() => {
-    // Load players
     fetch('/players.json')
       .then(res => res.json())
       .then(data => setPlayers(data));
+
+    // Restore draft state if it exists
+    const savedDraft = localStorage.getItem('draftState');
+    const savedNames = localStorage.getItem('managerNames');
+    if (savedDraft) {
+      setDraftState(JSON.parse(savedDraft));
+      setSetupComplete(true);
+    }
+    if (savedNames) {
+      setManagerNames(JSON.parse(savedNames));
+    }
   }, []);
 
   const handleSetupDraft = () => {
@@ -36,6 +46,11 @@ export default function DraftPage() {
     );
     // Save to localStorage
     localStorage.setItem('draftState', JSON.stringify(state));
+    localStorage.setItem('managerNames', JSON.stringify(
+      Array.from({ length: managers }, (_, i) =>
+        i === yourPosition - 1 ? 'You' : `Manager ${i + 1}`
+      )
+    ));
     setSetupComplete(true);
   };
 
@@ -63,14 +78,15 @@ export default function DraftPage() {
               <label className="block text-sm font-medium mb-1">
                 Number of Managers
               </label>
-              <input
-                type="number"
-                min={3}
-                max={12}
+              <select
                 value={managers}
                 onChange={(e) => setManagers(parseInt(e.target.value))}
                 className="w-full px-3 py-2 border rounded-md"
-              />
+              >
+                {Array.from({ length: 10 }, (_, i) => (
+                  <option key={i} value={i + 3}>{i + 3} managers</option>
+                ))}
+              </select>
             </div>
 
             <div>
@@ -118,10 +134,11 @@ export default function DraftPage() {
 
   if (!draftState) return null;
 
+  const isDraftComplete = draftState.currentRound > draftState.playersPerTeam;
+  const currentManager = !isDraftComplete ? getCurrentManager(draftState) : null;
+  const isYourTurn = !isDraftComplete && currentManager === draftState.yourPosition;
   const yourPicks = getManagerPicks(draftState, draftState.yourPosition - 1);
   const currentPickNumber = getCurrentPickNumber(draftState);
-  const currentManager = getCurrentManager(draftState);
-  const isYourTurn = currentManager === draftState.yourPosition;
 
   return (
     <div className="min-h-screen bg-gray-100">
