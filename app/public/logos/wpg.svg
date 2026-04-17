@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Winnipeg Jets - Modern fighter jet logo -->
+  <rect width="100" height="100" fill="#004C97"/>
+  <!-- Jet shape -->
+  <path d="M50 10 L60 30 L90 40 L60 50 L50 90 L40 50 L10 40 L40 30 Z" fill="#CE1126"/>
+  <!-- Jet details -->
+  <path d="M50 20 L55 35 L70 40 L55 45 L50 70 L45 45 L30 40 L45 35 Z" fill="#FFFFFF"/>
+  <!-- Cockpit -->
+  <circle cx="50" cy="40" r="8" fill="#004C97"/>
+  <circle cx="50" cy="40" r="4" fill="#FFFFFF"/>
+</svg>

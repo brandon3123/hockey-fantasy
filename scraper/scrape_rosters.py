@@ -8,28 +8,24 @@ from typing import List, Dict
 import requests
 import time
 
-# NHL.com API - use 2024-25 season (most recent completed season)
+# NHL.com API - use 2025-26 season (current season)
 # Format: YYYYZZZZ where ZZZZ is YYYY+1
-CURRENT_SEASON = "20242025"
+CURRENT_SEASON = "20252026"
 
 # All 32 NHL teams
 ALL_TEAMS = [
-    "ANA", "ARI", "BOS", "BUF", "CAR", "CBJ", "CGY", "CHI",
+    "ANA", "UTA", "BOS", "BUF", "CAR", "CBJ", "CGY", "CHI",
     "COL", "DAL", "DET", "EDM", "FLA", "LAK", "MIN", "MTL",
     "NJD", "NSH", "NYI", "NYR", "OTT", "PHI", "PIT", "SEA",
     "SJS", "STL", "TBL", "TOR", "VAN", "VGK", "WPG", "WSH"
 ]
 
-# 2024 Stanley Cup Playoff teams (16 teams)
-PLAYOFF_TEAMS_2024 = [
-    # Atlantic Division
-    "FLA", "TOR", "TBL", "BOS",
-    # Metropolitan Division
-    "NYR", "CAR", "NJD", "NYI",
-    # Central Division
-    "COL", "DAL", "WPG", "MIN",
-    # Pacific Division
-    "VAN", "EDM", "VGK", "LA"
+# 2026 Stanley Cup Playoff teams (16 teams) - Based on NHL API "If Playoffs Started Today"
+PLAYOFF_TEAMS_2026 = [
+    # Eastern Conference
+    "BUF", "BOS", "TBL", "MTL", "CAR", "OTT", "PHI", "PIT",
+    # Western Conference
+    "LAK", "COL", "MIN", "DAL", "VGK", "UTA", "EDM", "ANA"
 ]
 
 def scrape_playoff_rosters() -> List[Dict]:
@@ -96,11 +92,11 @@ def scrape_playoff_rosters() -> List[Dict]:
 
 def scrape_injury_report() -> Dict[str, Dict]:
     """
-    NHL API doesn't provide injury data in roster endpoint.
-    Returns empty dict - all players marked as healthy.
-    For production, could scrape NHL.com injury report or use a different source.
+    Scrape injury data from ESPN.
+    Returns dict mapping player name -> injury status.
     """
-    return {}
+    from scrape_espn_injuries import scrape_espn_injuries
+    return scrape_espn_injuries()
 
 if __name__ == "__main__":
     # Scrape rosters

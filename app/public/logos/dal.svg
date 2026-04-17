@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Dallas Stars - Modern star logo -->
+  <rect width="100" height="100" fill="#006847"/>
+  <!-- Large star -->
+  <path d="M50 10 L60 40 L90 40 L65 60 L75 90 L50 70 L25 90 L35 60 L10 40 L40 40 Z" fill="#8B2635"/>
+  <path d="M50 25 L56 45 L75 45 L60 58 L67 78 L50 65 L33 78 L40 58 L25 45 L44 45 Z" fill="#FFFFFF"/>
+</svg>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Vancouver Canucks - Modern orca logo -->
+  <rect width="100" height="100" fill="#00205B"/>
+  <!-- Orca shape -->
+  <path d="M20 50 C20 30 40 20 60 25 C80 30 85 50 80 70 C75 85 60 90 50 90 C35 90 25 80 20 50 Z" fill="#004C97"/>
+  <!-- Orca eye -->
+  <circle cx="55" cy="45" r="8" fill="#FFFFFF"/>
+  <circle cx="57" cy="43" r="4" fill="#000000"/>
+  <!-- Orca mouth -->
+  <path d="M40 60 Q60 65 75 60" stroke="#FFFFFF" stroke-width="3" fill="none"/>
+  <!-- Fin -->
+  <path d="M30 40 L40 25 L50 40 Z" fill="#00205B"/>
+</svg>

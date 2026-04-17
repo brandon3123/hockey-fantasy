@@ -25,15 +25,15 @@ export function getInjuryClass(status: Player['injury']['status']): string {
   }
 }
 
-export function getHotColdStatus(player: Player): 'hot' | 'cold' | null {
-  if (!player.last10Games) return null;
+export function getHotColdStatus(player: Player): 'hot' | 'cold' | 'neutral' {
+  if (!player.last10Games) return 'neutral';
 
   const last10Ppg = player.last10Games.points / player.last10Games.games;
   const seasonPpg = player.pointsPerGame;
 
   if (last10Ppg >= seasonPpg * 1.2) return 'hot';
   if (last10Ppg <= seasonPpg * 0.8) return 'cold';
-  return null;
+  return 'neutral';
 }
 
 export function getHotColdClass(status: 'hot' | 'cold' | null): string {
@@ -46,7 +46,7 @@ export function getHotColdClass(status: 'hot' | 'cold' | null): string {
 
 export function getAdpValue(player: Player, currentPick: number): number {
   if (!player.adp) return 0;
-  return player.adp - currentPick;
+  return currentPick - player.adp;
 }
 
 export function isAdpSteal(player: Player, currentPick: number): boolean {

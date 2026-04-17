@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Minnesota Wild - Modern forest logo -->
+  <rect width="100" height="100" fill="#154734"/>
+  <!-- Tree shape -->
+  <path d="M50 5 L20 40 L35 40 L25 55 L40 55 L30 75 L70 75 L60 55 L75 55 L65 40 L80 40 Z" fill="#EAAA00"/>
+  <!-- Tree trunk -->
+  <rect x="45" y="75" width="10" height="20" fill="#8B4513"/>
+  <!-- Star -->
+  <path d="M50 25 L53 35 L63 35 L55 42 L58 52 L50 45 L42 52 L45 42 L37 35 L47 35 Z" fill="#C60C30"/>
+</svg>

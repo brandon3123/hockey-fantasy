@@ -31,6 +31,7 @@ export interface Player {
   injury: {
     status: "healthy" | "day-to-day" | "week-to-week" | "out indefinitely" | "out for playoffs";
     expectedReturn: string | null;
+    description: string | null;
   };
 }
 

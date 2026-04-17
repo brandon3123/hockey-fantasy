@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+@theme {
+  --color-bg: #050a05;
+  --color-card-bg: #0a0f0a;
+  --color-text-primary: #c8d9c3;
+  --color-text-secondary: #5a6b57;
+  --color-text-tertiary: #2d3c28;
+  --color-border: #141e12;
+  --color-border-light: #0e140d;
+  --color-accent: #4a7c59;
+  --color-accent-dim: #3d664a;
+  --color-accent-soft: rgba(74, 124, 89, 0.1);
+}
+
 body {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background: #050a05;
+  color: #c8d9c3;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

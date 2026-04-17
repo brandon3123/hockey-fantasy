@@ -105,3 +105,60 @@ export function initializeDraft(config: DraftConfig, players: Player[]): DraftSt
     availablePlayers: [...players],
   };
 }
+
+export function undoLastPick(state: DraftState, allPlayers: Player[]): DraftState {
+  if (state.picks.length === 0) {
+    return state; // Can't undo if no picks
+  }
+
+  const lastPick = state.picks[state.picks.length - 1];
+  const playerName = lastPick.playerName;
+
+  // Go back one pick
+  let prevRound = state.currentRound;
+  let prevPick = state.currentPick - 1;
+
+  if (prevPick < 1) {
+    prevRound -= 1;
+    prevPick = state.managers;
+  }
+
+  // Remove the last pick and restore the player
+  const restoredPlayer = allPlayers.find(p => p.name === playerName);
+
+  return {
+    ...state,
+    currentRound: prevRound,
+    currentPick: prevPick,
+    picks: state.picks.slice(0, -1),
+    availablePlayers: restoredPlayer
+      ? [...state.availablePlayers, restoredPlayer].sort(
+          (a, b) => b.projectedPlayoffPoints - a.projectedPlayoffPoints
+        )
+      : state.availablePlayers,
+  };
+}
+
+export function removeSpecificPick(state: DraftState, pickIndex: number, allPlayers: Player[]): DraftState {
+  if (pickIndex < 0 || pickIndex >= state.picks.length) {
+    return state;
+  }
+
+  const pickToRemove = state.picks[pickIndex];
+  const playerName = pickToRemove.playerName;
+
+  // Remove the pick and restore the player
+  const restoredPlayer = allPlayers.find(p => p.name === playerName);
+
+  const newPicks = state.picks.filter((_, index) => index !== pickIndex);
+
+  return {
+    ...state,
+    picks: newPicks,
+    availablePlayers: restoredPlayer
+      ? [...state.availablePlayers, restoredPlayer].sort(
+          (a, b) => b.projectedPlayoffPoints - a.projectedPlayoffPoints
+        )
+      : state.availablePlayers,
+  };
+}

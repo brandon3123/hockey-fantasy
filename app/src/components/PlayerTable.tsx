@@ -2,14 +2,9 @@
 
 import { useState, useMemo } from 'react';
 import { Player } from '@/types/player';
-import {
-  isInjured,
-  getHotColdStatus,
-  cn,
-} from '@/lib/utils';
 import InjuryFlag from './InjuryFlag';
 import WatchlistToggle from './WatchlistToggle';
-import RecentFormIndicator from './RecentFormIndicator';
+import TeamLogo from './TeamLogo';
 
 interface PlayerTableProps {
   players: Player[];
@@ -64,21 +59,22 @@ export default function PlayerTable({ players, watchlist = new Set(), onToggleWa
 
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) return null;
-    return <span>{sortOrder === 'asc' ? ' ↑' : ' ↓'}</span>;
+    return sortOrder === 'asc' ? ' ↑' : ' ↓';
   };
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-4 p-4 bg-gray-50 rounded-lg">
+      {/* Filters */}
+      <div className="flex flex-wrap gap-4 p-4 bg-[#0a0f0a] rounded-lg border border-[#141e12]">
         <div>
-          <label htmlFor="position-filter" className="block text-sm font-medium mb-1">
+          <label htmlFor="position-filter" className="block text-sm font-medium mb-1 text-[#c8d9c3]">
             Position
           </label>
           <select
             id="position-filter"
             value={positionFilter}
             onChange={(e) => setPositionFilter(e.target.value)}
-            className="px-3 py-2 border rounded-md"
+            className="px-3 py-2 border border-[#141e12] rounded-md bg-[#050a05] text-[#c8d9c3] focus:outline-none focus:ring-2 focus:ring-[#4a7c59]"
           >
             <option value="all">All</option>
             <option value="C">Center</option>
@@ -89,14 +85,14 @@ export default function PlayerTable({ players, watchlist = new Set(), onToggleWa
         </div>
 
         <div>
-          <label htmlFor="team-filter" className="block text-sm font-medium mb-1">
+          <label htmlFor="team-filter" className="block text-sm font-medium mb-1 text-[#c8d9c3]">
             Team
           </label>
           <select
             id="team-filter"
             value={teamFilter}
             onChange={(e) => setTeamFilter(e.target.value)}
-            className="px-3 py-2 border rounded-md"
+            className="px-3 py-2 border border-[#141e12] rounded-md bg-[#050a05] text-[#c8d9c3] focus:outline-none focus:ring-2 focus:ring-[#4a7c59]"
           >
             <option value="all">All Teams</option>
             {teams.map(team => (
@@ -106,7 +102,7 @@ export default function PlayerTable({ players, watchlist = new Set(), onToggleWa
         </div>
 
         <div>
-          <label htmlFor="search" className="block text-sm font-medium mb-1">
+          <label htmlFor="search" className="block text-sm font-medium mb-1 text-[#c8d9c3]">
             Search
           </label>
           <input
@@ -115,96 +111,78 @@ export default function PlayerTable({ players, watchlist = new Set(), onToggleWa
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Player name or team..."
-            className="px-3 py-2 border rounded-md w-64"
+            className="px-3 py-2 border border-[#141e12] rounded-md w-64 bg-[#050a05] text-[#c8d9c3] placeholder-[#2d3c28] focus:outline-none focus:ring-2 focus:ring-[#4a7c59]"
           />
         </div>
 
         <div className="ml-auto flex items-end">
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-[#5a6b57]">
             Showing {filteredPlayers.length} of {players.length} players
           </span>
         </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="px-4 py-3 text-left cursor-pointer hover:bg-gray-200" onClick={() => handleSort('rank')}>
-                Rank<SortIcon field="rank" />
-              </th>
-              <th className="px-4 py-3 text-left cursor-pointer hover:bg-gray-200" onClick={() => handleSort('name')}>
-                Name<SortIcon field="name" />
-              </th>
-              <th className="px-4 py-3 text-left cursor-pointer hover:bg-gray-200" onClick={() => handleSort('team')}>
-                Team<SortIcon field="team" />
-              </th>
-              <th className="px-4 py-3 text-left cursor-pointer hover:bg-gray-200" onClick={() => handleSort('position')}>
-                Pos<SortIcon field="position" />
-              </th>
-              <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-200" onClick={() => handleSort('pointsPerGame')}>
-                PPG<SortIcon field="pointsPerGame" />
-              </th>
-              <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-200" onClick={() => handleSort('projectedPlayoffPoints')}>
-                Proj Pts<SortIcon field="projectedPlayoffPoints" />
-              </th>
-              <th className="px-4 py-3 text-right">Proj Games</th>
-              <th className="px-4 py-3 text-center">Form</th>
-              <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-200" onClick={() => handleSort('adp')}>
-                ADP<SortIcon field="adp" />
-              </th>
-              <th className="px-4 py-3 text-center">Watch</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredPlayers.map(player => {
-              const hotColdStatus = getHotColdStatus(player);
+      {/* Player Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {filteredPlayers.slice(0, 32).map((player) => (
+          <div
+            key={player.name}
+            className="bg-[#0a0f0a] rounded-lg p-4 hover:border-[#4a7c59] transition-all border border-[#141e12]"
+          >
+            {/* Header with Rank and Team Logo */}
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="text-2xl font-bold text-[#6b9b7a]">
+                  #{player.rank}
+                </div>
+                <TeamLogo team={player.team} className="w-12 h-12" />
+              </div>
+              <div className="flex items-center gap-2">
+                <WatchlistToggle
+                  playerName={player.name}
+                  isWatched={watchlist.has(player.name)}
+                  onToggle={onToggleWatchlist}
+                />
+              </div>
+            </div>
 
-              return (
-                <tr
-                  key={player.name}
-                  className={cn(
-                    "border-t hover:bg-gray-50",
-                    isInjured(player) && "bg-gray-50",
-                    hotColdStatus === 'hot' && "bg-green-50",
-                    hotColdStatus === 'cold' && "bg-red-50"
-                  )}
-                >
-                  <td className="px-4 py-3 font-medium">#{player.rank}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <span>{player.name}</span>
-                      <InjuryFlag player={player} />
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">{player.team}</td>
-                  <td className="px-4 py-3">{player.position}</td>
-                  <td className="px-4 py-3 text-right">{player.pointsPerGame.toFixed(2)}</td>
-                  <td className="px-4 py-3 text-right font-semibold">
-                    {player.projectedPlayoffPoints.toFixed(1)}
-                  </td>
-                  <td className="px-4 py-3 text-right text-gray-600">
-                    {player.projectedPlayoffGames.toFixed(1)}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <RecentFormIndicator player={player} />
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    {player.adp ? player.adp.toFixed(1) : '-'}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <WatchlistToggle
-                      playerName={player.name}
-                      isWatched={watchlist.has(player.name)}
-                      onToggle={onToggleWatchlist}
-                    />
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+            {/* Player Info */}
+            <div className="space-y-2">
+              <div>
+                <div className="font-semibold text-lg text-[#c8d9c3] flex items-center gap-2">
+                  {player.name}
+                  <InjuryFlag player={player} />
+                </div>
+                <div className="text-sm text-[#5a6b57]">
+                  {player.team} • {player.position}
+                </div>
+              </div>
+
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[#141e12]">
+                <div className="text-center">
+                  <div className="text-xs text-[#5a6b57]">PPG</div>
+                  <div className="font-semibold text-[#c8d9c3]">{player.pointsPerGame.toFixed(2)}</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xs text-[#5a6b57]">PROJ PTS</div>
+                  <div className="font-bold text-[#6b9b7a]">{player.projectedPlayoffPoints.toFixed(1)}</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xs text-[#5a6b57]">ADP</div>
+                  <div className="font-semibold text-[#c8d9c3]">{player.adp ? player.adp.toFixed(1) : '-'}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
+
+      {filteredPlayers.length > 32 && (
+        <div className="text-center text-sm text-[#5a6b57] py-4">
+          Showing first 32 of {filteredPlayers.length} players. Refine your search to see more.
+        </div>
+      )}
     </div>
   );
 }

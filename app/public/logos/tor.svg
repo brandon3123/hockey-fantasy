@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Toronto Maple Leafs - Modern leaf logo -->
+  <rect width="100" height="100" fill="#00205B"/>
+  <!-- Leaf shape -->
+  <path d="M50 10 C30 20 20 40 20 60 C20 80 40 90 50 95 C60 90 80 80 80 60 C80 40 70 20 50 10 Z" fill="#FFFFFF"/>
+  <!-- Leaf veins -->
+  <path d="M50 20 L50 85" stroke="#00205B" stroke-width="2"/>
+  <path d="M35 35 L50 50 L65 35" stroke="#00205B" stroke-width="2" fill="none"/>
+  <path d="M35 55 L50 70 L65 55" stroke="#00205B" stroke-width="2" fill="none"/>
+  <!-- Text -->
+  <text x="50" y="35" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#00205B" text-anchor="middle">TORONTO</text>
+</svg>

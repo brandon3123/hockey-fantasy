@@ -11,7 +11,6 @@ export default function HomePage() {
   const [watchlist, setWatchlist] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    // Load players from static JSON
     fetch('/players.json')
       .then(res => res.json())
       .then(data => {
@@ -23,7 +22,6 @@ export default function HomePage() {
         setLoading(false);
       });
 
-    // Load watchlist from localStorage
     const saved = localStorage.getItem('watchlist');
     if (saved) {
       setWatchlist(new Set(JSON.parse(saved)));
@@ -43,39 +41,27 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading player data...</div>
+      <div className="min-h-screen bg-[#050a05] flex items-center justify-center">
+        <div className="text-xl text-[#5a6b57]">Loading player data...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">
-            🏒 Hockey Playoff Draft Helper
-          </h1>
-          <nav className="flex gap-4">
-            <Link href="/" className="text-blue-600 font-medium">
-              Rankings
-            </Link>
-            <Link href="/draft" className="text-gray-600 hover:text-blue-600">
-              Draft Board
-            </Link>
-            <Link href="/rosters" className="text-gray-600 hover:text-blue-600">
-              Rosters
-            </Link>
-          </nav>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-[#050a05]">
       <main className="max-w-7xl mx-auto px-4 py-8">
+        {/* Header */}
         <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">
-            Pre-Draft Rankings
+          <h1 className="text-3xl font-bold text-[#c8d9c3] mb-4">
+            Hockey Fantasy Pool
+          </h1>
+        </div>
+
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-[#c8d9c3] mb-2">
+            Player Rankings
           </h2>
-          <p className="text-gray-600">
+          <p className="text-[#5a6b57]">
             Players ranked by projected playoff points. Sort, filter, and build your watchlist.
           </p>
         </div>
@@ -89,7 +75,7 @@ export default function HomePage() {
         <div className="mt-8 text-center">
           <Link
             href="/draft"
-            className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            className="inline-block px-6 py-3 bg-[#4a7c59] text-[#c8d9c3] rounded-lg font-semibold hover:bg-[#3d664a] transition-colors"
           >
             Start Draft →
           </Link>
