@@ -4,7 +4,7 @@ Replaces hardcoded stats and fake data with live scraping.
 """
 
 import random
-from typing import Dict
+from typing import Dict, List
 from scrape_nhl_api import scrape_all_player_stats, scrape_player_game_log, get_player_id_from_name, clear_cache
 
 # Keep the hardcoded stats as fallback
@@ -171,7 +171,6 @@ def parse_lines_csv() -> List[Dict]:
     Returns list of line combinations with players, icetime, and metrics.
     """
     import csv
-    from typing import Dict, List
 
     csv_path = _get_moneypuck_path().replace('simulations_recent.csv', 'lines.csv')
 
@@ -200,16 +199,14 @@ def parse_lines_csv() -> List[Dict]:
                     'position': row.get('position', ''),  # 'line' or 'pairing'
                     'situation': row.get('situation', ''),
                     'icetime': icetime,
-                    'gamesPlayed': int(row.get('games_played', 0)),
+                    'games_played': int(row.get('games_played', 0)),
                     'metrics': {
                         'xGoalsPercentage': float(row.get('xGoalsPercentage', 0)),
                         'corsiPercentage': float(row.get('corsiPercentage', 0)),
                     }
                 }
 
-                # Only include meaningful lines
-                if line_data['team'] and line_data['name']:
-                    lines.append(line_data)
+                lines.append(line_data)
 
         print(f"  Parsed {len(lines)} line combinations from MoneyPuck")
 
