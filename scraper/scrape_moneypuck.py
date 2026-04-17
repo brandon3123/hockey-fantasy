@@ -290,18 +290,22 @@ def parse_rankings_csv() -> List[Dict]:
                 try:
                     ranking = {
                         'team': team,
-                        'avgGoaliePrediction': float(row.get('avg_goalie_prediction', 0)),
-                        'avgRecordPrediction': float(row.get('avg_record_prediction', 0)),
-                        'avgFancyPrediction': float(row.get('avg_fancy_prediction', 0)),
-                        'avgOverallPrediction': float(row.get('avg_overall_prediction', 0)),
-                        'minGoaliePrediction': float(row.get('min_goalie_prediction', 0)),
-                        'maxGoaliePrediction': float(row.get('max_goalie_prediction', 0)),
-                        'minOverallPrediction': float(row.get('min_overall_prediction', 0)),
-                        'maxOverallPrediction': float(row.get('max_overall_prediction', 0)),
-                        'worstGoaliePlayerId': row.get('worst_goalie_player_id', ''),
-                        'bestGoaliePlayerId': row.get('best_goalie_player_id', ''),
-                        'worstGoalieName': row.get('worst_goalie_name', ''),
-                        'bestGoalieName': row.get('best_goalie_name', ''),
+                        'overall': {
+                            'avg': float(row.get('avg_overall_prediction', 0)),
+                            'min': float(row.get('min_overall_prediction', 0)),
+                            'max': float(row.get('max_overall_prediction', 0)),
+                        },
+                        'goalie': {
+                            'avg': float(row.get('avg_goalie_prediction', 0)),
+                            'min': float(row.get('min_goalie_prediction', 0)),
+                            'max': float(row.get('max_goalie_prediction', 0)),
+                        },
+                        'fancy': {
+                            'avg': float(row.get('avg_fancy_prediction', 0)),
+                        },
+                        'record': {
+                            'avg': float(row.get('avg_record_prediction', 0)),
+                        }
                     }
                     rankings.append(ranking)
                 except (ValueError, TypeError) as e:
