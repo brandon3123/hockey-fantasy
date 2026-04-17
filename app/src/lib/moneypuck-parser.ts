@@ -3,7 +3,7 @@ import { LineCombination, TeamQuality } from '@/types/draft-coach';
 let linesCache: LineCombination[] | null = null;
 let rankingsCache: TeamQuality[] | null = null;
 
-export async function loadLines(): Promise<LineCombination[]> {
+export async function loadLines(): Promise<LineCombination[] | null> {
   if (linesCache) return linesCache;
 
   try {
@@ -12,29 +12,30 @@ export async function loadLines(): Promise<LineCombination[]> {
     const rawLines = await response.json();
 
     // Process lines: extract player names from "Donato-Bedard-Mikheyev" format
+    // Note: The raw JSON has a "name" field, no existing "players" field to conflict
     linesCache = rawLines.map((line: any) => ({
       ...line,
       players: line.name.split('-').map((n: string) => n.trim())
     }));
 
-    return linesCache!;
+    return linesCache;
   } catch (error) {
     console.error('Failed to load lines:', error);
-    return [];
+    return null; // Return null to distinguish error from empty data
   }
 }
 
-export async function loadRankings(): Promise<TeamQuality[]> {
+export async function loadRankings(): Promise<TeamQuality[] | null> {
   if (rankingsCache) return rankingsCache;
 
   try {
     const response = await fetch('/rankings.json');
     if (!response.ok) throw new Error('Failed to load rankings.json');
     rankingsCache = await response.json();
-    return rankingsCache!;
+    return rankingsCache;
   } catch (error) {
     console.error('Failed to load rankings:', error);
-    return [];
+    return null; // Return null to distinguish error from empty data
   }
 }
 
