@@ -3,12 +3,33 @@ Generate player stats using real NHL API data.
 Replaces hardcoded stats and fake data with live scraping.
 """
 
+import os
+import csv
 import random
-from typing import Dict
+from typing import Dict, List
 from scrape_nhl_api import scrape_all_player_stats, scrape_player_game_log, get_player_id_from_name, clear_cache
 
 # Keep the hardcoded stats as fallback
 from top_players_stats import TOP_PLAYER_STATS
+
+
+def _get_moneypuck_path():
+    """Find the MoneyPuck CSV file."""
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    possible_paths = [
+        os.path.join(script_dir, "../moneypuck/simulations_recent.csv"),
+        os.path.join(script_dir, "../../moneypuck/simulations_recent.csv"),
+        "./moneypuck/simulations_recent.csv",
+        "../moneypuck/simulations_recent.csv",
+    ]
+    for path in possible_paths:
+        if os.path.exists(path):
+            return path
+    return possible_paths[0]
+
+
+_MONEYPUCK_CSV_PATH = _get_moneypuck_path()
+
 
 def scrape_player_stats() -> Dict[str, Dict]:
     """
@@ -19,6 +40,7 @@ def scrape_player_stats() -> Dict[str, Dict]:
     """
     print("Scraping player stats from NHL API...")
     return scrape_all_player_stats()
+
 
 def generate_stats_for_player(name: str, team: str, position: str) -> Dict:
     """
@@ -38,12 +60,9 @@ def generate_stats_for_player(name: str, team: str, position: str) -> Dict:
     player_id = get_player_id_from_name(name, team)
 
     # Only fetch game logs for top players to avoid rate limiting
-    # (Players with high projected points or on good teams)
     should_fetch_game_log = False
 
     if player_id:
-        # Only get game logs for players we know are good
-        # This prevents 380+ individual API calls
         if name in TOP_PLAYER_STATS:
             should_fetch_game_log = True
             game_log = scrape_player_game_log(player_id)
@@ -56,7 +75,6 @@ def generate_stats_for_player(name: str, team: str, position: str) -> Dict:
         assists = real_stats['assists']
         ppg = real_stats['ppg']
 
-        # Use real game log data if we got it, otherwise estimate
         if should_fetch_game_log and game_log:
             last10_data = game_log.get('last10Games', {
                 'goals': 0, 'assists': 0, 'points': 0, 'games': 10
@@ -136,21 +154,222 @@ def generate_stats_for_player(name: str, team: str, position: str) -> Dict:
         "pointsPerGame": ppg,
         "last10Games": last10_data,
         "last20Games": last20_data,
-        "ppg": ppg,  # Add this for compatibility with direct API stats
-        "goals": goals,  # Add this for compatibility
-        "assists": assists,  # Add this for compatibility
-        "games": games,  # Add this for compatibility
-        "points": total_points  # Add this for compatibility
+        "ppg": ppg,
+        "goals": goals,
+        "assists": assists,
+        "games": games,
+        "points": total_points
     }
 
 
-def scrape_team_advancement_odds() -> Dict[str, Dict[str, float]]:
+def scrape_moneypuck_team_odds() -> Dict[str, Dict[str, float]]:
     """
-    Calculate team advancement odds from current standings.
-    Returns real probabilities based on team performance.
+    Load team advancement odds from MoneyPuck Monte Carlo simulations.
+    Reads local simulations_recent.csv file.
 
     Returns:
         Dict mapping team abbreviation -> {round1, round2, round3, round4} odds
     """
-    from scrape_nhl_api import calculate_team_odds_from_standings
-    return calculate_team_odds_from_standings()
+    print("Loading team odds from MoneyPuck CSV...")
+
+    team_odds = {}
+
+    try:
+        with open(_MONEYPUCK_CSV_PATH, 'r') as f:
+            reader = csv.DictReader(f)
+
+            for row in reader:
+                # Only use the ALL scenario (not conditional win/loss rows)
+                # Note: CSV has typo 'scenerio' not 'scenario'
+                if row.get('scenerio', '') != 'ALL':
+                    continue
+
+                team = row.get('teamCode', '').strip()
+                if not team:
+                    continue
+
+                try:
+                    round1 = float(row.get('madePlayoffs', 0))
+                    round2 = float(row.get('round2', 0))
+                    round3 = float(row.get('round3', 0))
+                    round4 = float(row.get('round4', 0))
+                except (ValueError, TypeError):
+                    continue
+
+                # Only include teams with a meaningful playoff chance
+                if round1 < 0.01:
+                    continue
+
+                team_odds[team] = {
+                    'round1': round(round1, 3),
+                    'round2': round(round2, 3),
+                    'round3': round(round3, 3),
+                    'round4': round(round4, 3),
+                }
+
+        print(f"  Found MoneyPuck odds for {len(team_odds)} teams")
+
+    except FileNotFoundError:
+        print(f"  Error: MoneyPuck CSV not found at {_MONEYPUCK_CSV_PATH}")
+    except Exception as e:
+        print(f"  Error loading MoneyPuck CSV: {e}")
+
+    return team_odds
+
+
+def parse_lines_csv() -> List[Dict]:
+    """
+    Parse MoneyPuck lines.csv to extract line combinations.
+    Returns list of line combinations with players, icetime, and metrics.
+    """
+    csv_path = _get_moneypuck_path().replace('simulations_recent.csv', 'lines.csv')
+
+    lines = []
+    try:
+        with open(csv_path, 'r') as f:
+            reader = csv.DictReader(f)
+
+            for row in reader:
+                # Only 5on5 situations for now
+                if row.get('situation', '') != '5on5':
+                    continue
+
+                # Skip if no icetime data
+                try:
+                    icetime = float(row.get('icetime', 0))
+                    if icetime < 100:  # Filter out noise
+                        continue
+                except (ValueError, TypeError):
+                    continue
+
+                line_data = {
+                    'lineId': row.get('lineId', ''),
+                    'team': row.get('team', ''),
+                    'name': row.get('name', ''),  # "Donato-Bedard-Mikheyev"
+                    'position': row.get('position', ''),  # 'line' or 'pairing'
+                    'situation': row.get('situation', ''),
+                    'icetime': icetime,
+                    'games_played': int(row.get('games_played', 0)),
+                    'metrics': {
+                        'xGoalsPercentage': float(row.get('xGoalsPercentage', 0)),
+                        'corsiPercentage': float(row.get('corsiPercentage', 0)),
+                    }
+                }
+
+                lines.append(line_data)
+
+        print(f"  Parsed {len(lines)} line combinations from MoneyPuck")
+
+    except FileNotFoundError:
+        print(f"  Warning: lines.csv not found at {csv_path}")
+    except Exception as e:
+        print(f"  Error parsing lines.csv: {e}")
+
+    return lines
+
+
+def parse_rankings_csv() -> List[Dict]:
+    """
+    Parse MoneyPuck team rankings from CSV file.
+
+    Returns:
+        List of dicts with team rankings data
+    """
+    rankings_path = _get_moneypuck_path().replace('simulations_recent.csv', 'rankings_current.csv')
+    rankings = []
+
+    try:
+        with open(rankings_path, 'r') as f:
+            reader = csv.DictReader(f)
+
+            for row in reader:
+                team = row.get('teamCode', '').strip()
+                if not team:
+                    continue
+
+                try:
+                    ranking = {
+                        'team': team,
+                        'avgGoaliePrediction': float(row.get('avg_goalie_prediction', 0)),
+                        'avgRecordPrediction': float(row.get('avg_record_prediction', 0)),
+                        'avgFancyPrediction': float(row.get('avg_fancy_prediction', 0)),
+                        'avgOverallPrediction': float(row.get('avg_overall_prediction', 0)),
+                        'minGoaliePrediction': float(row.get('min_goalie_prediction', 0)),
+                        'maxGoaliePrediction': float(row.get('max_goalie_prediction', 0)),
+                        'minOverallPrediction': float(row.get('min_overall_prediction', 0)),
+                        'maxOverallPrediction': float(row.get('max_overall_prediction', 0)),
+                        'worstGoaliePlayerId': row.get('worst_goalie_player_id', ''),
+                        'bestGoaliePlayerId': row.get('best_goalie_player_id', ''),
+                        'worstGoalieName': row.get('worst_goalie_name', ''),
+                        'bestGoalieName': row.get('best_goalie_name', ''),
+                    }
+                    rankings.append(ranking)
+                except (ValueError, TypeError) as e:
+                    print(f"  Warning: Skipping row for team {team} due to data error: {e}")
+                    continue
+
+        print(f"  Found MoneyPuck rankings for {len(rankings)} teams")
+
+    except FileNotFoundError:
+        print(f"  Error: MoneyPuck rankings CSV not found at {rankings_path}")
+    except Exception as e:
+        print(f"  Error loading MoneyPuck rankings CSV: {e}")
+
+    return rankings
+
+
+def compare_team_odds() -> List[Dict]:
+    """
+    Compare MoneyPuck odds vs NHL standings-based odds side by side.
+
+    Returns:
+        List of dicts with team, mp_round2, nhl_round2, delta for each round
+    """
+    mp_odds = scrape_moneypuck_team_odds()
+    nhl_odds = scrape_team_advancement_odds()
+
+    all_teams = sorted(set(list(mp_odds.keys()) + list(nhl_odds.keys())))
+    comparison = []
+
+    for team in all_teams:
+        mp = mp_odds.get(team, {})
+        nhl = nhl_odds.get(team, {})
+
+        if not mp and not nhl:
+            continue
+
+        row = {
+            'team': team,
+            'mp_r1': mp.get('round1', 'N/A'),
+            'nhl_r1': nhl.get('round1', 'N/A'),
+            'mp_r2': mp.get('round2', 'N/A'),
+            'nhl_r2': nhl.get('round2', 'N/A'),
+            'mp_r3': mp.get('round3', 'N/A'),
+            'nhl_r3': nhl.get('round3', 'N/A'),
+            'mp_r4': mp.get('round4', 'N/A'),
+            'nhl_r4': nhl.get('round4', 'N/A'),
+        }
+
+        # Add delta for round2 as a quick quality signal
+        if isinstance(row['mp_r2'], float) and isinstance(row['nhl_r2'], float):
+            row['r2_delta'] = round(row['mp_r2'] - row['nhl_r2'], 3)
+        else:
+            row['r2_delta'] = 'N/A'
+
+        comparison.append(row)
+
+    return comparison
+
+
+if __name__ == "__main__":
+    print("Comparing MoneyPuck vs NHL standings odds:\n")
+    rows = compare_team_odds()
+    print(f"{'Team':<6} {'MP R1':>6} {'NHL R1':>7} | {'MP R2':>6} {'NHL R2':>7} {'Δ':>7} | {'MP R3':>6} {'NHL R3':>7} | {'MP R4':>6} {'NHL R4':>7}")
+    print("-" * 80)
+    for r in rows:
+        print(
+            f"{r['team']:<6} {str(r['mp_r1']):>6} {str(r['nhl_r1']):>7} |"
+            f" {str(r['mp_r2']):>6} {str(r['nhl_r2']):>7} {str(r['r2_delta']):>7} |"
+            f" {str(r['mp_r3']):>6} {str(r['nhl_r3']):>7} |"
+            f" {str(r['mp_r4']):>6} {str(r['nhl_r4']):>7}"
+        )
