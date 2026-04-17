@@ -591,7 +591,8 @@ export default function DraftPage() {
               <div className="w-full">
                 <DraftCoach
                   draftState={draftState}
-                  availablePlayers={players}
+                  availablePlayers={draftState.availablePlayers}
+                  allPlayers={players}
                   onDraftPlayer={handleDraftForCurrentManager}
                   draftComplete={draftState.picks.length >= draftState.managers * draftState.playersPerTeam}
                 />
