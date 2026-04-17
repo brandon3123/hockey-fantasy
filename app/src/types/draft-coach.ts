@@ -1,3 +1,5 @@
+import type { Player } from './player';
+
 // Strategy presets with weighting configs
 export interface DraftStrategy {
   id: 'team-stack' | 'balanced' | 'stars-depth';
@@ -68,6 +70,3 @@ export interface DraftCoachAnalysis {
     teams: Record<string, number>;
   };
 }
-
-// Import Player type to avoid circular dependency
-import type { Player } from './player';
