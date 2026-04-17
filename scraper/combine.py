@@ -4,7 +4,7 @@ Combine all scraper data and calculate playoff projections.
 
 import json
 import os
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple
 from scrape_rosters import scrape_playoff_rosters
 from scrape_moneypuck import scrape_team_advancement_odds, scrape_player_stats, generate_stats_for_player, parse_lines_csv
 from scrape_fantasypros_ros import load_fantasypros_ros
@@ -22,7 +22,7 @@ def calculate_projected_playoff_games(odds: Dict[str, float]) -> float:
     expected_games += odds.get('round4', 0) * GAMES_PER_ROUND
     return expected_games
 
-def combine_data() -> List[Dict]:
+def combine_data() -> Tuple[List[Dict], List[Dict]]:
     print("Combining data from all sources...")
 
     # Clear any cached data from previous runs
