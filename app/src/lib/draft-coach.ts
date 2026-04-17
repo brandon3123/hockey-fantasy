@@ -216,13 +216,8 @@ function generateReasoning(
     reasons.push(`Fills ${player.position} need`);
   }
 
-  // Value
-  if (player.adp) {
-    const currentPick = getCurrentPickNumber({ currentRound: 1, currentPick: 1, managers: 7, yourPosition: 1, playersPerTeam: 10, picks: [], availablePlayers: [] });
-    if (currentPick > player.adp + 10) {
-      reasons.push(`Value pick +${Math.round(currentPick - player.adp)} ADP`);
-    }
-  }
+  // Value - will be enhanced later with proper currentPick parameter
+  // TODO: Add currentPick parameter to generateReasoning() for value calculation
 
   return {
     primary: reasons[0] || 'Best available talent',
