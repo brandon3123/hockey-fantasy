@@ -154,3 +154,68 @@ def scrape_team_advancement_odds() -> Dict[str, Dict[str, float]]:
     """
     from scrape_nhl_api import calculate_team_odds_from_standings
     return calculate_team_odds_from_standings()
+
+def _get_moneypuck_path() -> str:
+    """
+    Get the path to MoneyPuck CSV files.
+    Returns path to simulations_recent.csv as reference.
+    """
+    import os
+    # MoneyPuck data is stored in scraper/moneypuck/ directory
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(current_dir, 'moneypuck', 'simulations_recent.csv')
+
+def parse_lines_csv() -> List[Dict]:
+    """
+    Parse MoneyPuck lines.csv to extract line combinations.
+    Returns list of line combinations with players, icetime, and metrics.
+    """
+    import csv
+    from typing import Dict, List
+
+    csv_path = _get_moneypuck_path().replace('simulations_recent.csv', 'lines.csv')
+
+    lines = []
+    try:
+        with open(csv_path, 'r') as f:
+            reader = csv.DictReader(f)
+
+            for row in reader:
+                # Only 5on5 situations for now
+                if row.get('situation', '') != '5on5':
+                    continue
+
+                # Skip if no icetime data
+                try:
+                    icetime = float(row.get('icetime', 0))
+                    if icetime < 100:  # Filter out noise
+                        continue
+                except (ValueError, TypeError):
+                    continue
+
+                line_data = {
+                    'lineId': row.get('lineId', ''),
+                    'team': row.get('team', ''),
+                    'name': row.get('name', ''),  # "Donato-Bedard-Mikheyev"
+                    'position': row.get('position', ''),  # 'line' or 'pairing'
+                    'situation': row.get('situation', ''),
+                    'icetime': icetime,
+                    'gamesPlayed': int(row.get('games_played', 0)),
+                    'metrics': {
+                        'xGoalsPercentage': float(row.get('xGoalsPercentage', 0)),
+                        'corsiPercentage': float(row.get('corsiPercentage', 0)),
+                    }
+                }
+
+                # Only include meaningful lines
+                if line_data['team'] and line_data['name']:
+                    lines.append(line_data)
+
+        print(f"  Parsed {len(lines)} line combinations from MoneyPuck")
+
+    except FileNotFoundError:
+        print(f"  Warning: lines.csv not found at {csv_path}")
+    except Exception as e:
+        print(f"  Error parsing lines.csv: {e}")
+
+    return lines
