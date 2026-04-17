@@ -216,3 +216,58 @@ def parse_lines_csv() -> List[Dict]:
         print(f"  Error parsing lines.csv: {e}")
 
     return lines
+
+def parse_rankings_csv() -> List[Dict]:
+    """
+    Parse MoneyPuck rankings_current.csv to extract team quality predictions.
+    Returns list of team quality metrics.
+    """
+    import csv
+    from typing import Dict, List
+
+    csv_path = _get_moneypuck_path().replace('simulations_recent.csv', 'rankings_current.csv')
+
+    rankings = []
+    try:
+        with open(csv_path, 'r') as f:
+            reader = csv.DictReader(f)
+
+            for row in reader:
+                team = row.get('teamCode', '').strip()
+                if not team:
+                    continue
+
+                try:
+                    ranking_data = {
+                        'team': team,
+                        'overall': {
+                            'avg': float(row.get('avg_overall_prediction', 0)),
+                            'min': float(row.get('min_overall_prediction', 0)),
+                            'max': float(row.get('max_overall_prediction', 0)),
+                        },
+                        'goalie': {
+                            'avg': float(row.get('avg_goalie_prediction', 0)),
+                            'min': float(row.get('min_goalie_prediction', 0)),
+                            'max': float(row.get('max_goalie_prediction', 0)),
+                        },
+                        'fancy': {
+                            'avg': float(row.get('avg_fancy_prediction', 0)),
+                        },
+                        'record': {
+                            'avg': float(row.get('avg_record_prediction', 0)),
+                        }
+                    }
+
+                    rankings.append(ranking_data)
+
+                except (ValueError, TypeError) as e:
+                    continue
+
+        print(f"  Parsed {len(rankings)} team rankings from MoneyPuck")
+
+    except FileNotFoundError:
+        print(f"  Warning: rankings_current.csv not found at {csv_path}")
+    except Exception as e:
+        print(f"  Error parsing rankings_current.csv: {e}")
+
+    return rankings
