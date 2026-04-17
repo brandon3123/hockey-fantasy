@@ -141,8 +141,8 @@ export default function RostersPage() {
 
       // Recalculate playersPerTeam after removal
       const maxPicksPerTeam = Math.max(
-        ...newState.picks.map(p =>
-          newState.picks.filter(pick => pick.managerIndex === p.managerIndex).length
+        ...newState.picks.map((p: { managerIndex: number }) =>
+          newState.picks.filter((pick: { managerIndex: number }) => pick.managerIndex === p.managerIndex).length
         ),
         1 // minimum of 1 if no picks exist
       );
@@ -221,7 +221,7 @@ export default function RostersPage() {
       return;
     }
 
-    const managerPicks = draftState.picks.filter(p => p.managerIndex === managerIndex);
+    const managerPicks = draftState.picks.filter((p: { managerIndex: number }) => p.managerIndex === managerIndex);
     const round = managerPicks.length + 1;
 
     // Add the new player

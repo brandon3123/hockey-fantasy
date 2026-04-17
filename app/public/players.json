@@ -1,5 +1,30 @@
 [
   {
+    "name": "Connor McDavid",
+    "team": "EDM",
+    "position": "C",
+    "regularSeasonGoals": 48,
+    "regularSeasonAssists": 90,
+    "gamesPlayed": 82,
+    "pointsPerGame": 1.68,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 25.9,
+    "adp": 2.0,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 1
+  },
+  {
     "name": "Nathan MacKinnon",
     "team": "COL",
     "position": "C",
@@ -22,7 +47,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 1
+    "rank": 2
   },
   {
     "name": "Nikita Kucherov",
@@ -43,31 +68,6 @@
     "projectedPlayoffGames": 16.0,
     "projectedPlayoffPoints": 25.5,
     "adp": 4.0,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 2
-  },
-  {
-    "name": "Connor McDavid",
-    "team": "EDM",
-    "position": "C",
-    "regularSeasonGoals": 48,
-    "regularSeasonAssists": 86,
-    "gamesPlayed": 82,
-    "pointsPerGame": 1.63,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.38,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 25.0,
-    "adp": 2.0,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
@@ -186,19 +186,43 @@
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
+      "round2": 0.63,
       "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 18.1,
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 18.2,
     "adp": 3.0,
     "injury": {
-      "status": "out indefinitely",
-      "expectedReturn": "Apr 18",
-      "description": "Apr 13: Draisaitl (lower body) participated in Monday's morning skate and should return to the lineup sometime in the opening round of the playoffs, Tony Brar of Oilers TV reports."
+      "status": "healthy",
+      "expectedReturn": null
     },
     "rank": 8
+  },
+  {
+    "name": "Evan Bouchard",
+    "team": "EDM",
+    "position": "D",
+    "regularSeasonGoals": 21,
+    "regularSeasonAssists": 74,
+    "gamesPlayed": 82,
+    "pointsPerGame": 1.16,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 17.9,
+    "adp": 26.0,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 9
   },
   {
     "name": "Kirill Kaprizov",
@@ -219,31 +243,6 @@
     "projectedPlayoffGames": 15.9,
     "projectedPlayoffPoints": 17.3,
     "adp": 6.5,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 9
-  },
-  {
-    "name": "Evan Bouchard",
-    "team": "EDM",
-    "position": "D",
-    "regularSeasonGoals": 21,
-    "regularSeasonAssists": 71,
-    "gamesPlayed": 82,
-    "pointsPerGame": 1.12,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.38,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 17.2,
-    "adp": 26.0,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
@@ -295,9 +294,8 @@
     "projectedPlayoffPoints": 17.2,
     "adp": 35.5,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 18",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
     "rank": 12
   },
@@ -377,6 +375,31 @@
     "rank": 15
   },
   {
+    "name": "Clayton Keller",
+    "team": "UTA",
+    "position": "RW",
+    "regularSeasonGoals": 26,
+    "regularSeasonAssists": 62,
+    "gamesPlayed": 82,
+    "pointsPerGame": 1.07,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 16.5,
+    "adp": 47.0,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 16
+  },
+  {
     "name": "Matt Boldy",
     "team": "MIN",
     "position": "LW",
@@ -395,31 +418,6 @@
     "projectedPlayoffGames": 15.9,
     "projectedPlayoffPoints": 16.5,
     "adp": 17.5,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 16
-  },
-  {
-    "name": "Clayton Keller",
-    "team": "UTA",
-    "position": "RW",
-    "regularSeasonGoals": 26,
-    "regularSeasonAssists": 60,
-    "gamesPlayed": 82,
-    "pointsPerGame": 1.05,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.63,
-      "round3": 0.38,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.4,
-    "projectedPlayoffPoints": 16.2,
-    "adp": 47.0,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
@@ -471,9 +469,8 @@
     "projectedPlayoffPoints": 16.0,
     "adp": 29.0,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 18",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
     "rank": 19
   },
@@ -597,9 +594,8 @@
     "projectedPlayoffPoints": 15.4,
     "adp": 71.5,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 18",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
     "rank": 24
   },
@@ -623,9 +619,8 @@
     "projectedPlayoffPoints": 15.4,
     "adp": 11.0,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 18",
-      "description": "Apr 16: Hughes (illness) will fly with the team for Game 1 in Dallas, according to Michael Russo of The Athletic."
+      "status": "healthy",
+      "expectedReturn": null
     },
     "rank": 25
   },
@@ -974,9 +969,8 @@
     "projectedPlayoffPoints": 13.8,
     "adp": 91.5,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 16",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
     "rank": 39
   },
@@ -1031,6 +1025,66 @@
     "rank": 41
   },
   {
+    "name": "Cutter Gauthier",
+    "team": "ANA",
+    "position": "LW",
+    "regularSeasonGoals": 41,
+    "regularSeasonAssists": 28,
+    "gamesPlayed": 78,
+    "pointsPerGame": 0.88,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 13.6,
+    "adp": 25.0,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 42
+  },
+  {
+    "name": "Hayden Hodgson",
+    "team": "OTT",
+    "position": "RW",
+    "regularSeasonGoals": 26,
+    "regularSeasonAssists": 41,
+    "gamesPlayed": 77,
+    "pointsPerGame": 0.87,
+    "last10Games": {
+      "goals": 3,
+      "assists": 5,
+      "points": 8,
+      "games": 10
+    },
+    "last20Games": {
+      "goals": 6,
+      "assists": 10,
+      "points": 16,
+      "games": 20
+    },
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.65,
+      "round3": 0.39,
+      "round4": 0.2
+    },
+    "projectedPlayoffGames": 15.7,
+    "projectedPlayoffPoints": 13.6,
+    "adp": null,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 43
+  },
+  {
     "name": "Travis Konecny",
     "team": "PHI",
     "position": "RW",
@@ -1053,7 +1107,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 42
+    "rank": 44
   },
   {
     "name": "Trevor Zegras",
@@ -1078,32 +1132,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 43
-  },
-  {
-    "name": "Cutter Gauthier",
-    "team": "ANA",
-    "position": "LW",
-    "regularSeasonGoals": 40,
-    "regularSeasonAssists": 28,
-    "gamesPlayed": 78,
-    "pointsPerGame": 0.87,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 13.3,
-    "adp": 25.0,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 44
+    "rank": 45
   },
   {
     "name": "Erik Karlsson",
@@ -1128,7 +1157,32 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 45
+    "rank": 46
+  },
+  {
+    "name": "Leo Carlsson",
+    "team": "ANA",
+    "position": "C",
+    "regularSeasonGoals": 29,
+    "regularSeasonAssists": 38,
+    "gamesPlayed": 78,
+    "pointsPerGame": 0.86,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 13.2,
+    "adp": 28.5,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 47
   },
   {
     "name": "Miro Heiskanen",
@@ -1150,11 +1204,10 @@
     "projectedPlayoffPoints": 13.2,
     "adp": 56.0,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 18",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
-    "rank": 46
+    "rank": 48
   },
   {
     "name": "Pavel Zacha",
@@ -1179,32 +1232,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 47
-  },
-  {
-    "name": "Leo Carlsson",
-    "team": "ANA",
-    "position": "C",
-    "regularSeasonGoals": 29,
-    "regularSeasonAssists": 37,
-    "gamesPlayed": 78,
-    "pointsPerGame": 0.85,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 13.0,
-    "adp": 28.5,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 48
+    "rank": 49
   },
   {
     "name": "Bryan Rust",
@@ -1229,7 +1257,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 49
+    "rank": 50
   },
   {
     "name": "Anthony Mantha",
@@ -1254,7 +1282,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 50
+    "rank": 51
   },
   {
     "name": "Ivan Demidov",
@@ -1275,41 +1303,6 @@
     "projectedPlayoffGames": 16.0,
     "projectedPlayoffPoints": 12.7,
     "adp": 108.0,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 51
-  },
-  {
-    "name": "Hayden Hodgson",
-    "team": "OTT",
-    "position": "RW",
-    "regularSeasonGoals": 23,
-    "regularSeasonAssists": 35,
-    "gamesPlayed": 72,
-    "pointsPerGame": 0.81,
-    "last10Games": {
-      "goals": 3,
-      "assists": 4,
-      "points": 7,
-      "games": 10
-    },
-    "last20Games": {
-      "goals": 6,
-      "assists": 9,
-      "points": 15,
-      "games": 20
-    },
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.65,
-      "round3": 0.39,
-      "round4": 0.2
-    },
-    "projectedPlayoffGames": 15.7,
-    "projectedPlayoffPoints": 12.7,
-    "adp": null,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
@@ -1492,6 +1485,81 @@
     "rank": 59
   },
   {
+    "name": "Beckett Sennecke",
+    "team": "ANA",
+    "position": "RW",
+    "regularSeasonGoals": 23,
+    "regularSeasonAssists": 37,
+    "gamesPlayed": 78,
+    "pointsPerGame": 0.77,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 11.9,
+    "adp": 128.0,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 60
+  },
+  {
+    "name": "John Carlson",
+    "team": "ANA",
+    "position": "D",
+    "regularSeasonGoals": 14,
+    "regularSeasonAssists": 46,
+    "gamesPlayed": 78,
+    "pointsPerGame": 0.77,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 11.9,
+    "adp": 147.5,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 61
+  },
+  {
+    "name": "Jackson LaCombe",
+    "team": "ANA",
+    "position": "D",
+    "regularSeasonGoals": 10,
+    "regularSeasonAssists": 48,
+    "gamesPlayed": 75,
+    "pointsPerGame": 0.77,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 11.9,
+    "adp": 108.0,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 62
+  },
+  {
     "name": "Tomas Hertl",
     "team": "VGK",
     "position": "C",
@@ -1514,82 +1582,32 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 60
+    "rank": 63
   },
   {
-    "name": "Beckett Sennecke",
+    "name": "Troy Terry",
     "team": "ANA",
     "position": "RW",
-    "regularSeasonGoals": 23,
-    "regularSeasonAssists": 37,
-    "gamesPlayed": 78,
-    "pointsPerGame": 0.77,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 11.8,
-    "adp": 128.0,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 61
-  },
-  {
-    "name": "John Carlson",
-    "team": "ANA",
-    "position": "D",
-    "regularSeasonGoals": 14,
-    "regularSeasonAssists": 44,
-    "gamesPlayed": 75,
-    "pointsPerGame": 0.77,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 11.8,
-    "adp": 147.5,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 62
-  },
-  {
-    "name": "Jackson LaCombe",
-    "team": "ANA",
-    "position": "D",
-    "regularSeasonGoals": 9,
-    "regularSeasonAssists": 48,
+    "regularSeasonGoals": 19,
+    "regularSeasonAssists": 38,
     "gamesPlayed": 75,
     "pointsPerGame": 0.76,
     "last10Games": null,
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
+      "round2": 0.63,
+      "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 11.6,
-    "adp": 108.0,
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 11.7,
+    "adp": 155.5,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 63
+    "rank": 64
   },
   {
     "name": "Ryan McLeod",
@@ -1611,11 +1629,10 @@
     "projectedPlayoffPoints": 11.6,
     "adp": null,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 18",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
-    "rank": 64
+    "rank": 65
   },
   {
     "name": "Jackson Blake",
@@ -1640,32 +1657,32 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 65
+    "rank": 66
   },
   {
-    "name": "Troy Terry",
-    "team": "ANA",
-    "position": "RW",
-    "regularSeasonGoals": 18,
-    "regularSeasonAssists": 38,
+    "name": "Ryan Nugent-Hopkins",
+    "team": "EDM",
+    "position": "C",
+    "regularSeasonGoals": 20,
+    "regularSeasonAssists": 36,
     "gamesPlayed": 75,
     "pointsPerGame": 0.75,
     "last10Games": null,
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
+      "round2": 0.63,
+      "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 11.4,
-    "adp": 155.5,
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 11.6,
+    "adp": 123.5,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 66
+    "rank": 67
   },
   {
     "name": "Mats Zuccarello",
@@ -1690,7 +1707,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 67
+    "rank": 68
   },
   {
     "name": "Viktor Arvidsson",
@@ -1715,7 +1732,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 68
+    "rank": 69
   },
   {
     "name": "Jake Sanderson",
@@ -1740,7 +1757,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 69
+    "rank": 70
   },
   {
     "name": "Josh Doan",
@@ -1765,67 +1782,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 70
-  },
-  {
-    "name": "Ryan Nugent-Hopkins",
-    "team": "EDM",
-    "position": "C",
-    "regularSeasonGoals": 19,
-    "regularSeasonAssists": 36,
-    "gamesPlayed": 75,
-    "pointsPerGame": 0.73,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.38,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 11.2,
-    "adp": 123.5,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
     "rank": 71
-  },
-  {
-    "name": "Jakob Pelletier",
-    "team": "TBL",
-    "position": "LW",
-    "regularSeasonGoals": 20,
-    "regularSeasonAssists": 32,
-    "gamesPlayed": 74,
-    "pointsPerGame": 0.7,
-    "last10Games": {
-      "goals": 2,
-      "assists": 4,
-      "points": 6,
-      "games": 10
-    },
-    "last20Games": {
-      "goals": 5,
-      "assists": 8,
-      "points": 13,
-      "games": 20
-    },
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.68,
-      "round3": 0.41,
-      "round4": 0.2
-    },
-    "projectedPlayoffGames": 16.0,
-    "projectedPlayoffPoints": 11.2,
-    "adp": null,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 72
   },
   {
     "name": "Nazem Kadri",
@@ -1850,7 +1807,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 73
+    "rank": 72
   },
   {
     "name": "Anthony Cirelli",
@@ -1872,11 +1829,10 @@
     "projectedPlayoffPoints": 11.1,
     "adp": 196.0,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 18",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
-    "rank": 74
+    "rank": 73
   },
   {
     "name": "Jack Quinn",
@@ -1901,7 +1857,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 75
+    "rank": 74
   },
   {
     "name": "Shayne Gostisbehere",
@@ -1926,77 +1882,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 76
-  },
-  {
-    "name": "Garrett Wilson",
-    "team": "PHI",
-    "position": "LW",
-    "regularSeasonGoals": 20,
-    "regularSeasonAssists": 31,
-    "gamesPlayed": 73,
-    "pointsPerGame": 0.7,
-    "last10Games": {
-      "goals": 2,
-      "assists": 4,
-      "points": 6,
-      "games": 10
-    },
-    "last20Games": {
-      "goals": 5,
-      "assists": 8,
-      "points": 13,
-      "games": 20
-    },
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.65,
-      "round3": 0.39,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.6,
-    "projectedPlayoffPoints": 10.9,
-    "adp": null,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 77
-  },
-  {
-    "name": "Justin Danforth",
-    "team": "BUF",
-    "position": "RW",
-    "regularSeasonGoals": 20,
-    "regularSeasonAssists": 32,
-    "gamesPlayed": 78,
-    "pointsPerGame": 0.67,
-    "last10Games": {
-      "goals": 2,
-      "assists": 4,
-      "points": 6,
-      "games": 10
-    },
-    "last20Games": {
-      "goals": 5,
-      "assists": 8,
-      "points": 13,
-      "games": 20
-    },
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.69,
-      "round3": 0.41,
-      "round4": 0.21
-    },
-    "projectedPlayoffGames": 16.2,
-    "projectedPlayoffPoints": 10.8,
-    "adp": null,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 78
+    "rank": 75
   },
   {
     "name": "Joel Eriksson Ek",
@@ -2021,7 +1907,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 79
+    "rank": 76
   },
   {
     "name": "Brock Faber",
@@ -2046,7 +1932,42 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 80
+    "rank": 77
+  },
+  {
+    "name": "Justin Danforth",
+    "team": "BUF",
+    "position": "RW",
+    "regularSeasonGoals": 19,
+    "regularSeasonAssists": 30,
+    "gamesPlayed": 74,
+    "pointsPerGame": 0.66,
+    "last10Games": {
+      "goals": 2,
+      "assists": 4,
+      "points": 6,
+      "games": 10
+    },
+    "last20Games": {
+      "goals": 5,
+      "assists": 8,
+      "points": 13,
+      "games": 20
+    },
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.69,
+      "round3": 0.41,
+      "round4": 0.21
+    },
+    "projectedPlayoffGames": 16.2,
+    "projectedPlayoffPoints": 10.7,
+    "adp": null,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 78
   },
   {
     "name": "Brayden Point",
@@ -2068,11 +1989,10 @@
     "projectedPlayoffPoints": 10.7,
     "adp": 39.0,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 18",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
-    "rank": 81
+    "rank": 79
   },
   {
     "name": "Artturi Lehkonen",
@@ -2097,7 +2017,32 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 82
+    "rank": 80
+  },
+  {
+    "name": "Zach Hyman",
+    "team": "EDM",
+    "position": "LW",
+    "regularSeasonGoals": 31,
+    "regularSeasonAssists": 21,
+    "gamesPlayed": 75,
+    "pointsPerGame": 0.69,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 10.6,
+    "adp": 67.5,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 81
   },
   {
     "name": "Christian Dvorak",
@@ -2119,11 +2064,10 @@
     "projectedPlayoffPoints": 10.6,
     "adp": null,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 18",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
-    "rank": 83
+    "rank": 82
   },
   {
     "name": "Matvei Michkov",
@@ -2148,7 +2092,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 84
+    "rank": 83
   },
   {
     "name": "Owen Tippett",
@@ -2170,11 +2114,10 @@
     "projectedPlayoffPoints": 10.6,
     "adp": 154.0,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 18",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
-    "rank": 85
+    "rank": 84
   },
   {
     "name": "Valeri Nichushkin",
@@ -2199,7 +2142,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 86
+    "rank": 85
   },
   {
     "name": "Taylor Hall",
@@ -2224,32 +2167,32 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 87
+    "rank": 86
   },
   {
-    "name": "Zach Hyman",
-    "team": "EDM",
+    "name": "Chris Kreider",
+    "team": "ANA",
     "position": "LW",
-    "regularSeasonGoals": 31,
-    "regularSeasonAssists": 20,
+    "regularSeasonGoals": 22,
+    "regularSeasonAssists": 28,
     "gamesPlayed": 75,
-    "pointsPerGame": 0.68,
+    "pointsPerGame": 0.67,
     "last10Games": null,
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
+      "round2": 0.63,
       "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 10.4,
-    "adp": 67.5,
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 10.3,
+    "adp": 140.0,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 88
+    "rank": 87
   },
   {
     "name": "Marcus Johansson",
@@ -2274,33 +2217,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 89
-  },
-  {
-    "name": "Chris Kreider",
-    "team": "ANA",
-    "position": "LW",
-    "regularSeasonGoals": 22,
-    "regularSeasonAssists": 28,
-    "gamesPlayed": 75,
-    "pointsPerGame": 0.67,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 10.2,
-    "adp": 140.0,
-    "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 16",
-      "description": null
-    },
-    "rank": 90
+    "rank": 88
   },
   {
     "name": "Claude Giroux",
@@ -2325,7 +2242,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 91
+    "rank": 89
   },
   {
     "name": "Elias Lindholm",
@@ -2350,7 +2267,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 92
+    "rank": 90
   },
   {
     "name": "Noah Dobson",
@@ -2375,7 +2292,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 93
+    "rank": 91
   },
   {
     "name": "Vladimir Tarasenko",
@@ -2400,7 +2317,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 94
+    "rank": 92
   },
   {
     "name": "Rickard Rakell",
@@ -2425,7 +2342,32 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 95
+    "rank": 93
+  },
+  {
+    "name": "Quinton Byfield",
+    "team": "LAK",
+    "position": "RW",
+    "regularSeasonGoals": 24,
+    "regularSeasonAssists": 25,
+    "gamesPlayed": 75,
+    "pointsPerGame": 0.65,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.62,
+      "round3": 0.37,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.3,
+    "projectedPlayoffPoints": 9.9,
+    "adp": 184.5,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 94
   },
   {
     "name": "Matt Duchene",
@@ -2450,67 +2392,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 96
-  },
-  {
-    "name": "Owen Michaels",
-    "team": "EDM",
-    "position": "RW",
-    "regularSeasonGoals": 15,
-    "regularSeasonAssists": 24,
-    "gamesPlayed": 61,
-    "pointsPerGame": 0.64,
-    "last10Games": {
-      "goals": 2,
-      "assists": 3,
-      "points": 5,
-      "games": 10
-    },
-    "last20Games": {
-      "goals": 4,
-      "assists": 7,
-      "points": 11,
-      "games": 20
-    },
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.38,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 9.8,
-    "adp": null,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 97
-  },
-  {
-    "name": "Quinton Byfield",
-    "team": "LAK",
-    "position": "RW",
-    "regularSeasonGoals": 23,
-    "regularSeasonAssists": 25,
-    "gamesPlayed": 75,
-    "pointsPerGame": 0.64,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 9.8,
-    "adp": 184.5,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 98
+    "rank": 95
   },
   {
     "name": "Noah Cates",
@@ -2535,7 +2417,32 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 99
+    "rank": 96
+  },
+  {
+    "name": "JJ Peterka",
+    "team": "UTA",
+    "position": "RW",
+    "regularSeasonGoals": 25,
+    "regularSeasonAssists": 22,
+    "gamesPlayed": 75,
+    "pointsPerGame": 0.63,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 9.7,
+    "adp": 126.0,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 97
   },
   {
     "name": "Jason Zucker",
@@ -2557,11 +2464,10 @@
     "projectedPlayoffPoints": 9.7,
     "adp": 288.0,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 18",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
-    "rank": 100
+    "rank": 98
   },
   {
     "name": "Rasmus Andersson",
@@ -2586,7 +2492,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 101
+    "rank": 99
   },
   {
     "name": "Logan Stankoven",
@@ -2608,11 +2514,10 @@
     "projectedPlayoffPoints": 9.6,
     "adp": 176.0,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 18",
-      "description": "Apr 16: Stankoven missed practice Thursday with an illness, according to Chip Alexander of The Raleigh News &amp; Observer."
+      "status": "healthy",
+      "expectedReturn": null
     },
-    "rank": 102
+    "rank": 100
   },
   {
     "name": "Roope Hintz",
@@ -2637,7 +2542,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 103
+    "rank": 101
   },
   {
     "name": "Shane Pinto",
@@ -2662,67 +2567,42 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 104
+    "rank": 102
   },
   {
-    "name": "JJ Peterka",
-    "team": "UTA",
-    "position": "RW",
-    "regularSeasonGoals": 25,
-    "regularSeasonAssists": 21,
-    "gamesPlayed": 75,
-    "pointsPerGame": 0.61,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.63,
-      "round3": 0.38,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.4,
-    "projectedPlayoffPoints": 9.4,
-    "adp": 126.0,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 105
-  },
-  {
-    "name": "Tyson Hinds",
-    "team": "ANA",
-    "position": "D",
-    "regularSeasonGoals": 9,
-    "regularSeasonAssists": 28,
-    "gamesPlayed": 61,
-    "pointsPerGame": 0.61,
+    "name": "Jakob Pelletier",
+    "team": "TBL",
+    "position": "LW",
+    "regularSeasonGoals": 18,
+    "regularSeasonAssists": 29,
+    "gamesPlayed": 79,
+    "pointsPerGame": 0.59,
     "last10Games": {
-      "goals": 1,
-      "assists": 4,
+      "goals": 2,
+      "assists": 3,
       "points": 5,
       "games": 10
     },
     "last20Games": {
-      "goals": 2,
-      "assists": 9,
+      "goals": 4,
+      "assists": 7,
       "points": 11,
       "games": 20
     },
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
-      "round4": 0.19
+      "round2": 0.68,
+      "round3": 0.41,
+      "round4": 0.2
     },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 9.3,
+    "projectedPlayoffGames": 16.0,
+    "projectedPlayoffPoints": 9.5,
     "adp": null,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 106
+    "rank": 103
   },
   {
     "name": "Zach Benson",
@@ -2747,7 +2627,32 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 107
+    "rank": 104
+  },
+  {
+    "name": "Lawson Crouse",
+    "team": "UTA",
+    "position": "LW",
+    "regularSeasonGoals": 24,
+    "regularSeasonAssists": 20,
+    "gamesPlayed": 75,
+    "pointsPerGame": 0.59,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 9.1,
+    "adp": 321.0,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 105
   },
   {
     "name": "Peyton Krebs",
@@ -2772,7 +2677,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 108
+    "rank": 106
   },
   {
     "name": "Bowen Byram",
@@ -2797,7 +2702,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 109
+    "rank": 107
   },
   {
     "name": "Ryan Hartman",
@@ -2822,7 +2727,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 110
+    "rank": 108
   },
   {
     "name": "Mavrik Bourque",
@@ -2847,7 +2752,32 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 111
+    "rank": 109
+  },
+  {
+    "name": "Alex Laferriere",
+    "team": "LAK",
+    "position": "RW",
+    "regularSeasonGoals": 21,
+    "regularSeasonAssists": 23,
+    "gamesPlayed": 75,
+    "pointsPerGame": 0.59,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.62,
+      "round3": 0.37,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.3,
+    "projectedPlayoffPoints": 9.0,
+    "adp": 191.0,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 110
   },
   {
     "name": "Mattias Samuelsson",
@@ -2869,9 +2799,43 @@
     "projectedPlayoffPoints": 8.9,
     "adp": 156.0,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 18",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 111
+  },
+  {
+    "name": "Owen Michaels",
+    "team": "EDM",
+    "position": "RW",
+    "regularSeasonGoals": 14,
+    "regularSeasonAssists": 23,
+    "gamesPlayed": 64,
+    "pointsPerGame": 0.58,
+    "last10Games": {
+      "goals": 2,
+      "assists": 3,
+      "points": 5,
+      "games": 10
+    },
+    "last20Games": {
+      "goals": 4,
+      "assists": 7,
+      "points": 11,
+      "games": 20
+    },
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 8.9,
+    "adp": null,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
     },
     "rank": 112
   },
@@ -2901,31 +2865,6 @@
     "rank": 113
   },
   {
-    "name": "Lawson Crouse",
-    "team": "UTA",
-    "position": "LW",
-    "regularSeasonGoals": 23,
-    "regularSeasonAssists": 20,
-    "gamesPlayed": 75,
-    "pointsPerGame": 0.57,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.63,
-      "round3": 0.38,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.4,
-    "projectedPlayoffPoints": 8.8,
-    "adp": 321.0,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 114
-  },
-  {
     "name": "Casey Mittelstadt",
     "team": "BOS",
     "position": "C",
@@ -2948,7 +2887,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 115
+    "rank": 114
   },
   {
     "name": "Sam Malinski",
@@ -2973,32 +2912,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 116
-  },
-  {
-    "name": "Alex Laferriere",
-    "team": "LAK",
-    "position": "RW",
-    "regularSeasonGoals": 21,
-    "regularSeasonAssists": 22,
-    "gamesPlayed": 75,
-    "pointsPerGame": 0.57,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 8.7,
-    "adp": 191.0,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 117
+    "rank": 115
   },
   {
     "name": "Egor Chinakhov",
@@ -3023,7 +2937,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 118
+    "rank": 116
   },
   {
     "name": "Tommy Novak",
@@ -3048,7 +2962,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 119
+    "rank": 117
   },
   {
     "name": "Shea Theodore",
@@ -3073,7 +2987,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 120
+    "rank": 118
   },
   {
     "name": "K'Andre Miller",
@@ -3098,7 +3012,82 @@
       "status": "healthy",
       "expectedReturn": null
     },
+    "rank": 119
+  },
+  {
+    "name": "Mikael Granlund",
+    "team": "ANA",
+    "position": "C",
+    "regularSeasonGoals": 19,
+    "regularSeasonAssists": 22,
+    "gamesPlayed": 75,
+    "pointsPerGame": 0.55,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 8.5,
+    "adp": 144.0,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 120
+  },
+  {
+    "name": "Mason McTavish",
+    "team": "ANA",
+    "position": "C",
+    "regularSeasonGoals": 17,
+    "regularSeasonAssists": 24,
+    "gamesPlayed": 75,
+    "pointsPerGame": 0.55,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 8.5,
+    "adp": 95.0,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
     "rank": 121
+  },
+  {
+    "name": "Mattias Ekholm",
+    "team": "EDM",
+    "position": "D",
+    "regularSeasonGoals": 6,
+    "regularSeasonAssists": 35,
+    "gamesPlayed": 75,
+    "pointsPerGame": 0.55,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 8.5,
+    "adp": 190.0,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 122
   },
   {
     "name": "Oliver Kapanen",
@@ -3123,7 +3112,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 122
+    "rank": 123
   },
   {
     "name": "Mike Matheson",
@@ -3148,7 +3137,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 123
+    "rank": 124
   },
   {
     "name": "Corey Perry",
@@ -3169,31 +3158,6 @@
     "projectedPlayoffGames": 16.0,
     "projectedPlayoffPoints": 8.5,
     "adp": null,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 124
-  },
-  {
-    "name": "Mattias Ekholm",
-    "team": "EDM",
-    "position": "D",
-    "regularSeasonGoals": 6,
-    "regularSeasonAssists": 35,
-    "gamesPlayed": 75,
-    "pointsPerGame": 0.55,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.38,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 8.4,
-    "adp": 190.0,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
@@ -3301,6 +3265,41 @@
     "rank": 129
   },
   {
+    "name": "Viking Gustafsson Nyberg",
+    "team": "MIN",
+    "position": "D",
+    "regularSeasonGoals": 10,
+    "regularSeasonAssists": 33,
+    "gamesPlayed": 82,
+    "pointsPerGame": 0.52,
+    "last10Games": {
+      "goals": 1,
+      "assists": 4,
+      "points": 5,
+      "games": 10
+    },
+    "last20Games": {
+      "goals": 2,
+      "assists": 8,
+      "points": 10,
+      "games": 20
+    },
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.67,
+      "round3": 0.4,
+      "round4": 0.2
+    },
+    "projectedPlayoffGames": 15.9,
+    "projectedPlayoffPoints": 8.3,
+    "adp": null,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 130
+  },
+  {
     "name": "Travis Sanheim",
     "team": "PHI",
     "position": "D",
@@ -3323,32 +3322,57 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 130
+    "rank": 131
   },
   {
-    "name": "Mikael Granlund",
-    "team": "ANA",
-    "position": "C",
+    "name": "Vasily Podkolzin",
+    "team": "EDM",
+    "position": "RW",
     "regularSeasonGoals": 19,
-    "regularSeasonAssists": 19,
+    "regularSeasonAssists": 18,
     "gamesPlayed": 70,
-    "pointsPerGame": 0.54,
+    "pointsPerGame": 0.53,
     "last10Games": null,
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
+      "round2": 0.63,
+      "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
+    "projectedPlayoffGames": 15.4,
     "projectedPlayoffPoints": 8.2,
-    "adp": 144.0,
+    "adp": null,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 131
+    "rank": 132
+  },
+  {
+    "name": "Matt Savoie",
+    "team": "EDM",
+    "position": "C",
+    "regularSeasonGoals": 18,
+    "regularSeasonAssists": 19,
+    "gamesPlayed": 70,
+    "pointsPerGame": 0.53,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 8.2,
+    "adp": 210.5,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 133
   },
   {
     "name": "Anze Kopitar",
@@ -3373,32 +3397,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 132
-  },
-  {
-    "name": "Mason McTavish",
-    "team": "ANA",
-    "position": "C",
-    "regularSeasonGoals": 17,
-    "regularSeasonAssists": 23,
-    "gamesPlayed": 75,
-    "pointsPerGame": 0.53,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 8.1,
-    "adp": 95.0,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 133
+    "rank": 134
   },
   {
     "name": "Parker Kelly",
@@ -3423,7 +3422,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 134
+    "rank": 135
   },
   {
     "name": "Brent Burns",
@@ -3444,31 +3443,6 @@
     "projectedPlayoffGames": 16.6,
     "projectedPlayoffPoints": 8.1,
     "adp": 205.0,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 135
-  },
-  {
-    "name": "Vasily Podkolzin",
-    "team": "EDM",
-    "position": "RW",
-    "regularSeasonGoals": 19,
-    "regularSeasonAssists": 18,
-    "gamesPlayed": 70,
-    "pointsPerGame": 0.53,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.38,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 8.1,
-    "adp": null,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
@@ -3551,6 +3525,56 @@
     "rank": 139
   },
   {
+    "name": "Ryan Poehling",
+    "team": "ANA",
+    "position": "C",
+    "regularSeasonGoals": 11,
+    "regularSeasonAssists": 25,
+    "gamesPlayed": 70,
+    "pointsPerGame": 0.51,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 7.9,
+    "adp": null,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 140
+  },
+  {
+    "name": "John Marino",
+    "team": "UTA",
+    "position": "D",
+    "regularSeasonGoals": 4,
+    "regularSeasonAssists": 32,
+    "gamesPlayed": 70,
+    "pointsPerGame": 0.51,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 7.9,
+    "adp": null,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 141
+  },
+  {
     "name": "Fraser Minten",
     "team": "BOS",
     "position": "C",
@@ -3573,7 +3597,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 140
+    "rank": 142
   },
   {
     "name": "Josh Norris",
@@ -3598,7 +3622,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 141
+    "rank": 143
   },
   {
     "name": "Jack Roslovic",
@@ -3612,18 +3636,18 @@
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
+      "round2": 0.63,
       "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 7.8,
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 7.9,
     "adp": null,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 142
+    "rank": 144
   },
   {
     "name": "Michael Amadio",
@@ -3648,7 +3672,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 143
+    "rank": 145
   },
   {
     "name": "Ridly Greig",
@@ -3673,7 +3697,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 144
+    "rank": 146
   },
   {
     "name": "Ben Kindel",
@@ -3698,42 +3722,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 145
-  },
-  {
-    "name": "Jake Livanavage",
-    "team": "PIT",
-    "position": "D",
-    "regularSeasonGoals": 7,
-    "regularSeasonAssists": 24,
-    "gamesPlayed": 62,
-    "pointsPerGame": 0.5,
-    "last10Games": {
-      "goals": 1,
-      "assists": 3,
-      "points": 4,
-      "games": 10
-    },
-    "last20Games": {
-      "goals": 2,
-      "assists": 7,
-      "points": 9,
-      "games": 20
-    },
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.65,
-      "round3": 0.39,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.6,
-    "projectedPlayoffPoints": 7.8,
-    "adp": null,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 146
+    "rank": 147
   },
   {
     "name": "Ryan Shea",
@@ -3758,14 +3747,14 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 147
+    "rank": 148
   },
   {
-    "name": "John Marino",
-    "team": "UTA",
+    "name": "Jacob Trouba",
+    "team": "ANA",
     "position": "D",
-    "regularSeasonGoals": 4,
-    "regularSeasonAssists": 31,
+    "regularSeasonGoals": 10,
+    "regularSeasonAssists": 25,
     "gamesPlayed": 70,
     "pointsPerGame": 0.5,
     "last10Games": null,
@@ -3778,12 +3767,12 @@
     },
     "projectedPlayoffGames": 15.4,
     "projectedPlayoffPoints": 7.7,
-    "adp": null,
+    "adp": 183.5,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 148
+    "rank": 149
   },
   {
     "name": "Alexander Nikishin",
@@ -3808,7 +3797,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 149
+    "rank": 150
   },
   {
     "name": "Michael Bunting",
@@ -3833,7 +3822,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 150
+    "rank": 151
   },
   {
     "name": "Sam Steel",
@@ -3853,31 +3842,6 @@
     },
     "projectedPlayoffGames": 16.3,
     "projectedPlayoffPoints": 7.7,
-    "adp": null,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 151
-  },
-  {
-    "name": "Ryan Poehling",
-    "team": "ANA",
-    "position": "C",
-    "regularSeasonGoals": 11,
-    "regularSeasonAssists": 24,
-    "gamesPlayed": 70,
-    "pointsPerGame": 0.5,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 7.6,
     "adp": null,
     "injury": {
       "status": "healthy",
@@ -3936,31 +3900,6 @@
     "rank": 154
   },
   {
-    "name": "Jacob Trouba",
-    "team": "ANA",
-    "position": "D",
-    "regularSeasonGoals": 10,
-    "regularSeasonAssists": 24,
-    "gamesPlayed": 70,
-    "pointsPerGame": 0.49,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 7.5,
-    "adp": 183.5,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 155
-  },
-  {
     "name": "Esa Lindell",
     "team": "DAL",
     "position": "D",
@@ -3983,32 +3922,42 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 156
+    "rank": 155
   },
   {
-    "name": "Matt Savoie",
-    "team": "EDM",
-    "position": "C",
-    "regularSeasonGoals": 15,
-    "regularSeasonAssists": 19,
-    "gamesPlayed": 70,
+    "name": "Jacob Moverare",
+    "team": "LAK",
+    "position": "D",
+    "regularSeasonGoals": 10,
+    "regularSeasonAssists": 30,
+    "gamesPlayed": 81,
     "pointsPerGame": 0.49,
-    "last10Games": null,
-    "last20Games": null,
+    "last10Games": {
+      "goals": 1,
+      "assists": 3,
+      "points": 4,
+      "games": 10
+    },
+    "last20Games": {
+      "goals": 2,
+      "assists": 7,
+      "points": 9,
+      "games": 20
+    },
     "teamAdvancementOdds": {
       "round1": 1.0,
       "round2": 0.62,
-      "round3": 0.38,
+      "round3": 0.37,
       "round4": 0.19
     },
     "projectedPlayoffGames": 15.3,
     "projectedPlayoffPoints": 7.5,
-    "adp": 210.5,
+    "adp": null,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 157
+    "rank": 156
   },
   {
     "name": "Gage Goncalves",
@@ -4033,7 +3982,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 158
+    "rank": 157
   },
   {
     "name": "Marat Khusnutdinov",
@@ -4058,7 +4007,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 159
+    "rank": 158
   },
   {
     "name": "Fabian Zetterlund",
@@ -4083,7 +4032,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 160
+    "rank": 159
   },
   {
     "name": "Oliver Bjorkstrand",
@@ -4108,7 +4057,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 161
+    "rank": 160
   },
   {
     "name": "Josh Manson",
@@ -4129,6 +4078,31 @@
     "projectedPlayoffGames": 16.6,
     "projectedPlayoffPoints": 7.3,
     "adp": null,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 161
+  },
+  {
+    "name": "Alex Killorn",
+    "team": "ANA",
+    "position": "LW",
+    "regularSeasonGoals": 15,
+    "regularSeasonAssists": 18,
+    "gamesPlayed": 70,
+    "pointsPerGame": 0.47,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 7.2,
+    "adp": 248.0,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
@@ -4186,31 +4160,6 @@
     "rank": 164
   },
   {
-    "name": "Alex Killorn",
-    "team": "ANA",
-    "position": "LW",
-    "regularSeasonGoals": 14,
-    "regularSeasonAssists": 18,
-    "gamesPlayed": 70,
-    "pointsPerGame": 0.46,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 7.0,
-    "adp": 248.0,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 165
-  },
-  {
     "name": "Justin Hryckowian",
     "team": "DAL",
     "position": "C",
@@ -4229,6 +4178,31 @@
     "projectedPlayoffGames": 16.3,
     "projectedPlayoffPoints": 7.0,
     "adp": null,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 165
+  },
+  {
+    "name": "Trevor Moore",
+    "team": "LAK",
+    "position": "LW",
+    "regularSeasonGoals": 13,
+    "regularSeasonAssists": 19,
+    "gamesPlayed": 70,
+    "pointsPerGame": 0.46,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.62,
+      "round3": 0.37,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.3,
+    "projectedPlayoffPoints": 7.0,
+    "adp": 299.0,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
@@ -4311,6 +4285,31 @@
     "rank": 169
   },
   {
+    "name": "Michael Carcone",
+    "team": "UTA",
+    "position": "LW",
+    "regularSeasonGoals": 16,
+    "regularSeasonAssists": 15,
+    "gamesPlayed": 70,
+    "pointsPerGame": 0.44,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 6.8,
+    "adp": null,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 170
+  },
+  {
     "name": "Bobby Brink",
     "team": "MIN",
     "position": "RW",
@@ -4333,7 +4332,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 170
+    "rank": 171
   },
   {
     "name": "Jordan Martinook",
@@ -4354,31 +4353,6 @@
     "projectedPlayoffGames": 16.3,
     "projectedPlayoffPoints": 6.7,
     "adp": null,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 171
-  },
-  {
-    "name": "Trevor Moore",
-    "team": "LAK",
-    "position": "LW",
-    "regularSeasonGoals": 13,
-    "regularSeasonAssists": 18,
-    "gamesPlayed": 70,
-    "pointsPerGame": 0.44,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 6.7,
-    "adp": 299.0,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
@@ -4461,15 +4435,25 @@
     "rank": 175
   },
   {
-    "name": "Michael Carcone",
-    "team": "UTA",
-    "position": "LW",
-    "regularSeasonGoals": 15,
-    "regularSeasonAssists": 15,
-    "gamesPlayed": 70,
+    "name": "Tyson Hinds",
+    "team": "ANA",
+    "position": "D",
+    "regularSeasonGoals": 6,
+    "regularSeasonAssists": 20,
+    "gamesPlayed": 61,
     "pointsPerGame": 0.43,
-    "last10Games": null,
-    "last20Games": null,
+    "last10Games": {
+      "goals": 0,
+      "assists": 3,
+      "points": 3,
+      "games": 10
+    },
+    "last20Games": {
+      "goals": 1,
+      "assists": 6,
+      "points": 7,
+      "games": 20
+    },
     "teamAdvancementOdds": {
       "round1": 1.0,
       "round2": 0.63,
@@ -4555,9 +4539,8 @@
     "projectedPlayoffPoints": 6.6,
     "adp": null,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 18",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
     "rank": 179
   },
@@ -4637,6 +4620,31 @@
     "rank": 182
   },
   {
+    "name": "MacKenzie Weegar",
+    "team": "UTA",
+    "position": "D",
+    "regularSeasonGoals": 4,
+    "regularSeasonAssists": 24,
+    "gamesPlayed": 70,
+    "pointsPerGame": 0.4,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 6.2,
+    "adp": 135.5,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 183
+  },
+  {
     "name": "Danila Yurov",
     "team": "MIN",
     "position": "RW",
@@ -4659,7 +4667,42 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 183
+    "rank": 184
+  },
+  {
+    "name": "Garrett Wilson",
+    "team": "PHI",
+    "position": "LW",
+    "regularSeasonGoals": 11,
+    "regularSeasonAssists": 17,
+    "gamesPlayed": 70,
+    "pointsPerGame": 0.4,
+    "last10Games": {
+      "goals": 1,
+      "assists": 2,
+      "points": 3,
+      "games": 10
+    },
+    "last20Games": {
+      "goals": 3,
+      "assists": 4,
+      "points": 7,
+      "games": 20
+    },
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.65,
+      "round3": 0.39,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.6,
+    "projectedPlayoffPoints": 6.2,
+    "adp": null,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 185
   },
   {
     "name": "Noah Hanifin",
@@ -4684,7 +4727,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 184
+    "rank": 186
   },
   {
     "name": "Sean Durzi",
@@ -4706,11 +4749,10 @@
     "projectedPlayoffPoints": 6.0,
     "adp": 180.0,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 16",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
-    "rank": 185
+    "rank": 187
   },
   {
     "name": "Logan Stanley",
@@ -4735,7 +4777,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 186
+    "rank": 188
   },
   {
     "name": "Nicolas Roy",
@@ -4760,7 +4802,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 187
+    "rank": 189
   },
   {
     "name": "Hampus Lindholm",
@@ -4785,7 +4827,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 188
+    "rank": 190
   },
   {
     "name": "Mason Lohrei",
@@ -4810,7 +4852,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 189
+    "rank": 191
   },
   {
     "name": "Alex Newhook",
@@ -4835,7 +4877,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 190
+    "rank": 192
   },
   {
     "name": "Cam York",
@@ -4860,32 +4902,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 191
-  },
-  {
-    "name": "MacKenzie Weegar",
-    "team": "UTA",
-    "position": "D",
-    "regularSeasonGoals": 4,
-    "regularSeasonAssists": 22,
-    "gamesPlayed": 70,
-    "pointsPerGame": 0.37,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.63,
-      "round3": 0.38,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.4,
-    "projectedPlayoffPoints": 5.7,
-    "adp": 135.5,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 192
+    "rank": 193
   },
   {
     "name": "Reilly Smith",
@@ -4910,7 +4927,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 193
+    "rank": 194
   },
   {
     "name": "Ross Colton",
@@ -4935,7 +4952,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 194
+    "rank": 195
   },
   {
     "name": "Devon Toews",
@@ -4957,11 +4974,10 @@
     "projectedPlayoffPoints": 5.6,
     "adp": 244.0,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 16",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
-    "rank": 195
+    "rank": 196
   },
   {
     "name": "Noel Acciari",
@@ -4986,7 +5002,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 196
+    "rank": 197
   },
   {
     "name": "Barrett Hayton",
@@ -5011,7 +5027,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 197
+    "rank": 198
   },
   {
     "name": "Jack McBain",
@@ -5036,7 +5052,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 198
+    "rank": 199
   },
   {
     "name": "Nick Blankenburg",
@@ -5061,7 +5077,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 199
+    "rank": 200
   },
   {
     "name": "Joel Armia",
@@ -5086,7 +5102,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 200
+    "rank": 201
   },
   {
     "name": "Andrei Kuzmenko",
@@ -5108,11 +5124,10 @@
     "projectedPlayoffPoints": 5.5,
     "adp": 280.0,
     "injury": {
-      "status": "out indefinitely",
-      "expectedReturn": "Apr 19",
-      "description": "Apr 8: Kuzmenko (knee) is making strides in his recovery and will be reevaluated in 7-8 days, Alexander Legget of Mayors Manor reports Wednesday."
+      "status": "healthy",
+      "expectedReturn": null
     },
-    "rank": 201
+    "rank": 202
   },
   {
     "name": "Jake Evans",
@@ -5137,7 +5152,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 202
+    "rank": 203
   },
   {
     "name": "Josh Anderson",
@@ -5162,7 +5177,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 203
+    "rank": 204
   },
   {
     "name": "Brendan Gallagher",
@@ -5187,7 +5202,32 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 204
+    "rank": 205
+  },
+  {
+    "name": "Darnell Nurse",
+    "team": "EDM",
+    "position": "D",
+    "regularSeasonGoals": 7,
+    "regularSeasonAssists": 17,
+    "gamesPlayed": 70,
+    "pointsPerGame": 0.34,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 5.2,
+    "adp": 152.0,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 206
   },
   {
     "name": "Yakov Trenin",
@@ -5212,7 +5252,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 205
+    "rank": 207
   },
   {
     "name": "Nick Cousins",
@@ -5237,7 +5277,32 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 206
+    "rank": 208
+  },
+  {
+    "name": "Kailer Yamamoto",
+    "team": "UTA",
+    "position": "RW",
+    "regularSeasonGoals": 13,
+    "regularSeasonAssists": 10,
+    "gamesPlayed": 70,
+    "pointsPerGame": 0.33,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 5.1,
+    "adp": null,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 209
   },
   {
     "name": "Ian Cole",
@@ -5262,32 +5327,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 207
-  },
-  {
-    "name": "Darnell Nurse",
-    "team": "EDM",
-    "position": "D",
-    "regularSeasonGoals": 7,
-    "regularSeasonAssists": 16,
-    "gamesPlayed": 70,
-    "pointsPerGame": 0.33,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.38,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 5.1,
-    "adp": 152.0,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 208
+    "rank": 210
   },
   {
     "name": "Drew Doughty",
@@ -5312,7 +5352,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 209
+    "rank": 211
   },
   {
     "name": "Joel Edmundson",
@@ -5337,7 +5377,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 210
+    "rank": 212
   },
   {
     "name": "Alexandre Carrier",
@@ -5359,11 +5399,10 @@
     "projectedPlayoffPoints": 5.0,
     "adp": null,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 18",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
-    "rank": 211
+    "rank": 213
   },
   {
     "name": "Pontus Holmberg",
@@ -5385,11 +5424,10 @@
     "projectedPlayoffPoints": 5.0,
     "adp": null,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 18",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
-    "rank": 212
+    "rank": 214
   },
   {
     "name": "Tanner Jeannot",
@@ -5414,7 +5452,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 213
+    "rank": 215
   },
   {
     "name": "Mark Kastelic",
@@ -5439,7 +5477,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 214
+    "rank": 216
   },
   {
     "name": "Sean Kuraly",
@@ -5464,7 +5502,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 215
+    "rank": 217
   },
   {
     "name": "Nikita Zadorov",
@@ -5489,7 +5527,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 216
+    "rank": 218
   },
   {
     "name": "Mark Jankowski",
@@ -5514,7 +5552,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 217
+    "rank": 219
   },
   {
     "name": "Jared Spurgeon",
@@ -5539,14 +5577,14 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 218
+    "rank": 220
   },
   {
-    "name": "Kailer Yamamoto",
-    "team": "UTA",
-    "position": "RW",
-    "regularSeasonGoals": 12,
-    "regularSeasonAssists": 10,
+    "name": "Pavel Mintyukov",
+    "team": "ANA",
+    "position": "D",
+    "regularSeasonGoals": 8,
+    "regularSeasonAssists": 14,
     "gamesPlayed": 70,
     "pointsPerGame": 0.31,
     "last10Games": null,
@@ -5564,7 +5602,32 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 219
+    "rank": 221
+  },
+  {
+    "name": "Olen Zellweger",
+    "team": "ANA",
+    "position": "D",
+    "regularSeasonGoals": 7,
+    "regularSeasonAssists": 15,
+    "gamesPlayed": 70,
+    "pointsPerGame": 0.31,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 4.8,
+    "adp": 233.0,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 222
   },
   {
     "name": "Nate Schmidt",
@@ -5589,7 +5652,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 220
+    "rank": 223
   },
   {
     "name": "Alexandre Texier",
@@ -5614,7 +5677,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 221
+    "rank": 224
   },
   {
     "name": "Ryan McDonagh",
@@ -5636,11 +5699,10 @@
     "projectedPlayoffPoints": 4.8,
     "adp": null,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 18",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
-    "rank": 222
+    "rank": 225
   },
   {
     "name": "Brett Howden",
@@ -5665,57 +5727,42 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 223
+    "rank": 226
   },
   {
-    "name": "Pavel Mintyukov",
-    "team": "ANA",
+    "name": "Jake Livanavage",
+    "team": "PIT",
     "position": "D",
-    "regularSeasonGoals": 8,
-    "regularSeasonAssists": 14,
-    "gamesPlayed": 70,
-    "pointsPerGame": 0.31,
-    "last10Games": null,
-    "last20Games": null,
+    "regularSeasonGoals": 5,
+    "regularSeasonAssists": 17,
+    "gamesPlayed": 74,
+    "pointsPerGame": 0.3,
+    "last10Games": {
+      "goals": 0,
+      "assists": 2,
+      "points": 2,
+      "games": 10
+    },
+    "last20Games": {
+      "goals": 1,
+      "assists": 4,
+      "points": 5,
+      "games": 20
+    },
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
+      "round2": 0.65,
+      "round3": 0.39,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
+    "projectedPlayoffGames": 15.6,
     "projectedPlayoffPoints": 4.7,
     "adp": null,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 224
-  },
-  {
-    "name": "Olen Zellweger",
-    "team": "ANA",
-    "position": "D",
-    "regularSeasonGoals": 7,
-    "regularSeasonAssists": 15,
-    "gamesPlayed": 70,
-    "pointsPerGame": 0.31,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 4.7,
-    "adp": 233.0,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 225
+    "rank": 227
   },
   {
     "name": "Zemgus Girgensons",
@@ -5740,7 +5787,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 226
+    "rank": 228
   },
   {
     "name": "Nic Dowd",
@@ -5765,7 +5812,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 227
+    "rank": 229
   },
   {
     "name": "Jake Walman",
@@ -5779,18 +5826,18 @@
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
+      "round2": 0.63,
       "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 4.4,
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 4.5,
     "adp": 255.0,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 228
+    "rank": 230
   },
   {
     "name": "Scott Laughton",
@@ -5815,7 +5862,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 229
+    "rank": 231
   },
   {
     "name": "Mikey Anderson",
@@ -5840,42 +5887,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 230
-  },
-  {
-    "name": "Viking Gustafsson Nyberg",
-    "team": "MIN",
-    "position": "D",
-    "regularSeasonGoals": 5,
-    "regularSeasonAssists": 16,
-    "gamesPlayed": 77,
-    "pointsPerGame": 0.27,
-    "last10Games": {
-      "goals": 0,
-      "assists": 2,
-      "points": 2,
-      "games": 10
-    },
-    "last20Games": {
-      "goals": 1,
-      "assists": 4,
-      "points": 5,
-      "games": 20
-    },
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.67,
-      "round3": 0.4,
-      "round4": 0.2
-    },
-    "projectedPlayoffGames": 15.9,
-    "projectedPlayoffPoints": 4.3,
-    "adp": null,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 231
+    "rank": 232
   },
   {
     "name": "William Carrier",
@@ -5900,7 +5912,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 232
+    "rank": 233
   },
   {
     "name": "Eric Robinson",
@@ -5925,7 +5937,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 233
+    "rank": 234
   },
   {
     "name": "Blake Lizotte",
@@ -5950,7 +5962,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 234
+    "rank": 235
   },
   {
     "name": "Samuel Girard",
@@ -5975,7 +5987,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 235
+    "rank": 236
   },
   {
     "name": "Michael Eyssimont",
@@ -5994,41 +6006,6 @@
       "round4": 0.2
     },
     "projectedPlayoffGames": 15.8,
-    "projectedPlayoffPoints": 4.1,
-    "adp": null,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 236
-  },
-  {
-    "name": "Jacob Moverare",
-    "team": "LAK",
-    "position": "D",
-    "regularSeasonGoals": 4,
-    "regularSeasonAssists": 13,
-    "gamesPlayed": 62,
-    "pointsPerGame": 0.27,
-    "last10Games": {
-      "goals": 0,
-      "assists": 2,
-      "points": 2,
-      "games": 10
-    },
-    "last20Games": {
-      "goals": 1,
-      "assists": 4,
-      "points": 5,
-      "games": 20
-    },
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
     "projectedPlayoffPoints": 4.1,
     "adp": null,
     "injury": {
@@ -6082,9 +6059,8 @@
     "projectedPlayoffPoints": 4.1,
     "adp": null,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 18",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
     "rank": 239
   },
@@ -6264,6 +6240,31 @@
     "rank": 246
   },
   {
+    "name": "Nick Jensen",
+    "team": "OTT",
+    "position": "D",
+    "regularSeasonGoals": 4,
+    "regularSeasonAssists": 13,
+    "gamesPlayed": 70,
+    "pointsPerGame": 0.24,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.65,
+      "round3": 0.39,
+      "round4": 0.2
+    },
+    "projectedPlayoffGames": 15.7,
+    "projectedPlayoffPoints": 3.8,
+    "adp": null,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 247
+  },
+  {
     "name": "Victor Hedman",
     "team": "TBL",
     "position": "D",
@@ -6286,7 +6287,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 247
+    "rank": 248
   },
   {
     "name": "Sam Carrick",
@@ -6311,7 +6312,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 248
+    "rank": 249
   },
   {
     "name": "Jason Dickinson",
@@ -6325,18 +6326,18 @@
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
+      "round2": 0.63,
       "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
+    "projectedPlayoffGames": 15.4,
     "projectedPlayoffPoints": 3.7,
     "adp": null,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 249
+    "rank": 250
   },
   {
     "name": "Kasperi Kapanen",
@@ -6350,18 +6351,43 @@
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
+      "round2": 0.63,
       "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
+    "projectedPlayoffGames": 15.4,
     "projectedPlayoffPoints": 3.7,
     "adp": null,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 250
+    "rank": 251
+  },
+  {
+    "name": "Connor Murphy",
+    "team": "EDM",
+    "position": "D",
+    "regularSeasonGoals": 5,
+    "regularSeasonAssists": 12,
+    "gamesPlayed": 70,
+    "pointsPerGame": 0.24,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 3.7,
+    "adp": null,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 252
   },
   {
     "name": "Brian Dumoulin",
@@ -6386,7 +6412,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 251
+    "rank": 253
   },
   {
     "name": "Jake Middleton",
@@ -6411,7 +6437,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 252
+    "rank": 254
   },
   {
     "name": "Denver Barkey",
@@ -6436,7 +6462,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 253
+    "rank": 255
   },
   {
     "name": "Tyson Foerster",
@@ -6461,7 +6487,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 254
+    "rank": 256
   },
   {
     "name": "Keegan Kolesar",
@@ -6486,7 +6512,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 255
+    "rank": 257
   },
   {
     "name": "Alex Steeves",
@@ -6511,7 +6537,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 256
+    "rank": 258
   },
   {
     "name": "Kaedan Korczak",
@@ -6536,32 +6562,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 257
-  },
-  {
-    "name": "Connor Murphy",
-    "team": "EDM",
-    "position": "D",
-    "regularSeasonGoals": 5,
-    "regularSeasonAssists": 11,
-    "gamesPlayed": 70,
-    "pointsPerGame": 0.23,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.38,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 3.5,
-    "adp": null,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 258
+    "rank": 259
   },
   {
     "name": "Tanner Pearson",
@@ -6586,7 +6587,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 259
+    "rank": 260
   },
   {
     "name": "Colin Blackwell",
@@ -6611,7 +6612,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 260
+    "rank": 261
   },
   {
     "name": "Kirby Dach",
@@ -6636,7 +6637,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 261
+    "rank": 262
   },
   {
     "name": "Dominic James",
@@ -6661,7 +6662,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 262
+    "rank": 263
   },
   {
     "name": "Nick Paul",
@@ -6686,7 +6687,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 263
+    "rank": 264
   },
   {
     "name": "Henri Jokiharju",
@@ -6711,7 +6712,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 264
+    "rank": 265
   },
   {
     "name": "Nick Foligno",
@@ -6736,7 +6737,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 265
+    "rank": 266
   },
   {
     "name": "Lars Eller",
@@ -6761,7 +6762,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 266
+    "rank": 267
   },
   {
     "name": "Drew Helleson",
@@ -6775,18 +6776,18 @@
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
+      "round2": 0.63,
+      "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
+    "projectedPlayoffGames": 15.4,
     "projectedPlayoffPoints": 3.2,
     "adp": null,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 267
+    "rank": 268
   },
   {
     "name": "Andrew Peeke",
@@ -6811,7 +6812,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 268
+    "rank": 269
   },
   {
     "name": "Beck Malenstyn",
@@ -6836,7 +6837,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 269
+    "rank": 270
   },
   {
     "name": "Adam Henrique",
@@ -6850,18 +6851,18 @@
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
+      "round2": 0.63,
       "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
+    "projectedPlayoffGames": 15.4,
     "projectedPlayoffPoints": 3.2,
     "adp": 333.0,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 270
+    "rank": 271
   },
   {
     "name": "Ben Hutton",
@@ -6886,7 +6887,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 271
+    "rank": 272
   },
   {
     "name": "Ross Johnston",
@@ -6900,19 +6901,18 @@
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
+      "round2": 0.63,
+      "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
+    "projectedPlayoffGames": 15.4,
     "projectedPlayoffPoints": 3.1,
     "adp": null,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 16",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
-    "rank": 272
+    "rank": 273
   },
   {
     "name": "Alex Turcotte",
@@ -6937,7 +6937,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 273
+    "rank": 274
   },
   {
     "name": "Nikita Grebenkin",
@@ -6962,7 +6962,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 274
+    "rank": 275
   },
   {
     "name": "Rasmus Ristolainen",
@@ -6987,7 +6987,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 275
+    "rank": 276
   },
   {
     "name": "Jonathan Aspirot",
@@ -7012,7 +7012,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 276
+    "rank": 277
   },
   {
     "name": "Marcus Foligno",
@@ -7037,7 +7037,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 277
+    "rank": 278
   },
   {
     "name": "Carl Grundstrom",
@@ -7062,7 +7062,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 278
+    "rank": 279
   },
   {
     "name": "Emil Andrae",
@@ -7087,7 +7087,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 279
+    "rank": 280
   },
   {
     "name": "Elmer Soderblom",
@@ -7112,7 +7112,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 280
+    "rank": 281
   },
   {
     "name": "Radko Gudas",
@@ -7126,19 +7126,18 @@
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
+      "round2": 0.63,
+      "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
+    "projectedPlayoffGames": 15.4,
     "projectedPlayoffPoints": 2.9,
     "adp": 295.0,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 16",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
-    "rank": 281
+    "rank": 282
   },
   {
     "name": "Alexander Kerfoot",
@@ -7163,7 +7162,32 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 282
+    "rank": 283
+  },
+  {
+    "name": "Colton Dach",
+    "team": "EDM",
+    "position": "C",
+    "regularSeasonGoals": 5,
+    "regularSeasonAssists": 8,
+    "gamesPlayed": 70,
+    "pointsPerGame": 0.19,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 2.9,
+    "adp": null,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 284
   },
   {
     "name": "Jeremy Lauzon",
@@ -7188,7 +7212,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 283
+    "rank": 285
   },
   {
     "name": "Brett Kulak",
@@ -7213,7 +7237,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 284
+    "rank": 286
   },
   {
     "name": "Oskar B\u00e4ck",
@@ -7238,7 +7262,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 285
+    "rank": 287
   },
   {
     "name": "Jayden Struble",
@@ -7263,7 +7287,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 286
+    "rank": 288
   },
   {
     "name": "Emil Lilleberg",
@@ -7288,7 +7312,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 287
+    "rank": 289
   },
   {
     "name": "Ian Moore",
@@ -7302,18 +7326,18 @@
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
+      "round2": 0.63,
+      "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
+    "projectedPlayoffGames": 15.4,
     "projectedPlayoffPoints": 2.6,
     "adp": null,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 288
+    "rank": 290
   },
   {
     "name": "Nils Lundkvist",
@@ -7338,7 +7362,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 289
+    "rank": 291
   },
   {
     "name": "Tyler Myers",
@@ -7363,7 +7387,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 290
+    "rank": 292
   },
   {
     "name": "Ty Emberson",
@@ -7377,18 +7401,18 @@
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
+      "round2": 0.63,
       "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
+    "projectedPlayoffGames": 15.4,
     "projectedPlayoffPoints": 2.6,
     "adp": null,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 291
+    "rank": 293
   },
   {
     "name": "Kaiden Guhle",
@@ -7413,7 +7437,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 292
+    "rank": 294
   },
   {
     "name": "Erik Cernak",
@@ -7438,7 +7462,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 293
+    "rank": 295
   },
   {
     "name": "Cole Smith",
@@ -7463,7 +7487,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 294
+    "rank": 296
   },
   {
     "name": "Brayden McNabb",
@@ -7488,32 +7512,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 295
-  },
-  {
-    "name": "Colton Dach",
-    "team": "EDM",
-    "position": "C",
-    "regularSeasonGoals": 4,
-    "regularSeasonAssists": 7,
-    "gamesPlayed": 70,
-    "pointsPerGame": 0.16,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.38,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 2.5,
-    "adp": null,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 296
+    "rank": 297
   },
   {
     "name": "Nico Sturm",
@@ -7538,7 +7537,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 297
+    "rank": 298
   },
   {
     "name": "Stephen Halliday",
@@ -7563,7 +7562,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 298
+    "rank": 299
   },
   {
     "name": "Colton Sissons",
@@ -7588,7 +7587,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 299
+    "rank": 300
   },
   {
     "name": "Mathieu Joseph",
@@ -7613,7 +7612,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 300
+    "rank": 301
   },
   {
     "name": "Zakhar Bardakov",
@@ -7638,7 +7637,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 301
+    "rank": 302
   },
   {
     "name": "Alexander Petrovic",
@@ -7663,7 +7662,32 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 302
+    "rank": 303
+  },
+  {
+    "name": "Jeffrey Viel",
+    "team": "ANA",
+    "position": "LW",
+    "regularSeasonGoals": 3,
+    "regularSeasonAssists": 7,
+    "gamesPlayed": 70,
+    "pointsPerGame": 0.14,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 2.2,
+    "adp": null,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 304
   },
   {
     "name": "Joel Kiviranta",
@@ -7688,7 +7712,32 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 303
+    "rank": 305
+  },
+  {
+    "name": "Spencer Stastney",
+    "team": "EDM",
+    "position": "D",
+    "regularSeasonGoals": 2,
+    "regularSeasonAssists": 8,
+    "gamesPlayed": 70,
+    "pointsPerGame": 0.14,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 2.2,
+    "adp": null,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 306
   },
   {
     "name": "Rodrigo Abols",
@@ -7710,11 +7759,10 @@
     "projectedPlayoffPoints": 2.2,
     "adp": null,
     "injury": {
-      "status": "out indefinitely",
-      "expectedReturn": "Apr 18",
-      "description": "Jan 21: Abols' injury is a fractured right ankle, Kevin Kurz of The Athletic reports Wednesday."
+      "status": "healthy",
+      "expectedReturn": null
     },
-    "rank": 304
+    "rank": 307
   },
   {
     "name": "Porter Martone",
@@ -7739,7 +7787,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 305
+    "rank": 308
   },
   {
     "name": "Noah Juulsen",
@@ -7764,7 +7812,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 306
+    "rank": 309
   },
   {
     "name": "Nick Seeler",
@@ -7789,7 +7837,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 307
+    "rank": 310
   },
   {
     "name": "Max Crozier",
@@ -7814,7 +7862,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 308
+    "rank": 311
   },
   {
     "name": "Jesperi Kotkaniemi",
@@ -7839,7 +7887,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 309
+    "rank": 312
   },
   {
     "name": "Mike Reilly",
@@ -7864,7 +7912,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 310
+    "rank": 313
   },
   {
     "name": "Ilya Lyubushkin",
@@ -7889,32 +7937,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 311
-  },
-  {
-    "name": "Spencer Stastney",
-    "team": "EDM",
-    "position": "D",
-    "regularSeasonGoals": 2,
-    "regularSeasonAssists": 8,
-    "gamesPlayed": 70,
-    "pointsPerGame": 0.14,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.38,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 2.1,
-    "adp": null,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 312
+    "rank": 314
   },
   {
     "name": "Jeff Petry",
@@ -7939,7 +7962,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 313
+    "rank": 315
   },
   {
     "name": "Frank Vatrano",
@@ -7953,43 +7976,18 @@
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
+      "round2": 0.63,
+      "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
+    "projectedPlayoffGames": 15.4,
     "projectedPlayoffPoints": 2.0,
     "adp": 250.0,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 314
-  },
-  {
-    "name": "Jeffrey Viel",
-    "team": "ANA",
-    "position": "LW",
-    "regularSeasonGoals": 3,
-    "regularSeasonAssists": 6,
-    "gamesPlayed": 70,
-    "pointsPerGame": 0.13,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 2.0,
-    "adp": null,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 315
+    "rank": 316
   },
   {
     "name": "Samuel Helenius",
@@ -8014,7 +8012,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 316
+    "rank": 317
   },
   {
     "name": "Jeff Malott",
@@ -8039,7 +8037,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 317
+    "rank": 318
   },
   {
     "name": "Cody Ceci",
@@ -8064,7 +8062,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 318
+    "rank": 319
   },
   {
     "name": "Alex Bump",
@@ -8089,7 +8087,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 319
+    "rank": 320
   },
   {
     "name": "Luke Glendening",
@@ -8114,7 +8112,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 320
+    "rank": 321
   },
   {
     "name": "Alexander Holtz",
@@ -8139,7 +8137,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 321
+    "rank": 322
   },
   {
     "name": "Brandon Saad",
@@ -8164,7 +8162,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 322
+    "rank": 323
   },
   {
     "name": "Conor Timmins",
@@ -8189,7 +8187,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 323
+    "rank": 324
   },
   {
     "name": "Jaccob Slavin",
@@ -8214,7 +8212,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 324
+    "rank": 325
   },
   {
     "name": "Adam Erne",
@@ -8239,7 +8237,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 325
+    "rank": 326
   },
   {
     "name": "Lian Bichsel",
@@ -8264,7 +8262,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 326
+    "rank": 327
   },
   {
     "name": "Jansen Harkins",
@@ -8278,18 +8276,18 @@
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
+      "round2": 0.63,
+      "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
+    "projectedPlayoffGames": 15.4,
     "projectedPlayoffPoints": 1.7,
     "adp": null,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 327
+    "rank": 328
   },
   {
     "name": "Nick DeSimone",
@@ -8314,7 +8312,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 328
+    "rank": 329
   },
   {
     "name": "Lukas Reichel",
@@ -8339,7 +8337,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 329
+    "rank": 330
   },
   {
     "name": "Mattias Janmark",
@@ -8353,18 +8351,18 @@
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
+      "round2": 0.63,
       "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
+    "projectedPlayoffGames": 15.4,
     "projectedPlayoffPoints": 1.7,
     "adp": null,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 330
+    "rank": 331
   },
   {
     "name": "Kevin Hayes",
@@ -8389,7 +8387,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 331
+    "rank": 332
   },
   {
     "name": "Ilya Solovyov",
@@ -8414,7 +8412,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 332
+    "rank": 333
   },
   {
     "name": "Luke Schenn",
@@ -8439,7 +8437,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 333
+    "rank": 334
   },
   {
     "name": "Nathan Bastian",
@@ -8464,7 +8462,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 334
+    "rank": 335
   },
   {
     "name": "Ville Koivunen",
@@ -8489,7 +8487,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 335
+    "rank": 336
   },
   {
     "name": "Jack St. Ivany",
@@ -8514,7 +8512,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 336
+    "rank": 337
   },
   {
     "name": "Jordan Greenway",
@@ -8539,7 +8537,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 337
+    "rank": 338
   },
   {
     "name": "Tyson Kozak",
@@ -8564,7 +8562,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 338
+    "rank": 339
   },
   {
     "name": "Zach Metsa",
@@ -8589,7 +8587,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 339
+    "rank": 340
   },
   {
     "name": "Trent Frederic",
@@ -8603,18 +8601,18 @@
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
+      "round2": 0.63,
       "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
+    "projectedPlayoffGames": 15.4,
     "projectedPlayoffPoints": 1.5,
     "adp": 336.0,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 340
+    "rank": 341
   },
   {
     "name": "Taylor Ward",
@@ -8639,7 +8637,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 341
+    "rank": 342
   },
   {
     "name": "William Karlsson",
@@ -8664,7 +8662,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 342
+    "rank": 343
   },
   {
     "name": "Curtis Lazar",
@@ -8678,18 +8676,18 @@
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
+      "round2": 0.63,
       "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
+    "projectedPlayoffGames": 15.4,
     "projectedPlayoffPoints": 1.4,
     "adp": null,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 343
+    "rank": 344
   },
   {
     "name": "Zach Bogosian",
@@ -8711,11 +8709,10 @@
     "projectedPlayoffPoints": 1.4,
     "adp": null,
     "injury": {
-      "status": "day-to-day",
-      "expectedReturn": "Apr 18",
-      "description": null
+      "status": "healthy",
+      "expectedReturn": null
     },
-    "rank": 344
+    "rank": 345
   },
   {
     "name": "Daemon Hunt",
@@ -8740,7 +8737,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 345
+    "rank": 346
   },
   {
     "name": "Connor Clifton",
@@ -8765,7 +8762,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 346
+    "rank": 347
   },
   {
     "name": "Tim Washe",
@@ -8779,18 +8776,18 @@
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.37,
+      "round2": 0.63,
+      "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
+    "projectedPlayoffGames": 15.4,
     "projectedPlayoffPoints": 1.1,
     "adp": null,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 347
+    "rank": 348
   },
   {
     "name": "Jiri Kulich",
@@ -8815,7 +8812,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 348
+    "rank": 349
   },
   {
     "name": "Arttu Hyry",
@@ -8840,7 +8837,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 349
+    "rank": 350
   },
   {
     "name": "Kyle Capobianco",
@@ -8865,7 +8862,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 350
+    "rank": 351
   },
   {
     "name": "Max Jones",
@@ -8879,18 +8876,18 @@
     "last20Games": null,
     "teamAdvancementOdds": {
       "round1": 1.0,
-      "round2": 0.62,
+      "round2": 0.63,
       "round3": 0.38,
       "round4": 0.19
     },
-    "projectedPlayoffGames": 15.3,
+    "projectedPlayoffGames": 15.4,
     "projectedPlayoffPoints": 1.1,
     "adp": null,
     "injury": {
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 351
+    "rank": 352
   },
   {
     "name": "Robby Fabbri",
@@ -8915,7 +8912,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 352
+    "rank": 353
   },
   {
     "name": "Joe Veleno",
@@ -8940,7 +8937,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 353
+    "rank": 354
   },
   {
     "name": "Nikolas Matinpalo",
@@ -8965,7 +8962,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 354
+    "rank": 355
   },
   {
     "name": "Scott Sabourin",
@@ -8990,7 +8987,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 355
+    "rank": 356
   },
   {
     "name": "Josh Dunne",
@@ -9015,7 +9012,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 356
+    "rank": 357
   },
   {
     "name": "Arber Xhekaj",
@@ -9040,7 +9037,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 357
+    "rank": 358
   },
   {
     "name": "Liam O'Brien",
@@ -9065,7 +9062,32 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 358
+    "rank": 359
+  },
+  {
+    "name": "Josh Samanski",
+    "team": "EDM",
+    "position": "C",
+    "regularSeasonGoals": 2,
+    "regularSeasonAssists": 2,
+    "gamesPlayed": 70,
+    "pointsPerGame": 0.06,
+    "last10Games": null,
+    "last20Games": null,
+    "teamAdvancementOdds": {
+      "round1": 1.0,
+      "round2": 0.63,
+      "round3": 0.38,
+      "round4": 0.19
+    },
+    "projectedPlayoffGames": 15.4,
+    "projectedPlayoffPoints": 0.9,
+    "adp": null,
+    "injury": {
+      "status": "healthy",
+      "expectedReturn": null
+    },
+    "rank": 360
   },
   {
     "name": "Jared Wright",
@@ -9090,7 +9112,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 359
+    "rank": 361
   },
   {
     "name": "Filip Hallander",
@@ -9115,7 +9137,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 360
+    "rank": 362
   },
   {
     "name": "Brandon Tanev",
@@ -9140,7 +9162,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 361
+    "rank": 363
   },
   {
     "name": "Jordan Harris",
@@ -9165,32 +9187,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 362
-  },
-  {
-    "name": "Josh Samanski",
-    "team": "EDM",
-    "position": "C",
-    "regularSeasonGoals": 1,
-    "regularSeasonAssists": 2,
-    "gamesPlayed": 70,
-    "pointsPerGame": 0.04,
-    "last10Games": null,
-    "last20Games": null,
-    "teamAdvancementOdds": {
-      "round1": 1.0,
-      "round2": 0.62,
-      "round3": 0.38,
-      "round4": 0.19
-    },
-    "projectedPlayoffGames": 15.3,
-    "projectedPlayoffPoints": 0.6,
-    "adp": null,
-    "injury": {
-      "status": "healthy",
-      "expectedReturn": null
-    },
-    "rank": 363
+    "rank": 364
   },
   {
     "name": "Lassi Thomson",
@@ -9215,7 +9212,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 364
+    "rank": 365
   },
   {
     "name": "Garnet Hathaway",
@@ -9240,7 +9237,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 365
+    "rank": 366
   },
   {
     "name": "Declan Carlile",
@@ -9265,7 +9262,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 366
+    "rank": 367
   },
   {
     "name": "Michael Kesselring",
@@ -9290,7 +9287,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 367
+    "rank": 368
   },
   {
     "name": "Nicolas Deslauriers",
@@ -9315,7 +9312,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 368
+    "rank": 369
   },
   {
     "name": "Logan O'Connor",
@@ -9340,7 +9337,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 369
+    "rank": 370
   },
   {
     "name": "Kevin Rooney",
@@ -9365,7 +9362,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 370
+    "rank": 371
   },
   {
     "name": "Dmitri Simashev",
@@ -9390,7 +9387,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 371
+    "rank": 372
   },
   {
     "name": "James Hagens",
@@ -9415,7 +9412,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 372
+    "rank": 373
   },
   {
     "name": "Alex Barr\u00e9-Boulet",
@@ -9440,7 +9437,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 373
+    "rank": 374
   },
   {
     "name": "Matt Kiersted",
@@ -9465,7 +9462,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 374
+    "rank": 375
   },
   {
     "name": "Patrik Laine",
@@ -9490,7 +9487,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 375
+    "rank": 376
   },
   {
     "name": "Adam Engstrom",
@@ -9515,7 +9512,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 376
+    "rank": 377
   },
   {
     "name": "David Reinbacher",
@@ -9540,7 +9537,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 377
+    "rank": 378
   },
   {
     "name": "Kurtis MacDermid",
@@ -9565,7 +9562,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 378
+    "rank": 379
   },
   {
     "name": "Cameron Crotty",
@@ -9590,7 +9587,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 379
+    "rank": 380
   },
   {
     "name": "Dennis Gilbert",
@@ -9615,7 +9612,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 380
+    "rank": 381
   },
   {
     "name": "Ryan Graves",
@@ -9640,7 +9637,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 381
+    "rank": 382
   },
   {
     "name": "Mitchell Chaffee",
@@ -9665,7 +9662,7 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 382
+    "rank": 383
   },
   {
     "name": "Steven Santini",
@@ -9690,6 +9687,6 @@
       "status": "healthy",
       "expectedReturn": null
     },
-    "rank": 383
+    "rank": 384
   }
 ]
