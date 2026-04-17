@@ -10,6 +10,9 @@ import FullPlayerList from '@/components/FullPlayerList';
 import PositionTracker from '@/components/PositionTracker';
 import TeamCompositionVisualizer from '@/components/TeamCompositionVisualizer';
 import WatchlistToggle from '@/components/WatchlistToggle';
+import DraftCoach from '@/components/DraftCoach';
+import { STRATEGIES } from '@/lib/draft-coach';
+import type { DraftStrategy } from '@/types/draft-coach';
 
 export default function DraftPage() {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -17,8 +20,9 @@ export default function DraftPage() {
   const [setupComplete, setSetupComplete] = useState(false);
   const [showTips, setShowTips] = useState(true);
   const [managerNames, setManagerNames] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<'best' | 'full' | 'team' | 'positions' | 'visualizer'>('best');
+  const [activeTab, setActiveTab] = useState<'coach' | 'best' | 'full' | 'team' | 'positions' | 'visualizer'>('coach');
   const [watchlist, setWatchlist] = useState<Set<string>>(new Set());
+  const [strategy, setStrategy] = useState<DraftStrategy>(STRATEGIES.balanced);
 
   const [managers, setManagers] = useState(7);
   const [yourPosition, setYourPosition] = useState(1);
@@ -517,6 +521,16 @@ export default function DraftPage() {
           <div className="p-2 border-b border-[#141e12] shrink-0">
             <div className="flex gap-1">
               <button
+                onClick={() => setActiveTab('coach')}
+                className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-colors ${
+                  activeTab === 'coach'
+                    ? 'bg-[#4a7c59] text-[#c8d9c3]'
+                    : 'text-[#5a6b57] hover:bg-[#141e12]'
+                }`}
+              >
+                Coach
+              </button>
+              <button
                 onClick={() => setActiveTab('best')}
                 className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-colors ${
                   activeTab === 'best'
@@ -536,6 +550,8 @@ export default function DraftPage() {
               >
                 All
               </button>
+            </div>
+            <div className="flex gap-1 mt-1">
               <button
                 onClick={() => setActiveTab('team')}
                 className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-colors ${
@@ -546,8 +562,6 @@ export default function DraftPage() {
               >
                 Stack
               </button>
-            </div>
-            <div className="flex gap-1 mt-1">
               <button
                 onClick={() => setActiveTab('positions')}
                 className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-colors ${
@@ -573,6 +587,18 @@ export default function DraftPage() {
 
           {/* Tab Content */}
           <div className="overflow-y-auto p-4">
+            {activeTab === 'coach' && (
+              <div className="w-full">
+                <DraftCoach
+                  draftState={draftState}
+                  availablePlayers={draftState.availablePlayers}
+                  allPlayers={players}
+                  onDraftPlayer={handleDraftForCurrentManager}
+                  draftComplete={draftState.picks.length >= draftState.managers * draftState.playersPerTeam}
+                />
+              </div>
+            )}
+
             {activeTab === 'best' && (
               <BestAvailable
                 availablePlayers={draftState.availablePlayers}

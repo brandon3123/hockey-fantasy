@@ -17,10 +17,10 @@ def _get_moneypuck_path():
     """Find the MoneyPuck CSV file."""
     script_dir = os.path.dirname(os.path.abspath(__file__))
     possible_paths = [
+        os.path.join(script_dir, "moneypuck/simulations_recent.csv"),
         os.path.join(script_dir, "../moneypuck/simulations_recent.csv"),
         os.path.join(script_dir, "../../moneypuck/simulations_recent.csv"),
         "./moneypuck/simulations_recent.csv",
-        "../moneypuck/simulations_recent.csv",
     ]
     for path in possible_paths:
         if os.path.exists(path):

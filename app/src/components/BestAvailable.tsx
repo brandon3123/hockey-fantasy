@@ -1,10 +1,12 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Player } from '@/types/player';
 import { cn, getAdpValue, isAdpSteal, isAdpReach, isInjured } from '@/lib/utils';
 import InjuryFlag from './InjuryFlag';
 import TeamLogo from './TeamLogo';
 import WatchlistToggle from './WatchlistToggle';
+import { loadLines, getPlayerLine } from '@/lib/moneypuck-parser';
 
 interface BestAvailableProps {
   availablePlayers: Player[];
@@ -23,12 +25,28 @@ export default function BestAvailable({
   onToggleWatchlist,
   draftComplete = false
 }: BestAvailableProps) {
+  const [lines, setLines] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const linesData = await loadLines();
+      if (linesData) setLines(linesData);
+    };
+    loadData();
+  }, []);
+
   const sorted = [...availablePlayers].sort(
     (a, b) => b.projectedPlayoffPoints - a.projectedPlayoffPoints
   );
 
   const top3 = sorted.slice(0, 3);
   const bestHealthy = sorted.find(p => !isInjured(p));
+
+  // Helper to get line info
+  const getPlayerLineInfo = (playerName: string) => {
+    if (!lines.length) return null;
+    return getPlayerLine(playerName, lines);
+  };
 
   return (
     <div className="space-y-6">
@@ -106,6 +124,32 @@ export default function BestAvailable({
                     {player.pointsPerGame.toFixed(2)} ppg
                   </div>
 
+                  {/* Team Advancement Odds */}
+                  {(() => {
+                    const round2Chance = player.teamAdvancementOdds?.round2 ? player.teamAdvancementOdds.round2 * 100 : null;
+                    if (!round2Chance) return null;
+                    return (
+                      <div className={`text-xs px-2 py-0.5 rounded mt-1 font-medium ${
+                        round2Chance >= 60 ? 'bg-[#1a3d1a] text-[#6b9b7a] border border-[#4a7c59]' :
+                        round2Chance >= 40 ? 'bg-[#3d3a1a] text-[#9b8f6b] border border-[#7c744a]' :
+                        'bg-[#3d1a1a] text-[#9b6b6b] border border-[#7c4a4a]'
+                      }`}>
+                        {round2Chance.toFixed(0)}% R2
+                      </div>
+                    );
+                  })()}
+
+                  {/* Line Combo Info */}
+                  {lines.length > 0 && (() => {
+                    const lineInfo = getPlayerLineInfo(player.name);
+                    if (!lineInfo) return null;
+                    return (
+                      <div className="text-xs px-2 py-0.5 rounded mt-1 bg-[#0a0f0a] text-[#5a6b57] border border-[#141e12]">
+                        {lineInfo.name}
+                      </div>
+                    );
+                  })()}
+
                   {/* ADP Indicator */}
                   {player.adp && (
                     <div className={`text-xs px-2 py-0.5 rounded mt-1 font-medium ${
@@ -155,8 +199,23 @@ export default function BestAvailable({
                   {bestHealthy.team} • {bestHealthy.position}
                 </div>
               </div>
-              <div className="text-xl font-bold text-[#c8d9c3]">
-                {bestHealthy.projectedPlayoffPoints.toFixed(1)}
+              <div className="text-right">
+                <div className="text-xl font-bold text-[#c8d9c3]">
+                  {bestHealthy.projectedPlayoffPoints.toFixed(1)}
+                </div>
+                {(() => {
+                  const round2Chance = bestHealthy.teamAdvancementOdds?.round2 ? bestHealthy.teamAdvancementOdds.round2 * 100 : null;
+                  if (!round2Chance) return null;
+                  return (
+                    <div className={`text-xs px-2 py-0.5 rounded mt-1 font-medium ${
+                      round2Chance >= 60 ? 'bg-[#1a3d1a] text-[#6b9b7a] border border-[#4a7c59]' :
+                      round2Chance >= 40 ? 'bg-[#3d3d1a] text-[#9b9b6b] border border-[#7c7c4a]' :
+                      'bg-[#3d1a1a] text-[#9b6b6b] border border-[#7c4a4a]'
+                    }`}>
+                      {round2Chance.toFixed(0)}% R2
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </div>
