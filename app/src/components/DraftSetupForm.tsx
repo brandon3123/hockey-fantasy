@@ -40,6 +40,8 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
   const [playersPerTeam, setPlayersPerTeam] = useState(initialData?.players_per_team ?? 10);
   const [scoringFormat, setScoringFormat] = useState(initialData?.scoring_format ?? '1pt_per_goal_assist');
 
+  const today = new Date().toISOString().split('T')[0];
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -111,7 +113,7 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Date</label>
-              <input type="date" value={draftDate} onChange={(e) => setDraftDate(e.target.value)} className={inputClass} />
+              <input type="date" value={draftDate} onChange={(e) => setDraftDate(e.target.value)} min={today} className={inputClass} style={{ colorScheme: 'dark' }} />
             </div>
             <div>
               <label className={labelClass}>Time</label>
