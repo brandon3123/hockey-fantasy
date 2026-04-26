@@ -69,3 +69,49 @@ export async function POST(request: Request) {
 
   return NextResponse.json({ results });
 }
+
+export async function DELETE(request: Request) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const { invite_id } = await request.json();
+
+  if (!invite_id) {
+    return NextResponse.json({ error: 'invite_id required' }, { status: 400 });
+  }
+
+  const { data: invite } = await supabase
+    .from('draft_invites')
+    .select('id, draft_id')
+    .eq('id', invite_id)
+    .single();
+
+  if (!invite) {
+    return NextResponse.json({ error: 'Invite not found' }, { status: 404 });
+  }
+
+  const { data: draft } = await supabase
+    .from('drafts')
+    .select('admin_user_id')
+    .eq('id', invite.draft_id)
+    .single();
+
+  if (!draft || draft.admin_user_id !== user.id) {
+    return NextResponse.json({ error: 'Not your draft' }, { status: 403 });
+  }
+
+  const { error } = await supabase
+    .from('draft_invites')
+    .delete()
+    .eq('id', invite_id);
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ success: true });
+}
