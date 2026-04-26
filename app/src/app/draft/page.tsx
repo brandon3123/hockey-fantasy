@@ -259,7 +259,7 @@ export default function DraftPage() {
     const url = URL.createObjectURL(dataBlob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `hockey-draft-${new Date().toISOString().split('T')[0]}.json`;
+    link.download = `top-shelf-draft-${new Date().toISOString().split('T')[0]}.json`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -280,7 +280,7 @@ export default function DraftPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `hockey-draft-${new Date().toISOString().split('T')[0]}.csv`;
+    link.download = `top-shelf-draft-${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
     URL.revokeObjectURL(url);
   };

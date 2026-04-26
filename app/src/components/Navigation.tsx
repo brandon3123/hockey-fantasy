@@ -30,7 +30,7 @@ export default function Navigation() {
           <div className="flex items-center gap-3">
             <span className="text-2xl">&#127953;</span>
             <span className="font-bold text-xl text-[#c8d9c3]">
-              Hockey Draft
+              Top Shelf Draft
             </span>
           </div>
           <div className="flex items-center gap-1">

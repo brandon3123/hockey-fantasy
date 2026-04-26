@@ -1,4 +1,4 @@
-# Hockey Fantasy Playoff Draft App
+# Top Shelf Draft
 
 Data-driven edge for your NHL playoff fantasy draft. 1 point per goal/assist, skaters only.
 

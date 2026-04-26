@@ -5,7 +5,7 @@ import Navigation from '@/components/Navigation';
 import { AuthProvider } from '@/context/auth-context';
 
 export const metadata: Metadata = {
-  title: 'Hockey Playoff Draft Helper',
+  title: 'Top Shelf Draft',
   description: 'Data-driven NHL playoff fantasy draft assistant',
 };
 
