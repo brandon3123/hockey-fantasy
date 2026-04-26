@@ -203,7 +203,7 @@ export default function RostersPage() {
 
     // Check if player is already drafted by any team
     const alreadyDrafted = draftState.picks.some(
-      pick => pick.playerName === player.name
+      (pick: { playerName: string }) => pick.playerName === player.name
     );
 
     if (alreadyDrafted) {
@@ -213,7 +213,7 @@ export default function RostersPage() {
 
     // Check if this manager already has this player
     const managerAlreadyHasPlayer = draftState.picks.some(
-      pick => pick.playerName === player.name && pick.managerIndex === managerIndex
+      (pick: { playerName: string; managerIndex: number }) => pick.playerName === player.name && pick.managerIndex === managerIndex
     );
 
     if (managerAlreadyHasPlayer) {
@@ -243,7 +243,7 @@ export default function RostersPage() {
     const updatedState = {
       ...draftState,
       picks: updatedPicks,
-      availablePlayers: draftState.availablePlayers.filter(p => p.name !== player.name),
+      availablePlayers: draftState.availablePlayers.filter((p: { name: string }) => p.name !== player.name),
       playersPerTeam: maxPicksPerTeam,
     };
 
@@ -336,7 +336,7 @@ export default function RostersPage() {
           <h1 className="text-4xl font-bold mb-4 text-[#c8d9c3]">Team Rosters</h1>
           <div className="w-full h-px bg-[#141e12]"></div>
           <p className="text-sm text-[#5a6b57] mt-4">
-            Click "Add" on any team roster to add/remove players
+            Click &quot;Add&quot; on any team roster to add/remove players
           </p>
         </div>
 

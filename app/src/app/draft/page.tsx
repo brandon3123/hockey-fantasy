@@ -306,7 +306,7 @@ export default function DraftPage() {
               <ul className="space-y-2 text-sm text-[#5a6b57]">
                 <li>• <strong>Fresh Data:</strong> Re-check Fantasy Pros most recent data before draft day for the latest rankings and injury updates</li>
                 <li>• <strong>Team Stacking:</strong> Pick 2-3 teams you think will go deep in playoffs and load up on their players</li>
-                <li>• <strong>Position Balance:</strong> Don't wait too long on centers - they tend to go faster than wingers</li>
+                <li>• <strong>Position Balance:</strong> Don&apos;t wait too long on centers - they tend to go faster than wingers</li>
                 <li>• <strong>Injury Risk:</strong> Watch the injury flags - healthy players are safer early picks</li>
                 <li>• <strong>ADP Value:</strong> Green numbers indicate players picked later than their average draft position (good value!)</li>
                 <li>• <strong>PPG Focus:</strong> Points per game is more consistent than total season points for playoff performance</li>
@@ -464,7 +464,7 @@ export default function DraftPage() {
               </div>
             ))}
           </div>
-          <div className="mt-2 text-xs">Use "Reset Draft" to fix this issue.</div>
+          <div className="mt-2 text-xs">Use &quot;Reset Draft&quot; to fix this issue.</div>
         </div>
       )}
 

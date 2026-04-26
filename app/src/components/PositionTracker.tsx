@@ -109,7 +109,7 @@ export default function PositionTracker({ draftState, allPlayers }: PositionTrac
           {remainingPicks > 0 ? (
             <div>
               <div className="font-semibold mb-1">{remainingPicks} picks remaining</div>
-              <div className="text-xs">Focus on positions marked "Need more"</div>
+              <div className="text-xs">Focus on positions marked &quot;Need more&quot;</div>
             </div>
           ) : (
             <div className="font-semibold text-[#6b9b7a]">Roster complete!</div>
