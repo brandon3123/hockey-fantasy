@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/auth-context';
 import Link from 'next/link';
 
@@ -18,21 +18,37 @@ export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
   const [drafts, setDrafts] = useState<Draft[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState<string | null>(null);
+
+  const fetchDrafts = useCallback(async () => {
+    const res = await fetch('/api/drafts');
+    if (res.ok) {
+      const data = await res.json();
+      setDrafts(data.drafts || []);
+    }
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
     if (!user) return;
-
-    const fetchDrafts = async () => {
-      const res = await fetch('/api/drafts');
-      if (res.ok) {
-        const data = await res.json();
-        setDrafts(data.drafts || []);
-      }
-      setLoading(false);
-    };
-
     fetchDrafts();
-  }, [user]);
+  }, [user, fetchDrafts]);
+
+  const handleDeleteDraft = async (e: React.MouseEvent, draftId: string, draftName: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!confirm(`Delete "${draftName}"? This removes all invites, participants, and picks. This cannot be undone.`)) return;
+    setDeleting(draftId);
+    const res = await fetch('/api/drafts', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ draft_id: draftId }),
+    });
+    if (res.ok) {
+      setDrafts(prev => prev.filter(d => d.id !== draftId));
+    }
+    setDeleting(null);
+  };
 
   if (authLoading || !user) {
     return (
@@ -86,26 +102,37 @@ export default function DashboardPage() {
         ) : (
           <div className="grid gap-4">
             {drafts.map((draft) => (
-              <Link
+              <div
                 key={draft.id}
-                href={`/dashboard/drafts/${draft.id}`}
-                className="block bg-[#0a0f0a] border border-[#141e12] rounded-lg p-6 hover:border-[#4a7c59] transition-colors"
+                className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-6 hover:border-[#4a7c59] transition-colors"
               >
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-bold text-[#c8d9c3]">{draft.name}</h3>
-                    <div className="text-sm text-[#5a6b57] mt-1">
-                      {draft.draft_date && new Date(draft.draft_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                      {draft.draft_time && ` at ${draft.draft_time}`}
-                      {draft.draft_date && ' \u2022 '}
-                      {draft.season_type === 'playoffs' ? 'Playoffs' : 'Regular Season'}
+                  <Link href={`/dashboard/drafts/${draft.id}`} className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-lg font-bold text-[#c8d9c3]">{draft.name}</h3>
+                        <div className="text-sm text-[#5a6b57] mt-1">
+                          {draft.draft_date && new Date(draft.draft_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                          {draft.draft_time && ` at ${draft.draft_time}`}
+                          {draft.draft_date && ' \u2022 '}
+                          {draft.season_type === 'playoffs' ? 'Playoffs' : 'Regular Season'}
+                        </div>
+                      </div>
+                      <span className={`text-sm font-semibold ${statusColors[draft.status] || 'text-[#5a6b57]'}`}>
+                        {statusLabels[draft.status] || draft.status}
+                      </span>
                     </div>
-                  </div>
-                  <span className={`text-sm font-semibold ${statusColors[draft.status] || 'text-[#5a6b57]'}`}>
-                    {statusLabels[draft.status] || draft.status}
-                  </span>
+                  </Link>
+                  <button
+                    onClick={(e) => handleDeleteDraft(e, draft.id, draft.name)}
+                    disabled={deleting === draft.id}
+                    className="ml-4 text-[#5a6b57] hover:text-red-400 transition-colors text-sm disabled:opacity-50"
+                    title="Delete draft"
+                  >
+                    {deleting === draft.id ? '...' : '\u2715'}
+                  </button>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         )}
