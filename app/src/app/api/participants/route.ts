@@ -57,3 +57,49 @@ export async function POST(request: Request) {
 
   return NextResponse.json({ participant: data }, { status: 201 });
 }
+
+export async function DELETE(request: Request) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const { participant_id } = await request.json();
+
+  if (!participant_id) {
+    return NextResponse.json({ error: 'participant_id required' }, { status: 400 });
+  }
+
+  const { data: participant } = await supabase
+    .from('draft_participants')
+    .select('id, draft_id')
+    .eq('id', participant_id)
+    .single();
+
+  if (!participant) {
+    return NextResponse.json({ error: 'Participant not found' }, { status: 404 });
+  }
+
+  const { data: draft } = await supabase
+    .from('drafts')
+    .select('admin_user_id')
+    .eq('id', participant.draft_id)
+    .single();
+
+  if (!draft || draft.admin_user_id !== user.id) {
+    return NextResponse.json({ error: 'Not your draft' }, { status: 403 });
+  }
+
+  const { error } = await supabase
+    .from('draft_participants')
+    .delete()
+    .eq('id', participant_id);
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ success: true });
+}
