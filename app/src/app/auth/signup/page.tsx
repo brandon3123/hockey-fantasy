@@ -1,10 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import Link from 'next/link';
 
 export default function SignupPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const nextUrl = searchParams.get('next') || '/';
   const { signUpWithEmail, signInWithGoogle } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,7 +24,7 @@ export default function SignupPage() {
     if (error) {
       setError(error);
     } else {
-      setSuccess(true);
+      router.push(nextUrl);
     }
     setLoading(false);
   };
@@ -33,7 +37,7 @@ export default function SignupPage() {
           <h1 className="text-2xl font-bold text-[#6b9b7a] mb-2">Account Created!</h1>
           <p className="text-[#5a6b57] mb-6">Check your email to confirm your account, then sign in.</p>
           <Link
-            href="/auth/login"
+            href={`/auth/login?next=${encodeURIComponent(nextUrl)}`}
             className="inline-block px-6 py-3 bg-[#4a7c59] text-[#c8d9c3] rounded-lg font-semibold hover:bg-[#3d664a] transition-colors"
           >
             Go to Sign In
@@ -108,7 +112,7 @@ export default function SignupPage() {
 
         <p className="text-center text-sm text-[#5a6b57] mt-4">
           Already have an account?{' '}
-          <Link href="/auth/login" className="text-[#6b9b7a] hover:underline">
+          <Link href={`/auth/login?next=${encodeURIComponent(nextUrl)}`} className="text-[#6b9b7a] hover:underline">
             Sign In
           </Link>
         </p>
