@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createServerClient } from '@supabase/ssr';
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -49,7 +50,17 @@ export async function POST(request: Request) {
   }
 
   if (invite) {
-    await supabase
+    const adminClient = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        cookies: {
+          getAll() { return []; },
+          setAll() {},
+        },
+      }
+    );
+    await adminClient
       .from('draft_invites')
       .update({ status: 'registered' })
       .eq('id', invite.id);
