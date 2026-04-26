@@ -35,7 +35,7 @@ interface PlayerJSON {
 }
 
 async function importPlayers() {
-  const filePath = join(__dirname, '..', 'app', 'public', 'players.json');
+  const filePath = join(__dirname, '..', 'public', 'players.json');
   const raw = readFileSync(filePath, 'utf-8');
   const players: PlayerJSON[] = JSON.parse(raw);
 
