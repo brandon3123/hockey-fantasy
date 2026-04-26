@@ -82,6 +82,17 @@ export default function DraftDetailPage() {
     }
   };
 
+  const handleTogglePaid = async (id: string, has_paid: boolean) => {
+    const res = await fetch('/api/participants', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ participant_id: id, has_paid }),
+    });
+    if (res.ok) {
+      fetchDraft();
+    }
+  };
+
   useEffect(() => {
     fetchDraft();
   }, [fetchDraft]);
@@ -181,6 +192,7 @@ export default function DraftDetailPage() {
             invites={invites}
             onRemoveParticipant={handleRemoveParticipant}
             onRemoveInvite={handleRemoveInvite}
+            onTogglePaid={handleTogglePaid}
           />
         </div>
       </div>

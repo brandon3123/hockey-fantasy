@@ -19,9 +19,10 @@ interface ParticipantListProps {
   totalSlots?: number;
   onRemoveParticipant?: (id: string) => void;
   onRemoveInvite?: (id: string) => void;
+  onTogglePaid?: (id: string, has_paid: boolean) => void;
 }
 
-export default function ParticipantList({ participants, invites, totalSlots, onRemoveParticipant, onRemoveInvite }: ParticipantListProps) {
+export default function ParticipantList({ participants, invites, totalSlots, onRemoveParticipant, onRemoveInvite, onTogglePaid }: ParticipantListProps) {
   const pendingInvites = invites.filter((inv) => inv.status === 'pending');
   const registeredCount = participants.length;
   const totalSlotsDisplay = totalSlots || 12;
@@ -49,11 +50,17 @@ export default function ParticipantList({ participants, invites, totalSlots, onR
               <span className="font-medium text-[#c8d9c3]">{p.team_name}</span>
             </div>
             <div className="flex items-center gap-3">
-              {p.has_paid ? (
-                <span className="text-xs bg-[#1a2f1a] text-[#6b9b7a] px-2 py-1 rounded">Paid</span>
-              ) : (
-                <span className="text-xs bg-[#3d3a1a] text-[#9b8f6b] px-2 py-1 rounded">Unpaid</span>
-              )}
+              <button
+                onClick={() => onTogglePaid?.(p.id, !p.has_paid)}
+                className={`text-xs px-2 py-1 rounded transition-colors ${
+                  p.has_paid
+                    ? 'bg-[#1a2f1a] text-[#6b9b7a] hover:bg-[#2a3f2a]'
+                    : 'bg-[#3d3a1a] text-[#9b8f6b] hover:bg-[#4d4a2a]'
+                }`}
+                title={p.has_paid ? 'Click to mark as unpaid' : 'Click to mark as paid'}
+              >
+                {p.has_paid ? 'Paid' : 'Unpaid'}
+              </button>
               {onRemoveParticipant && (
                 <button
                   onClick={() => onRemoveParticipant(p.id)}
