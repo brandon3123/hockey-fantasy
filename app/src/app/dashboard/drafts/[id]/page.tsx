@@ -60,6 +60,28 @@ export default function DraftDetailPage() {
     setLoading(false);
   }, [draftId]);
 
+  const handleRemoveParticipant = async (id: string) => {
+    const res = await fetch('/api/participants', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ participant_id: id }),
+    });
+    if (res.ok) {
+      fetchDraft();
+    }
+  };
+
+  const handleRemoveInvite = async (id: string) => {
+    const res = await fetch('/api/invites', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ invite_id: id }),
+    });
+    if (res.ok) {
+      fetchDraft();
+    }
+  };
+
   useEffect(() => {
     fetchDraft();
   }, [fetchDraft]);
@@ -157,6 +179,8 @@ export default function DraftDetailPage() {
           <ParticipantList
             participants={participants}
             invites={invites}
+            onRemoveParticipant={handleRemoveParticipant}
+            onRemoveInvite={handleRemoveInvite}
           />
         </div>
       </div>
