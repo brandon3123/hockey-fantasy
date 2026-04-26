@@ -91,7 +91,7 @@ export default function BestAvailable({
                 </div>
 
                 {/* Player Info */}
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     {onToggleWatchlist && (
                       <WatchlistToggle
@@ -100,8 +100,8 @@ export default function BestAvailable({
                         onToggle={onToggleWatchlist}
                       />
                     )}
-                    <TeamLogo team={player.team} className="w-6 h-6" />
-                    <span className="text-sm font-semibold text-[#c8d9c3]">
+                    <TeamLogo team={player.team} className="w-6 h-6 shrink-0" />
+                    <span className="text-sm font-semibold text-[#c8d9c3] truncate">
                       {player.name}
                     </span>
                     <InjuryFlag player={player} />
@@ -109,59 +109,57 @@ export default function BestAvailable({
                   <div className="text-xs text-[#5a6b57]">
                     {player.team} • {player.position}
                   </div>
+                  {lines.length > 0 && (() => {
+                    const lineInfo = getPlayerLineInfo(player.name);
+                    if (!lineInfo) return null;
+                    return (
+                      <div className="text-xs text-[#5a6b57] mt-1">
+                        Line: {lineInfo.name}
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Stats */}
-                <div className="text-right shrink-0">
+                <div className="text-right shrink-0 min-w-fit">
                   <div className="text-2xl font-bold text-[#c8d9c3]">
                     {player.projectedPlayoffPoints.toFixed(1)}
                     <span className="text-xs font-normal text-[#5a6b57] ml-1">proj</span>
                   </div>
                   <div className="text-xs text-[#5a6b57]">
-                    {player.projectedPlayoffGames.toFixed(1)} gp
-                  </div>
-                  <div className="text-xs text-[#5a6b57]">
-                    {player.pointsPerGame.toFixed(2)} ppg
+                    {player.projectedPlayoffGames.toFixed(1)} gp • {player.pointsPerGame.toFixed(2)} ppg
                   </div>
 
-                  {/* Team Advancement Odds */}
-                  {(() => {
-                    const round2Chance = player.teamAdvancementOdds?.round2 ? player.teamAdvancementOdds.round2 * 100 : null;
-                    if (!round2Chance) return null;
-                    return (
-                      <div className={`text-xs px-2 py-0.5 rounded mt-1 font-medium ${
-                        round2Chance >= 60 ? 'bg-[#1a3d1a] text-[#6b9b7a] border border-[#4a7c59]' :
-                        round2Chance >= 40 ? 'bg-[#3d3a1a] text-[#9b8f6b] border border-[#7c744a]' :
-                        'bg-[#3d1a1a] text-[#9b6b6b] border border-[#7c4a4a]'
+                  {/* Badges */}
+                  <div className="flex flex-col gap-1 mt-1 items-end">
+                    {/* Team Advancement Odds */}
+                    {(() => {
+                      const round2Chance = player.teamAdvancementOdds?.round2 ? player.teamAdvancementOdds.round2 * 100 : null;
+                      if (!round2Chance) return null;
+                      return (
+                        <div className={`text-xs px-2 py-0.5 rounded font-medium whitespace-nowrap ${
+                          round2Chance >= 60 ? 'bg-[#1a3d1a] text-[#6b9b7a] border border-[#4a7c59]' :
+                          round2Chance >= 40 ? 'bg-[#3d3a1a] text-[#9b8f6b] border border-[#7c744a]' :
+                          'bg-[#3d1a1a] text-[#9b6b6b] border border-[#7c4a4a]'
+                        }`}>
+                          {round2Chance.toFixed(0)}% R2
+                        </div>
+                      );
+                    })()}
+
+                    {/* ADP Indicator */}
+                    {player.adp && (
+                      <div className={`text-xs px-2 py-0.5 rounded font-medium whitespace-nowrap ${
+                        steal ? 'bg-[#4a7c59] text-[#c8d9c3]' :
+                        reach ? 'bg-[#0a0f0a] text-[#5a6b57] border border-[#141e12]' :
+                        'bg-[#0a0f0a] text-[#5a6b57] border border-[#141e12]'
                       }`}>
-                        {round2Chance.toFixed(0)}% R2
+                        {adpDiff > 0 && `+${adpDiff.toFixed(1)} value`}
+                        {adpDiff < 0 && `${Math.abs(adpDiff).toFixed(1)} early`}
+                        {adpDiff === 0 && `ADP ${player.adp.toFixed(1)}`}
                       </div>
-                    );
-                  })()}
-
-                  {/* Line Combo Info */}
-                  {lines.length > 0 && (() => {
-                    const lineInfo = getPlayerLineInfo(player.name);
-                    if (!lineInfo) return null;
-                    return (
-                      <div className="text-xs px-2 py-0.5 rounded mt-1 bg-[#0a0f0a] text-[#5a6b57] border border-[#141e12]">
-                        {lineInfo.name}
-                      </div>
-                    );
-                  })()}
-
-                  {/* ADP Indicator */}
-                  {player.adp && (
-                    <div className={`text-xs px-2 py-0.5 rounded mt-1 font-medium ${
-                      steal ? 'bg-[#4a7c59] text-[#c8d9c3]' :
-                      reach ? 'bg-[#0a0f0a] text-[#5a6b57] border border-[#141e12]' :
-                      'bg-[#0a0f0a] text-[#5a6b57] border border-[#141e12]'
-                    }`}>
-                      {adpDiff > 0 && `+${adpDiff.toFixed(1)} value`}
-                      {adpDiff < 0 && `${Math.abs(adpDiff).toFixed(1)} early`}
-                      {adpDiff === 0 && `ADP ${player.adp.toFixed(1)}`}
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

@@ -6,6 +6,7 @@ import { DraftStrategy, DraftCoachAnalysis, DraftRecommendation } from '@/types/
 import { STRATEGIES, generateRecommendations, analyzeYourTeam, analyzeOpponents } from '@/lib/draft-coach';
 import { loadLines, loadRankings, getPlayerLine, getLinesByTeam } from '@/lib/moneypuck-parser';
 import TeamLogo from './TeamLogo';
+import InjuryFlag from './InjuryFlag';
 
 interface DraftCoachProps {
   draftState: DraftState;
@@ -32,6 +33,16 @@ export default function DraftCoach({
     }
     return STRATEGIES.balanced;
   });
+
+  // Load position requirements preference
+  const [positionRequirements, setPositionRequirements] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('draftCoachPositionRequirements');
+      return saved ? JSON.parse(saved) : false;
+    }
+    return false;
+  });
+
   const [analysis, setAnalysis] = useState<DraftCoachAnalysis | null>(null);
   const [linesLoaded, setLinesLoaded] = useState(false);
   const [lines, setLines] = useState<any[]>([]);
@@ -42,6 +53,12 @@ export default function DraftCoach({
     const newStrategy = STRATEGIES[strategyId];
     setStrategy(newStrategy);
     localStorage.setItem('draftCoachStrategy', strategyId);
+  };
+
+  // Save position requirements preference
+  const handlePositionRequirementsToggle = (enabled: boolean) => {
+    setPositionRequirements(enabled);
+    localStorage.setItem('draftCoachPositionRequirements', JSON.stringify(enabled));
   };
 
   useEffect(() => {
@@ -61,10 +78,19 @@ export default function DraftCoach({
     const recalculate = async () => {
       if (!lines.length) return;
 
+      // Create adjusted strategies based on position requirements preference
+      const adjustedStrategy = {
+        ...strategy,
+        weights: {
+          ...strategy.weights,
+          position: positionRequirements ? strategy.weights.position : 0
+        }
+      };
+
       const yourTeam = analyzeYourTeam(draftState, lines, availablePlayers, allPlayers);
       const opponents = analyzeOpponents(draftState, lines, availablePlayers, allPlayers);
 
-      const recommendations = generateRecommendations(availablePlayers, draftState, strategy, lines, allPlayers);
+      const recommendations = generateRecommendations(availablePlayers, draftState, adjustedStrategy, lines, allPlayers);
 
       setAnalysis({
         recommendations,
@@ -90,7 +116,7 @@ export default function DraftCoach({
     if (draftState && availablePlayers.length > 0 && linesLoaded) {
       recalculate();
     }
-  }, [draftState, availablePlayers, strategy, linesLoaded, allPlayers, lines]);
+  }, [draftState, availablePlayers, strategy, linesLoaded, allPlayers, lines, positionRequirements]);
 
   if (!analysis) {
     return <div className="text-[#5a6b57]">Loading Draft Coach...</div>;
@@ -99,17 +125,34 @@ export default function DraftCoach({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-bold text-[#c8d9c3]">Draft Coach</h3>
-        <select
-          value={strategy.id}
-          onChange={(e) => handleStrategyChange(e.target.value)}
-          className="bg-[#141e12] border border-[#4a7c59] text-[#c8d9c3] px-3 py-1 rounded text-sm"
-        >
-          <option value="team-stack">Team Stack</option>
-          <option value="balanced">Balanced</option>
-          <option value="stars-depth">Stars + Depth</option>
-        </select>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <select
+              value={strategy.id}
+              onChange={(e) => handleStrategyChange(e.target.value)}
+              className="bg-[#141e12] border border-[#4a7c59] text-[#c8d9c3] px-3 py-1 rounded text-sm"
+            >
+              <option value="team-stack">Team Stack</option>
+              <option value="balanced">Balanced</option>
+              <option value="stars-depth">Stars + Depth</option>
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-[#5a6b57]">Position Balance:</label>
+            <button
+              onClick={() => handlePositionRequirementsToggle(!positionRequirements)}
+              className={`w-10 h-5 rounded-full transition-colors relative ${
+                positionRequirements ? 'bg-[#4a7c59]' : 'bg-[#141e12]'
+              }`}
+            >
+              <div className={`absolute top-0.5 w-4 h-4 rounded-full transition-all ${
+                positionRequirements ? 'left-5 bg-[#c8d9c3]' : 'left-0.5 bg-[#5a6b57]'
+              }`} />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Strategy Description */}
@@ -218,6 +261,12 @@ export default function DraftCoach({
                 {lineInfo && (
                   <div className="text-xs px-2 py-1 rounded bg-[#0a0f0a] text-[#5a6b57] border border-[#141e12]">
                     {lineInfo.name}
+                  </div>
+                )}
+                {/* Injury Badge */}
+                {rec.player.injury && rec.player.injury.status !== 'healthy' && (
+                  <div className="text-xs px-2 py-1 rounded bg-[#0a0f0a] text-[#5a6b57] border border-[#141e12]">
+                    {rec.player.injury.status}
                   </div>
                 )}
               </div>

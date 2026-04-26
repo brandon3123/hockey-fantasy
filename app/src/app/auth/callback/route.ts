@@ -49,7 +49,7 @@ export async function GET(request: Request) {
             .limit(1);
 
           if (invites && invites.length > 0) {
-            return NextResponse.redirect(`${origin}/auth/complete-signup?next=/join/${invites[0].draft_id}`);
+            return NextResponse.redirect(`${origin}/join/${invites[0].draft_id}`);
           }
         }
       }

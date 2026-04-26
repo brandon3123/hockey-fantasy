@@ -236,9 +236,23 @@ function calculatePositionBonus(player: Player, yourTeam: YourTeamState): number
 }
 
 function calculateValueScore(player: Player, currentPick: number): number {
-  if (!player.adp) return 0;
-  const adpDiff = currentPick - player.adp;
-  return adpDiff > 0 ? adpDiff * 2 : 0;
+  let score = 0;
+
+  // ADP value (smaller multiplier, capped to avoid overweighting)
+  if (player.adp) {
+    const adpDiff = currentPick - player.adp;
+    if (adpDiff > 0) {
+      score += Math.min(adpDiff * 0.5, 5);  // Max +5 from ADP value
+    }
+  }
+
+  // Rank bonus (prefer better-ranked players - lower rank number = better)
+  // This rewards players who are actually ranked higher regardless of ADP
+  if (player.rank) {
+    score += Math.max(0, (50 - player.rank) * 0.1);  // +5 for rank 1, +4 for rank 10, etc.
+  }
+
+  return score;
 }
 
 function calculateBlockScore(player: Player, opponents: OpponentState[]): number {
@@ -366,9 +380,16 @@ function calculateFit(player: Player, yourTeam: YourTeamState, lineCache: LineCo
   if (playerLine) {
     const lineWithCount = yourTeam.lines.find(l => l.line.lineId === playerLine.lineId);
     if (lineWithCount) {
-      if (lineWithCount.yourPlayerCount >= 2) return 'excellent';
-      if (lineWithCount.yourPlayerCount >= 1) return 'good';
+      const yourPlayersOnLine = lineWithCount.yourPlayerCount;
+      if (yourPlayersOnLine >= 2) return 'excellent';
+      if (yourPlayersOnLine >= 1) return 'good';
     }
   }
+
+  // Also check team stacking (any players from same team)
+  const teamCount = yourTeam.teams[player.team] || 0;
+  if (teamCount >= 2) return 'good';
+  if (teamCount >= 1) return 'fair'; // At least 1 teammate
+
   return 'fair';
 }

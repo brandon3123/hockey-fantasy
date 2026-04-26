@@ -44,7 +44,17 @@ export function getLinesByTeam(team: string, lines: LineCombination[]): LineComb
 }
 
 export function getPlayerLine(playerName: string, lines: LineCombination[]): LineCombination | null {
-  return lines.find(l => l.players.includes(playerName)) || null;
+  // Try exact match first
+  const exactMatch = lines.find(l => l.players.includes(playerName));
+  if (exactMatch) return exactMatch;
+
+  // Try last name match (lines have last names only, players have full names)
+  const lastName = playerName.split(' ').pop()?.toLowerCase();
+  if (!lastName) return null;
+
+  return lines.find(l =>
+    l.players.some(p => p.toLowerCase() === lastName)
+  ) || null;
 }
 
 export function getTeammates(playerName: string, lines: LineCombination[]): string[] {
