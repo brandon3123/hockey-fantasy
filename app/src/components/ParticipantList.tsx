@@ -17,9 +17,11 @@ interface ParticipantListProps {
   participants: Participant[];
   invites: Invite[];
   totalSlots?: number;
+  onRemoveParticipant?: (id: string) => void;
+  onRemoveInvite?: (id: string) => void;
 }
 
-export default function ParticipantList({ participants, invites, totalSlots }: ParticipantListProps) {
+export default function ParticipantList({ participants, invites, totalSlots, onRemoveParticipant, onRemoveInvite }: ParticipantListProps) {
   const pendingInvites = invites.filter((inv) => inv.status === 'pending');
   const registeredCount = participants.length;
   const totalSlotsDisplay = totalSlots || 12;
@@ -52,6 +54,15 @@ export default function ParticipantList({ participants, invites, totalSlots }: P
               ) : (
                 <span className="text-xs bg-[#3d3a1a] text-[#9b8f6b] px-2 py-1 rounded">Unpaid</span>
               )}
+              {onRemoveParticipant && (
+                <button
+                  onClick={() => onRemoveParticipant(p.id)}
+                  className="text-[#5a6b57] hover:text-red-400 transition-colors text-sm"
+                  title="Remove participant"
+                >
+                  &#10005;
+                </button>
+              )}
             </div>
           </div>
         ))}
@@ -65,7 +76,18 @@ export default function ParticipantList({ participants, invites, totalSlots }: P
               <span className="text-[#888]">&#9675;</span>
               <span className="text-[#5a6b57] italic">{inv.email}</span>
             </div>
-            <span className="text-xs text-[#5a6b57]">Pending</span>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-[#5a6b57]">Pending</span>
+              {onRemoveInvite && (
+                <button
+                  onClick={() => onRemoveInvite(inv.id)}
+                  className="text-[#5a6b57] hover:text-red-400 transition-colors text-sm"
+                  title="Cancel invite"
+                >
+                  &#10005;
+                </button>
+              )}
+            </div>
           </div>
         ))}
 
