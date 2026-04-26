@@ -8,12 +8,20 @@ export default function Navigation() {
   const pathname = usePathname();
   const { user, loading, signOut } = useAuth();
 
-  const navItems = [
-    { href: '/', label: 'Player Rankings' },
-    { href: '/draft', label: 'Draft Board' },
-    { href: '/rosters', label: 'Team Rosters' },
-    { href: '/bracket', label: 'Playoff Bracket' },
-  ];
+  const navItems = user
+    ? [
+        { href: '/dashboard', label: 'Dashboard' },
+        { href: '/', label: 'Player Rankings' },
+        { href: '/draft', label: 'Draft Board' },
+        { href: '/rosters', label: 'Team Rosters' },
+        { href: '/bracket', label: 'Playoff Bracket' },
+      ]
+    : [
+        { href: '/', label: 'Player Rankings' },
+        { href: '/draft', label: 'Draft Board' },
+        { href: '/rosters', label: 'Team Rosters' },
+        { href: '/bracket', label: 'Playoff Bracket' },
+      ];
 
   return (
     <nav className="bg-[#0a0f0a] border-b border-[#141e12]">
