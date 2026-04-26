@@ -46,6 +46,15 @@ export async function POST(request: Request) {
     scoring_format,
   } = body;
 
+  if (draft_date) {
+    const selectedDate = new Date(draft_date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (selectedDate < today) {
+      return NextResponse.json({ error: 'Draft date cannot be in the past' }, { status: 400 });
+    }
+  }
+
   const { data, error } = await supabase
     .from('drafts')
     .insert({
