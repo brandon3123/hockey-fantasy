@@ -17,3 +17,7 @@ lint:
 
 install:
 	PATH="$$HOME/.local/node/bin:$$PATH" npm install
+
+import-players:
+	export $$(grep -v '^#' .env.local | xargs) && \
+	PATH="$$HOME/.local/node/bin:$$PATH" npx tsx scripts/import-players.ts
