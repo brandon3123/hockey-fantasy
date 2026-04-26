@@ -27,7 +27,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Already registered for this draft' }, { status: 400 });
   }
 
-  const { data: invite } = await supabase
+  const adminClient = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: {
+        getAll() { return []; },
+        setAll() {},
+      },
+    }
+  );
+
+  const { data: invite } = await adminClient
     .from('draft_invites')
     .select('id')
     .eq('draft_id', draft_id)
@@ -50,16 +61,6 @@ export async function POST(request: Request) {
   }
 
   if (invite) {
-    const adminClient = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        cookies: {
-          getAll() { return []; },
-          setAll() {},
-        },
-      }
-    );
     await adminClient
       .from('draft_invites')
       .update({ status: 'registered' })
