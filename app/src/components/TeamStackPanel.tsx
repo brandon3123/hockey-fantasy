@@ -3,6 +3,7 @@
 import { Player, DraftPick } from '@/types/player';
 import { cn } from '@/lib/utils';
 import TeamLogo from '@/components/TeamLogo';
+import { isPlayerPickable } from './InjuryFlag';
 
 interface TeamStackPanelProps {
   yourPicks: DraftPick[];
@@ -83,7 +84,7 @@ export default function TeamStackPanel({
                   <div
                     key={player.name}
                     onClick={(e) => {
-                      if (draftComplete) {
+                      if (draftComplete || !isPlayerPickable(player)) {
                         e.preventDefault();
                         e.stopPropagation();
                         return;
@@ -91,7 +92,7 @@ export default function TeamStackPanel({
                       onDraftPlayer?.(player);
                     }}
                     className={`flex items-center gap-2 p-2 bg-[#0a0f0a] border border-[#141e12] rounded hover:border-[#4a7c59] transition-all ${
-                      draftComplete ? 'opacity-50' : 'cursor-pointer'
+                      draftComplete ? 'opacity-50' : !isPlayerPickable(player) ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
                     }`}
                   >
                     <div className="text-xs text-[#5a6b57] font-semibold w-10 shrink-0">#{player.rank}</div>

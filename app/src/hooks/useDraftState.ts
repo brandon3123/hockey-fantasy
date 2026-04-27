@@ -103,6 +103,8 @@ function mapPlayerRow(row: PlayerRow): Player {
     projectedPlayoffPoints: row.projected_playoff_points,
     gamesRemaining: row.games_remaining ?? 0,
     projectedPoints: row.projected_points ?? 0,
+    displayPoints: row.projected_playoff_points ?? row.projected_points ?? 0,
+    displayGames: row.projected_playoff_games ?? row.games_remaining ?? 0,
     rank: row.rank,
     adp: row.adp ?? undefined,
     injury: {

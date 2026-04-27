@@ -62,10 +62,14 @@ export default function InjuryFlag({ player }: InjuryFlagProps) {
               </div>
             ))}
           </div>
-          {/* Arrow */}
           <div className="absolute top-full left-2 -mt-1 w-2 h-2 bg-[#4a7c59] border-r border-b border-[#6b9b7a] transform rotate-45"></div>
         </div>
       )}
     </div>
   );
+}
+
+export function isPlayerPickable(player: Player): boolean {
+  const status = player.injury.status.toLowerCase()
+  return status === 'healthy' || status === 'day-to-day' || status === 'week-to-week'
 }

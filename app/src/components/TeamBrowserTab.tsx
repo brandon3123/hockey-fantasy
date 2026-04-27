@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { Player } from '@/types/player';
 import { DraftPickRow, ParticipantData } from '@/hooks/useDraftState';
 import TeamLogo from './TeamLogo';
-import InjuryFlag from './InjuryFlag';
+import InjuryFlag, { isPlayerPickable } from './InjuryFlag';
 
 interface TeamBrowserTabProps {
   players: Player[];
@@ -131,13 +131,15 @@ export default function TeamBrowserTab({
                 <div
                   key={player.name}
                   onClick={() => {
-                    if (!isDrafted && onDraftPlayer && !isDraftComplete) {
+                    if (!isDrafted && onDraftPlayer && !isDraftComplete && isPlayerPickable(player)) {
                       onDraftPlayer(player);
                     }
                   }}
                   className={`flex items-center gap-3 p-3 ${
                     isDrafted
                       ? 'opacity-50'
+                      : !isPlayerPickable(player)
+                      ? 'opacity-40 cursor-not-allowed'
                       : onDraftPlayer && !isDraftComplete
                       ? 'cursor-pointer hover:bg-[#050a05]'
                       : ''

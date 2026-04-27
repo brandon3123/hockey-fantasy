@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Player } from '@/types/player';
 import { cn, getAdpValue, isAdpSteal, isAdpReach, isInjured } from '@/lib/utils';
-import InjuryFlag from './InjuryFlag';
+import InjuryFlag, { isPlayerPickable } from './InjuryFlag';
 import TeamLogo from './TeamLogo';
 import WatchlistToggle from './WatchlistToggle';
 import { loadLines, getPlayerLine } from '@/lib/moneypuck-parser';
@@ -42,7 +42,6 @@ export default function BestAvailable({
   const top3 = sorted.slice(0, 3);
   const bestHealthy = sorted.find(p => !isInjured(p));
 
-  // Helper to get line info
   const getPlayerLineInfo = (playerName: string) => {
     if (!lines.length) return null;
     return getPlayerLine(playerName, lines);
@@ -50,7 +49,6 @@ export default function BestAvailable({
 
   return (
     <div className="space-y-6">
-      {/* Title */}
       <div className="text-center mb-6">
         <h3 className="text-lg font-bold mb-2 text-[#c8d9c3]">
           Best Available
@@ -58,18 +56,18 @@ export default function BestAvailable({
         <div className="w-full h-px bg-[#141e12]"></div>
       </div>
 
-      {/* Top 3 Players */}
       <div className="space-y-4">
         {top3.map((player, index) => {
           const steal = isAdpSteal(player, currentPick);
           const reach = isAdpReach(player, currentPick);
           const adpDiff = getAdpValue(player, currentPick);
+          const pickable = isPlayerPickable(player);
 
           return (
             <div
               key={player.name}
               onClick={(e) => {
-                if (draftComplete) {
+                if (draftComplete || !pickable) {
                   e.preventDefault();
                   e.stopPropagation();
                   return;
@@ -80,17 +78,15 @@ export default function BestAvailable({
                 index === 0
                   ? 'bg-[#0a0f0a] border-[#4a7c59]'
                   : 'bg-[#050a05] border border-[#141e12] hover:border-[#4a7c59]'
-              } ${draftComplete ? 'opacity-50' : 'cursor-pointer'}`}
+              } ${draftComplete ? 'opacity-50' : !pickable ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
             >
               <div className="flex items-center gap-4">
-                {/* Rank Badge */}
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shrink-0 ${
                   index === 0 ? 'bg-[#4a7c59] text-[#c8d9c3]' : 'bg-[#141e12] text-[#5a6b57]'
                 }`}>
                   #{index + 1}
                 </div>
 
-                {/* Player Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     {onToggleWatchlist && (
@@ -120,7 +116,6 @@ export default function BestAvailable({
                   })()}
                 </div>
 
-                {/* Stats */}
                 <div className="text-right shrink-0 min-w-fit">
                   <div className="text-2xl font-bold text-[#c8d9c3]">
                     {player.displayPoints.toFixed(1)}
@@ -130,9 +125,7 @@ export default function BestAvailable({
                     {player.displayGames.toFixed(1)} gp • {player.pointsPerGame.toFixed(2)} ppg
                   </div>
 
-                  {/* Badges */}
                   <div className="flex flex-col gap-1 mt-1 items-end">
-                    {/* Team Advancement Odds */}
                     {(() => {
                       const round2Chance = player.teamAdvancementOdds?.round2 ? player.teamAdvancementOdds.round2 * 100 : null;
                       if (!round2Chance) return null;
@@ -147,7 +140,6 @@ export default function BestAvailable({
                       );
                     })()}
 
-                    {/* ADP Indicator */}
                     {player.adp && (
                       <div className={`text-xs px-2 py-0.5 rounded font-medium whitespace-nowrap ${
                         steal ? 'bg-[#4a7c59] text-[#c8d9c3]' :
@@ -167,16 +159,15 @@ export default function BestAvailable({
         })}
       </div>
 
-      {/* Best Healthy Alternative */}
       {top3.length > 0 && isInjured(top3[0]) && bestHealthy && bestHealthy.name !== top3[0].name && (
         <div className="pt-6 border-t border-[#141e12]">
           <h4 className="text-sm font-semibold text-[#5a6b57] mb-3">Best Healthy</h4>
           <div
             className={`p-4 bg-[#050a05] border border-[#4a7c59] rounded-lg hover:bg-[#0a0f0a] transition-all ${
-              draftComplete ? 'opacity-50' : 'cursor-pointer'
+              draftComplete ? 'opacity-50' : !isPlayerPickable(bestHealthy) ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
             }`}
             onClick={(e) => {
-              if (draftComplete) {
+              if (draftComplete || !isPlayerPickable(bestHealthy)) {
                 e.preventDefault();
                 e.stopPropagation();
                 return;

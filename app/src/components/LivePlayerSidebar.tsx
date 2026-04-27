@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { Player } from '@/types/player';
 import { ParticipantData } from '@/hooks/useDraftState';
 import TeamLogo from './TeamLogo';
-import InjuryFlag from './InjuryFlag';
+import InjuryFlag, { isPlayerPickable } from './InjuryFlag';
 
 interface LivePlayerSidebarProps {
   availablePlayers: Player[];
@@ -104,11 +104,13 @@ export default function LivePlayerSidebar({
             <div
               key={player.name}
               onClick={() => {
-                if (!isDraftComplete) onPickPlayer(player);
+                if (!isDraftComplete && isPlayerPickable(player)) onPickPlayer(player);
               }}
               className={`flex items-center gap-3 p-3 border-b border-[#141e12] transition-colors ${
                 isDraftComplete
                   ? 'opacity-50 cursor-not-allowed'
+                  : !isPlayerPickable(player)
+                  ? 'opacity-40 cursor-not-allowed'
                   : 'cursor-pointer hover:bg-[#0a0f0a]'
               } ${index === 0 ? 'bg-[#0a0f0a] border-l-2 border-l-[#4a7c59]' : ''}`}
             >

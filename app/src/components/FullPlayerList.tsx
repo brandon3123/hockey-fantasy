@@ -2,7 +2,7 @@
 
 import { Player } from '@/types/player';
 import { cn, isInjured } from '@/lib/utils';
-import InjuryFlag from './InjuryFlag';
+import InjuryFlag, { isPlayerPickable } from './InjuryFlag';
 import TeamLogo from './TeamLogo';
 import WatchlistToggle from './WatchlistToggle';
 import { useState } from 'react';
@@ -106,7 +106,7 @@ export default function FullPlayerList({
           <div
             key={player.name}
             onClick={(e) => {
-              if (draftComplete) {
+              if (draftComplete || !isPlayerPickable(player)) {
                 e.preventDefault();
                 e.stopPropagation();
                 return;
@@ -114,7 +114,7 @@ export default function FullPlayerList({
               onDraftPlayer(player);
             }}
             className={`p-3 bg-[#050a05] border border-[#141e12] rounded-lg hover:border-[#4a7c59] hover:bg-[#0a0f0a] transition-all ${
-              draftComplete ? 'opacity-50' : 'cursor-pointer'
+              draftComplete ? 'opacity-50' : !isPlayerPickable(player) ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
             }`}
           >
             <div className="flex items-center gap-3">
