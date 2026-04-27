@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { useDraftState, DraftPickRow, ParticipantData } from '@/hooks/useDraftState';
 import LivePlayerSidebar from '@/components/LivePlayerSidebar';
+import TeamBrowserTab from '@/components/TeamBrowserTab';
 import TeamLogo from '@/components/TeamLogo';
 import InjuryFlag from '@/components/InjuryFlag';
 import { Player } from '@/types/player';
@@ -49,6 +50,89 @@ function TeamLogoInline({ team }: { team: string }) {
   );
 }
 
+function ReplacePickModal({
+  pick,
+  availablePlayers,
+  onReplace,
+  onClose,
+}: {
+  pick: DraftPickRow;
+  availablePlayers: Player[];
+  onReplace: (newPlayer: Player) => void;
+  onClose: () => void;
+}) {
+  const [search, setSearch] = useState('');
+
+  const filtered = useMemo(() => {
+    if (!search) return availablePlayers.slice(0, 50);
+    const q = search.toLowerCase();
+    return availablePlayers.filter(
+      (p) => p.name.toLowerCase().includes(q) || p.team.toLowerCase().includes(q)
+    );
+  }, [availablePlayers, search]);
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+      <div className="bg-[#0a0f0a] rounded-lg border border-[#141e12] max-w-md w-full mx-4 max-h-[80vh] flex flex-col">
+        <div className="p-4 border-b border-[#141e12] bg-[#4a7c59]">
+          <h3 className="text-lg font-bold text-[#c8d9c3]">Replace Pick</h3>
+          <div className="text-sm text-[#c8d9c3] opacity-80">
+            {pick.player_name} (R{pick.round})
+          </div>
+        </div>
+        <div className="p-3 border-b border-[#141e12]">
+          <input
+            type="text"
+            placeholder="Search players..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full px-3 py-2 border border-[#141e12] rounded-lg bg-[#050a05] text-[#c8d9c3] placeholder-[#2d3c28] focus:outline-none focus:ring-2 focus:ring-[#4a7c59] text-sm"
+            autoFocus
+          />
+        </div>
+        <div className="flex-1 overflow-y-auto">
+          {filtered.map((player) => (
+            <div
+              key={player.name}
+              onClick={() => onReplace(player)}
+              className="flex items-center gap-3 p-3 border-b border-[#141e12] cursor-pointer hover:bg-[#050a05] transition-colors"
+            >
+              <div className="w-7 text-center text-xs text-[#5a6b57] font-semibold">
+                #{player.rank}
+              </div>
+              <TeamLogo team={player.team} className="w-7 h-7" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm font-semibold text-[#c8d9c3] truncate">
+                    {player.name}
+                  </span>
+                  <InjuryFlag player={player} />
+                </div>
+                <div className="text-xs text-[#5a6b57]">
+                  {player.team} &bull; {player.position}
+                </div>
+              </div>
+              <div className="text-sm font-bold text-[#6b9b7a]">
+                {player.projectedPlayoffPoints.toFixed(1)}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="p-3 border-t border-[#141e12]">
+          <button
+            onClick={onClose}
+            className="w-full px-4 py-2 text-sm font-medium text-[#5a6b57] bg-[#050a05] border border-[#141e12] rounded-lg hover:bg-[#141e12] transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type SidebarTab = 'players' | 'teams';
+
 function DraftBoardGrid({
   participants,
   picks,
@@ -57,6 +141,7 @@ function DraftBoardGrid({
   currentPick,
   playersPerTeam,
   currentParticipant,
+  onPickClick,
 }: {
   participants: ParticipantData[];
   picks: DraftPickRow[];
@@ -65,6 +150,7 @@ function DraftBoardGrid({
   currentPick: number;
   playersPerTeam: number;
   currentParticipant: ParticipantData | null;
+  onPickClick: (pick: DraftPickRow) => void;
 }) {
   const sortedParticipants = useMemo(
     () => [...participants].sort((a, b) => (a.draft_position ?? 0) - (b.draft_position ?? 0)),
@@ -74,11 +160,6 @@ function DraftBoardGrid({
   const managers = sortedParticipants.length;
 
   const getPickForCell = (participantId: string, round: number) => {
-    const isReverse = round % 2 === 0;
-    const pickNum = isReverse
-      ? (round - 1) * managers + (managers - (sortedParticipants.findIndex(p => p.id === participantId)) + 1)
-      : (round - 1) * managers + sortedParticipants.findIndex(p => p.id === participantId) + 1;
-
     return picks.find((p) => p.participant_id === participantId && p.round === round);
   };
 
@@ -162,7 +243,10 @@ function DraftBoardGrid({
                         }`}
                       >
                         {pick ? (
-                          <div className="p-1 border border-[#141e12] bg-[#050a05] rounded">
+                          <div
+                            onClick={() => onPickClick(pick)}
+                            className="p-1 border border-[#141e12] bg-[#050a05] rounded hover:border-[#4a7c59] hover:bg-[#0a0f0a] cursor-pointer transition-colors"
+                          >
                             <div className="text-[11px] font-medium text-[#c8d9c3] leading-tight truncate">
                               {pick.player_name}
                             </div>
@@ -202,6 +286,8 @@ export default function LiveDraftPage() {
   const params = useParams();
   const draftId = params.id as string;
   const [picking, setPicking] = useState(false);
+  const [sidebarTab, setSidebarTab] = useState<SidebarTab>('players');
+  const [replacePick, setReplacePick] = useState<DraftPickRow | null>(null);
 
   const {
     draft,
@@ -238,9 +324,7 @@ export default function LiveDraftPage() {
       if (!res.ok) {
         alert(data.error || 'Failed to make pick');
       }
-      if (data.draft_complete) {
-        refresh();
-      }
+      refresh();
     } catch (err) {
       alert('Failed to make pick');
     } finally {
@@ -250,7 +334,6 @@ export default function LiveDraftPage() {
 
   const handleUndo = async () => {
     if (picks.length === 0) return;
-    if (!confirm('Undo the last pick?')) return;
 
     try {
       const res = await fetch(`/api/drafts/${draftId}/picks/last`, {
@@ -263,6 +346,55 @@ export default function LiveDraftPage() {
       refresh();
     } catch (err) {
       alert('Failed to undo pick');
+    }
+  };
+
+  const handleReset = async () => {
+    try {
+      const res = await fetch(`/api/drafts/${draftId}/reset`, {
+        method: 'POST',
+      });
+      if (res.ok) {
+        window.location.href = `/dashboard/drafts/${draftId}`;
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Failed to reset draft');
+      }
+    } catch {
+      alert('Failed to reset draft');
+    }
+  };
+
+  const handleReplacePick = async (newPlayer: Player) => {
+    if (!replacePick) return;
+
+    try {
+      const undoRes = await fetch(`/api/drafts/${draftId}/picks/last`, {
+        method: 'DELETE',
+      });
+      if (!undoRes.ok) {
+        alert('Failed to replace pick');
+        return;
+      }
+
+      const pickRes = await fetch(`/api/drafts/${draftId}/picks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          participant_id: replacePick.participant_id,
+          player_id: newPlayer.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          player_name: newPlayer.name,
+        }),
+      });
+      if (!pickRes.ok) {
+        const data = await pickRes.json();
+        alert(data.error || 'Failed to make replacement pick');
+      }
+
+      setReplacePick(null);
+      refresh();
+    } catch {
+      alert('Failed to replace pick');
     }
   };
 
@@ -282,7 +414,7 @@ export default function LiveDraftPage() {
     );
   }
 
-  if (draft.status !== 'in_progress') {
+  if (draft.status !== 'in_progress' && draft.status !== 'complete') {
     return (
       <div className="min-h-screen bg-[#050a05] flex items-center justify-center">
         <div className="text-center">
@@ -301,8 +433,8 @@ export default function LiveDraftPage() {
   const totalSlots = managers * (draft.players_per_team || 0);
 
   return (
-    <div className="min-h-screen bg-[#050a05] flex flex-col">
-      <div className="border-b border-[#141e12] bg-[#0a0f0a] px-4 py-3">
+    <div className="h-screen bg-[#050a05] flex flex-col">
+      <div className="shrink-0 border-b border-[#141e12] bg-[#0a0f0a] px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h1 className="text-lg font-bold text-[#c8d9c3]">
@@ -313,7 +445,7 @@ export default function LiveDraftPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {isDraftComplete ? (
               <div className="px-4 py-1.5 bg-[#4a7c59] rounded-lg text-sm font-bold text-[#c8d9c3]">
                 DRAFT COMPLETE
@@ -328,20 +460,30 @@ export default function LiveDraftPage() {
               {totalPicks}/{totalSlots} picks
             </div>
 
-            {isAdmin && !isDraftComplete && (
-              <button
-                onClick={handleUndo}
-                disabled={totalPicks === 0}
-                className="px-3 py-1.5 text-xs font-medium text-[#c8d9c3] bg-[#050a05] border border-[#141e12] rounded-lg hover:bg-[#141e12] hover:border-[#4a7c59] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                Undo Pick
-              </button>
+            {isAdmin && (
+              <>
+                {!isDraftComplete && (
+                  <button
+                    onClick={handleUndo}
+                    disabled={totalPicks === 0}
+                    className="px-3 py-1.5 text-xs font-medium text-[#c8d9c3] bg-[#050a05] border border-[#141e12] rounded-lg hover:bg-[#141e12] hover:border-[#4a7c59] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    Undo Pick
+                  </button>
+                )}
+                <button
+                  onClick={handleReset}
+                  className="px-3 py-1.5 text-xs font-medium text-red-400 bg-[#050a05] border border-[#3d1a1a] rounded-lg hover:bg-[#3d1a1a] transition-colors"
+                >
+                  Reset Draft
+                </button>
+              </>
             )}
           </div>
         </div>
       </div>
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex min-h-0">
         <div className="flex-1 overflow-auto p-4">
           <DraftBoardGrid
             participants={participants}
@@ -351,19 +493,66 @@ export default function LiveDraftPage() {
             currentPick={currentPick}
             playersPerTeam={draft.players_per_team || 10}
             currentParticipant={currentParticipant}
+            onPickClick={(pick) => isAdmin && setReplacePick(pick)}
           />
         </div>
 
-        <LivePlayerSidebar
-          availablePlayers={availablePlayers}
-          currentParticipant={currentParticipant}
-          participants={participants}
-          isDraftComplete={isDraftComplete}
-          pickTimerSeconds={draft.pick_timer_seconds}
-          onPickPlayer={handlePickPlayer}
-          loading={picking}
-        />
+        <div className="w-96 shrink-0 border-l border-[#141e12] flex flex-col bg-[#050a05]">
+          <div className="shrink-0 flex gap-1 p-2 border-b border-[#141e12]">
+            <button
+              onClick={() => setSidebarTab('players')}
+              className={`flex-1 px-2 py-1.5 text-xs font-semibold rounded transition-colors ${
+                sidebarTab === 'players'
+                  ? 'bg-[#4a7c59] text-[#c8d9c3]'
+                  : 'bg-[#0a0f0a] text-[#5a6b57] hover:bg-[#141e12]'
+              }`}
+            >
+              Players
+            </button>
+            <button
+              onClick={() => setSidebarTab('teams')}
+              className={`flex-1 px-2 py-1.5 text-xs font-semibold rounded transition-colors ${
+                sidebarTab === 'teams'
+                  ? 'bg-[#4a7c59] text-[#c8d9c3]'
+                  : 'bg-[#0a0f0a] text-[#5a6b57] hover:bg-[#141e12]'
+              }`}
+            >
+              Teams
+            </button>
+          </div>
+
+          {sidebarTab === 'players' ? (
+            <LivePlayerSidebar
+              availablePlayers={availablePlayers}
+              currentParticipant={currentParticipant}
+              participants={participants}
+              isDraftComplete={isDraftComplete}
+              pickTimerSeconds={draft.pick_timer_seconds}
+              onPickPlayer={handlePickPlayer}
+              loading={picking}
+            />
+          ) : (
+            <div className="flex-1 overflow-y-auto p-4">
+              <TeamBrowserTab
+                players={players}
+                picks={picks}
+                participants={participants}
+                onDraftPlayer={handlePickPlayer}
+                isDraftComplete={isDraftComplete}
+              />
+            </div>
+          )}
+        </div>
       </div>
+
+      {replacePick && isAdmin && (
+        <ReplacePickModal
+          pick={replacePick}
+          availablePlayers={availablePlayers}
+          onReplace={handleReplacePick}
+          onClose={() => setReplacePick(null)}
+        />
+      )}
     </div>
   );
 }

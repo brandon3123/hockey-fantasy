@@ -47,7 +47,7 @@ export default function LivePlayerSidebar({
   const positions = ['ALL', 'C', 'LW', 'RW', 'D'];
 
   return (
-    <div className="w-96 border-l border-[#141e12] flex flex-col bg-[#050a05]">
+    <div className="flex-1 flex flex-col bg-[#050a05] min-h-0">
       <div className="p-4 border-b border-[#141e12] bg-[#0a0f0a]">
         <div className="text-sm font-semibold text-[#5a6b57] mb-1">
           PICKING FOR
