@@ -138,11 +138,14 @@ export default function FullPlayerList({
 
               {/* Player Info */}
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold text-[#c8d9c3] truncate">
-                  {player.name}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-[#c8d9c3] truncate">
+                    {player.name}
+                  </span>
+                  <InjuryFlag player={player} />
                 </div>
                 <div className="text-xs text-[#5a6b57]">
-                  {player.team} • {player.position}
+                  {player.team} &bull; {player.position}
                 </div>
               </div>
 
@@ -159,11 +162,6 @@ export default function FullPlayerList({
                   {player.pointsPerGame.toFixed(2)} ppg
                 </div>
               </div>
-            </div>
-
-            {/* Injury Flag */}
-            <div className="mt-2">
-              <InjuryFlag player={player} />
             </div>
           </div>
         ))}
