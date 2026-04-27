@@ -5,6 +5,8 @@ import { createClient } from '@/lib/supabase/client'
 import { Player } from '@/types/player'
 import { useDraftRealtime, DraftPickRow } from './useDraftRealtime'
 
+export type { DraftPickRow } from './useDraftRealtime'
+
 export interface DraftData {
   id: string
   name: string
