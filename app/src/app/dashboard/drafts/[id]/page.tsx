@@ -3,8 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import InviteForm from '@/components/InviteForm';
 import ParticipantList from '@/components/ParticipantList';
+import DraftStartModal from '@/components/DraftStartModal';
 
 interface Draft {
   id: string;
@@ -40,6 +42,7 @@ interface Invite {
 
 export default function DraftDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const draftId = params.id as string;
 
   const [draft, setDraft] = useState<Draft | null>(null);
@@ -47,6 +50,7 @@ export default function DraftDetailPage() {
   const [invites, setInvites] = useState<Invite[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showStartModal, setShowStartModal] = useState(false);
 
   const fetchDraft = useCallback(async () => {
     const res = await fetch(`/api/drafts/${draftId}`);
@@ -145,6 +149,32 @@ export default function DraftDetailPage() {
               {statusLabels[draft.status] || draft.status} &bull; {draft.season_type === 'playoffs' ? 'Playoffs' : 'Regular Season'}
             </div>
           </div>
+          <div className="flex gap-2">
+            {(draft.status === 'setup' || draft.status === 'inviting') && participants.length > 0 && (
+              <button
+                onClick={() => setShowStartModal(true)}
+                className="px-4 py-2 text-sm font-medium text-[#c8d9c3] bg-[#4a7c59] rounded-lg hover:bg-[#3d664a] transition-colors"
+              >
+                Start Draft
+              </button>
+            )}
+            {draft.status === 'in_progress' && (
+              <Link
+                href={`/draft/${draftId}/live`}
+                className="px-4 py-2 text-sm font-medium text-[#c8d9c3] bg-[#4a7c59] rounded-lg hover:bg-[#3d664a] transition-colors"
+              >
+                Go to Live Draft
+              </Link>
+            )}
+            {draft.status === 'complete' && (
+              <Link
+                href={`/draft/${draftId}/live`}
+                className="px-4 py-2 text-sm font-medium text-[#5a6b57] bg-[#0a0f0a] border border-[#141e12] rounded-lg hover:border-[#4a7c59] transition-colors"
+              >
+                View Results
+              </Link>
+            )}
+          </div>
         </div>
 
         <div className="bg-[#050a05] border border-[#141e12] rounded-lg p-6 mb-6">
@@ -195,6 +225,18 @@ export default function DraftDetailPage() {
             onTogglePaid={handleTogglePaid}
           />
         </div>
+
+        {showStartModal && (
+          <DraftStartModal
+            draftId={draftId}
+            participants={participants}
+            onStart={() => {
+              setShowStartModal(false);
+              router.push(`/draft/${draftId}/live`);
+            }}
+            onClose={() => setShowStartModal(false)}
+          />
+        )}
       </div>
     </div>
   );
