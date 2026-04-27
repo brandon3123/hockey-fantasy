@@ -102,6 +102,13 @@ export default function DraftDetailPage() {
     fetchDraft();
   }, [fetchDraft]);
 
+  const participantsWithAdmin = useMemo(() => {
+    if (!isAdmin || !user) return participants;
+    const adminInList = participants.some((p) => p.team_name === 'Commissioner');
+    if (adminInList) return participants;
+    return [...participants, { id: '__admin__', team_name: 'Commissioner', draft_position: null, has_paid: true, created_at: new Date().toISOString() }];
+  }, [participants, isAdmin, user]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#050a05] flex items-center justify-center">
@@ -152,13 +159,6 @@ export default function DraftDetailPage() {
       </div>
     );
   }
-
-  const participantsWithAdmin = useMemo(() => {
-    if (!isAdmin || !user) return participants;
-    const adminInList = participants.some((p) => p.team_name === 'Commissioner');
-    if (adminInList) return participants;
-    return [...participants, { id: '__admin__', team_name: 'Commissioner', draft_position: null, has_paid: true, created_at: new Date().toISOString() }];
-  }, [participants, isAdmin, user]);
 
   const statusLabels: Record<string, string> = {
     setup: 'Setup',
