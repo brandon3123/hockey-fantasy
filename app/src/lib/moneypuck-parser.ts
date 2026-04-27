@@ -1,27 +1,27 @@
 import { LineCombination, TeamQuality } from '@/types/draft-coach';
 
-let linesCache: LineCombination[] | null = null;
+let linesCache: Map<string, LineCombination[]> = new Map();
 let rankingsCache: TeamQuality[] | null = null;
 
-export async function loadLines(): Promise<LineCombination[] | null> {
-  if (linesCache) return linesCache;
+export async function loadLines(seasonType: string = 'playoffs'): Promise<LineCombination[] | null> {
+  if (linesCache.has(seasonType)) return linesCache.get(seasonType)!;
 
   try {
-    const response = await fetch('/lines.json');
-    if (!response.ok) throw new Error('Failed to load lines.json');
+    const filename = seasonType === 'playoffs' ? '/lines_playoffs.json' : '/lines_regular.json';
+    const response = await fetch(filename);
+    if (!response.ok) throw new Error(`Failed to load ${filename}`);
     const rawLines = await response.json();
 
-    // Process lines: extract player names from "Donato-Bedard-Mikheyev" format
-    // Note: The raw JSON has a "name" field, no existing "players" field to conflict
-    linesCache = rawLines.map((line: any) => ({
+    const processed = rawLines.map((line: any) => ({
       ...line,
       players: line.name.split('-').map((n: string) => n.trim())
     }));
+    linesCache.set(seasonType, processed);
 
-    return linesCache;
+    return processed;
   } catch (error) {
     console.error('Failed to load lines:', error);
-    return null; // Return null to distinguish error from empty data
+    return null;
   }
 }
 

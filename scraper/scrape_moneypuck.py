@@ -8,6 +8,7 @@ import csv
 import random
 import sys
 import urllib.request
+from datetime import date, timedelta
 from typing import Dict, List
 from scrape_nhl_api import scrape_all_player_stats, scrape_player_game_log, get_player_id_from_name, clear_cache
 
@@ -17,46 +18,84 @@ from top_players_stats import TOP_PLAYER_STATS
 MONEYPUCK_BASE_URL = "https://moneypuck.com"
 MONEYPUCK_LOCAL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "moneypuck")
 
-MONEYPUCK_FILES = {
-    "simulations_recent.csv": f"{MONEYPUCK_BASE_URL}/simulations_recent.csv",
-    "lines.csv": f"{MONEYPUCK_BASE_URL}/lines.csv",
-    "rankings_current.csv": f"{MONEYPUCK_BASE_URL}/rankings_current.csv",
-}
 
-
-def download_csv_with_fallback(filename: str, url: str, local_dir: str) -> str:
-    local_path = os.path.join(local_dir, filename)
-    downloaded = False
-
+def download_csv(url: str, local_path: str) -> bool:
     try:
-        print(f"  Downloading {filename} from {url}...")
-        os.makedirs(local_dir, exist_ok=True)
+        os.makedirs(os.path.dirname(local_path), exist_ok=True)
         request = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         with urllib.request.urlopen(request) as response:
             with open(local_path, 'wb') as f:
                 f.write(response.read())
-        downloaded = True
+        return True
+    except Exception:
+        return False
+
+
+def download_with_fallback(filename: str, url: str) -> str:
+    local_path = os.path.join(MONEYPUCK_LOCAL_DIR, filename)
+    print(f"  Downloading {filename}...")
+
+    if download_csv(url, local_path):
         print(f"  ✓ Downloaded {filename}")
-    except Exception as e:
-        print(f"  ✗ Download failed: {e}")
+        return local_path
 
-    if not downloaded:
-        if os.path.exists(local_path):
-            print(f"  ⚠ Using existing local file: {local_path}")
-        else:
-            response = input(f"  Auto-download of {filename} failed and no local file found. Continue? (y/n): ").strip().lower()
-            if response != 'y':
-                print("  Aborting.")
-                sys.exit(1)
+    if os.path.exists(local_path):
+        print(f"  ⚠ Using existing local file: {local_path}")
+        return local_path
 
+    response = input(f"  Auto-download of {filename} failed and no local file found. Continue? (y/n): ").strip().lower()
+    if response != 'y':
+        print("  Aborting.")
+        sys.exit(1)
     return local_path
 
 
-def download_all_moneypuck_files():
+def find_latest_rankings() -> str:
+    today = date.today()
+    for i in range(60):
+        d = today - timedelta(days=i)
+        date_str = d.strftime("%Y%m%d")
+        filename = f"rankings_{date_str}.csv"
+        url = f"{MONEYPUCK_BASE_URL}/moneypuck/powerRankings/gen2Model/{filename}"
+        local_path = os.path.join(MONEYPUCK_LOCAL_DIR, filename)
+        print(f"  Trying {filename}...", end=" ")
+        if download_csv(url, local_path):
+            print("✓")
+            return local_path
+        print("✗")
+    local_fallback = os.path.join(MONEYPUCK_LOCAL_DIR, "rankings_current.csv")
+    if os.path.exists(local_fallback):
+        print(f"  ⚠ No remote rankings found. Using existing local file: {local_fallback}")
+        return local_fallback
+    response = input("  No rankings data found. Continue? (y/n): ").strip().lower()
+    if response != 'y':
+        sys.exit(1)
+    return None
+
+
+def download_all_moneypuck_files(season_year: str):
     print("Downloading MoneyPuck data files...")
+
     paths = {}
-    for filename, url in MONEYPUCK_FILES.items():
-        paths[filename] = download_csv_with_fallback(filename, url, MONEYPUCK_LOCAL_DIR)
+
+    paths['simulations_recent.csv'] = download_with_fallback(
+        'simulations_recent.csv',
+        f"{MONEYPUCK_BASE_URL}/simulations_recent.csv"
+    )
+
+    lines_base = f"{MONEYPUCK_BASE_URL}/moneypuck/playerData/seasonSummary/{season_year}"
+    paths['lines_regular.csv'] = download_with_fallback(
+        'lines_regular.csv',
+        f"{lines_base}/regular/lines.csv"
+    )
+    paths['lines_playoffs.csv'] = download_with_fallback(
+        'lines_playoffs.csv',
+        f"{lines_base}/playoffs/lines.csv"
+    )
+
+    print("  Finding latest rankings...")
+    paths['rankings.csv'] = find_latest_rankings()
+
     print()
     return paths
 

@@ -22,18 +22,21 @@ def calculate_projected_playoff_games(odds: Dict[str, float]) -> float:
     expected_games += odds.get('round4', 0) * GAMES_PER_ROUND
     return expected_games
 
-def combine_data() -> Tuple[List[Dict], List[Dict], List[Dict]]:
+def combine_data() -> Tuple[List[Dict], Dict[str, List[Dict]], List[Dict]]:
     print("Combining data from all sources...")
 
-    # Clear any cached data from previous runs
     from scrape_nhl_api import clear_cache
     clear_cache()
+
+    season_year = input("Enter season year (e.g. 2025): ").strip()
+    if not season_year:
+        season_year = "2025"
+    print(f"  Using season year: {season_year}")
 
     print("  - Fetching rosters...")
     rosters = scrape_playoff_rosters()
     print(f"    Found {len(rosters)} total players from all teams")
 
-    # Scrape injury data from ESPN (optional)
     print("  - Fetching injury data from ESPN...")
     try:
         from scrape_espn_injuries import scrape_espn_injuries
@@ -49,7 +52,7 @@ def combine_data() -> Tuple[List[Dict], List[Dict], List[Dict]]:
         if name in injury_data:
             player['injury'] = injury_data[name]
 
-    moneypuck_paths = download_all_moneypuck_files()
+    moneypuck_paths = download_all_moneypuck_files(season_year)
 
     print("  - Fetching team advancement odds from MoneyPuck...")
     team_odds = scrape_moneypuck_team_odds(moneypuck_paths.get('simulations_recent.csv'))
@@ -63,12 +66,17 @@ def combine_data() -> Tuple[List[Dict], List[Dict], List[Dict]]:
     ros_data = load_fantasypros_ros()
     print(f"    Found {len(ros_data)} players with ROS data")
 
-    print("  - Loading MoneyPuck lines data...")
-    lines_data = parse_lines_csv(moneypuck_paths.get('lines.csv'))
-    print(f"    Found {len(lines_data)} line combinations")
+    lines_data = {}
+    print("  - Loading MoneyPuck regular season lines...")
+    lines_data['regular'] = parse_lines_csv(moneypuck_paths.get('lines_regular.csv'))
+    print(f"    Found {len(lines_data['regular'])} regular season line combinations")
+
+    print("  - Loading MoneyPuck playoff lines...")
+    lines_data['playoffs'] = parse_lines_csv(moneypuck_paths.get('lines_playoffs.csv'))
+    print(f"    Found {len(lines_data['playoffs'])} playoff line combinations")
 
     print("  - Loading MoneyPuck rankings data...")
-    rankings_data = parse_rankings_csv(moneypuck_paths.get('rankings_current.csv'))
+    rankings_data = parse_rankings_csv(moneypuck_paths.get('rankings.csv'))
     print(f"    Found {len(rankings_data)} team rankings")
 
     print("  - Merging data...")
@@ -187,15 +195,13 @@ def save_players_json(players: List[Dict], output_path: str = DEFAULT_OUTPUT_PAT
         json.dump(players, f, indent=2)
     print(f"Saved {len(players)} players to {output_path}")
 
-def save_lines_json(lines: List[Dict], output_path: str = DEFAULT_OUTPUT_PATH):
-    """Save line combinations to JSON file."""
-    lines_path = output_path.replace('players.json', 'lines.json')
-    import os
-    os.makedirs(os.path.dirname(lines_path), exist_ok=True)
-
-    with open(lines_path, 'w') as f:
-        json.dump(lines, f, indent=2)
-    print(f"Saved {len(lines)} line combinations to {lines_path}")
+def save_lines_json(lines: Dict[str, List[Dict]], output_path: str = DEFAULT_OUTPUT_PATH):
+    for season_type, lines_list in lines.items():
+        lines_path = output_path.replace('players.json', f'lines_{season_type}.json')
+        os.makedirs(os.path.dirname(lines_path), exist_ok=True)
+        with open(lines_path, 'w') as f:
+            json.dump(lines_list, f, indent=2)
+        print(f"Saved {len(lines_list)} {season_type} line combinations to {lines_path}")
 
 def save_rankings_json(rankings: List[Dict], output_path: str = DEFAULT_OUTPUT_PATH):
     """Save team rankings to JSON file."""
