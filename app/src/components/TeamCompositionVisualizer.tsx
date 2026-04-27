@@ -58,8 +58,8 @@ export default function TeamCompositionVisualizer({
     }
     byTeam[player.team].push(pick);
 
-    totalProjectedPoints += player.projectedPlayoffPoints;
-    totalProjectedGames += player.projectedPlayoffGames;
+    totalProjectedPoints += player.displayPoints;
+    totalProjectedGames += player.displayGames;
   });
 
   // Sort teams by player count
@@ -168,7 +168,7 @@ export default function TeamCompositionVisualizer({
               // Calculate team totals
               const teamPoints = picks.reduce((sum, pick) => {
                 const player = allPlayers.find(p => p.name === pick.playerName);
-                return sum + (player?.projectedPlayoffPoints || 0);
+                return sum + (player?.displayPoints || 0);
               }, 0);
 
               return (

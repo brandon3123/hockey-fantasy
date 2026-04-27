@@ -47,7 +47,7 @@ export default function TeamBrowserTab({
     if (!selectedTeam) return [];
     return players
       .filter((p) => p.team === selectedTeam)
-      .sort((a, b) => b.projectedPlayoffPoints - a.projectedPlayoffPoints);
+      .sort((a, b) => b.displayPoints - a.displayPoints);
   }, [players, selectedTeam]);
 
   const teamAdvancementOdds = useMemo(() => {
@@ -167,7 +167,7 @@ export default function TeamBrowserTab({
                       </span>
                     ) : (
                       <span className="text-sm font-bold text-[#6b9b7a]">
-                        {player.projectedPlayoffPoints.toFixed(1)}
+                        {player.displayPoints.toFixed(1)}
                       </span>
                     )}
                   </div>

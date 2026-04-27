@@ -116,7 +116,7 @@ export default function DraftGrid({ draftState, managerNames, availablePlayers, 
 
                 const projectedPts = managerPicks.reduce((total, pick) => {
                   const player = availablePlayers.find(p => p.name === pick.playerName);
-                  return total + (player?.projectedPlayoffPoints || 0);
+                  return total + (player?.displayPoints || 0);
                 }, 0);
 
                 return (
@@ -269,11 +269,11 @@ export default function DraftGrid({ draftState, managerNames, availablePlayers, 
                     </div>
                     <div className="text-right">
                       <div className="text-lg font-bold text-[#6b9b7a]">
-                        {player.projectedPlayoffPoints.toFixed(1)}
+                        {player.displayPoints.toFixed(1)}
                         <span className="text-xs font-normal text-[#5a6b57] ml-1">proj</span>
                       </div>
                       <div className="text-xs text-[#5a6b57]">
-                        {player.projectedPlayoffGames.toFixed(1)} gp
+                        {player.displayGames.toFixed(1)} gp
                       </div>
                     </div>
                   </div>
@@ -293,7 +293,7 @@ export default function DraftGrid({ draftState, managerNames, availablePlayers, 
                   if (selectedPick) {
                     const bestAvailable = filteredAvailablePlayers
                       .filter(p => p.name !== selectedPick.playerName)
-                      .sort((a, b) => b.projectedPlayoffPoints - a.projectedPlayoffPoints)[0];
+                      .sort((a, b) => b.displayPoints - a.displayPoints)[0];
                     if (bestAvailable) {
                       handleReplacePlayer(bestAvailable);
                     }

@@ -262,7 +262,7 @@ export default function CoachPage() {
                         .filter((p) => p.participant_id === participant.id)
                         .reduce((total, pick) => {
                           const player = players.find((pl) => pl.name === pick.player_name);
-                          return total + (player?.projectedPlayoffPoints || 0);
+                          return total + (player?.displayPoints || 0);
                         }, 0);
                       return (
                         <tr key={participant.id} className={`border-b border-[#141e12] ${isCurrent ? 'bg-[#2a4a2a]' : 'bg-[#050a05]'}`}>

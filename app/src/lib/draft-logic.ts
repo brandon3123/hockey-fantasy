@@ -133,7 +133,7 @@ export function undoLastPick(state: DraftState, allPlayers: Player[]): DraftStat
     picks: state.picks.slice(0, -1),
     availablePlayers: restoredPlayer
       ? [...state.availablePlayers, restoredPlayer].sort(
-          (a, b) => b.projectedPlayoffPoints - a.projectedPlayoffPoints
+          (a, b) => b.displayPoints - a.displayPoints
         )
       : state.availablePlayers,
   };
@@ -157,7 +157,7 @@ export function removeSpecificPick(state: DraftState, pickIndex: number, allPlay
     picks: newPicks,
     availablePlayers: restoredPlayer
       ? [...state.availablePlayers, restoredPlayer].sort(
-          (a, b) => b.projectedPlayoffPoints - a.projectedPlayoffPoints
+          (a, b) => b.displayPoints - a.displayPoints
         )
       : state.availablePlayers,
   };

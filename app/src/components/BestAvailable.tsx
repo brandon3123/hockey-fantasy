@@ -36,7 +36,7 @@ export default function BestAvailable({
   }, []);
 
   const sorted = [...availablePlayers].sort(
-    (a, b) => b.projectedPlayoffPoints - a.projectedPlayoffPoints
+    (a, b) => b.displayPoints - a.displayPoints
   );
 
   const top3 = sorted.slice(0, 3);
@@ -123,11 +123,11 @@ export default function BestAvailable({
                 {/* Stats */}
                 <div className="text-right shrink-0 min-w-fit">
                   <div className="text-2xl font-bold text-[#c8d9c3]">
-                    {player.projectedPlayoffPoints.toFixed(1)}
+                    {player.displayPoints.toFixed(1)}
                     <span className="text-xs font-normal text-[#5a6b57] ml-1">proj</span>
                   </div>
                   <div className="text-xs text-[#5a6b57]">
-                    {player.projectedPlayoffGames.toFixed(1)} gp • {player.pointsPerGame.toFixed(2)} ppg
+                    {player.displayGames.toFixed(1)} gp • {player.pointsPerGame.toFixed(2)} ppg
                   </div>
 
                   {/* Badges */}
@@ -199,7 +199,7 @@ export default function BestAvailable({
               </div>
               <div className="text-right">
                 <div className="text-xl font-bold text-[#c8d9c3]">
-                  {bestHealthy.projectedPlayoffPoints.toFixed(1)}
+                  {bestHealthy.displayPoints.toFixed(1)}
                 </div>
                 {(() => {
                   const round2Chance = bestHealthy.teamAdvancementOdds?.round2 ? bestHealthy.teamAdvancementOdds.round2 * 100 : null;

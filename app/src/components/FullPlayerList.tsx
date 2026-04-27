@@ -34,7 +34,7 @@ export default function FullPlayerList({
       const matchesPosition = positionFilter === 'ALL' || p.position === positionFilter;
       return matchesSearch && matchesPosition;
     })
-    .sort((a, b) => b.projectedPlayoffPoints - a.projectedPlayoffPoints);
+    .sort((a, b) => b.displayPoints - a.displayPoints);
 
   const positions = ['ALL', 'C', 'LW', 'RW', 'D', 'G'];
 
@@ -152,11 +152,11 @@ export default function FullPlayerList({
               {/* Stats */}
               <div className="text-right shrink-0">
                 <div className="text-lg font-bold text-[#6b9b7a]">
-                  {player.projectedPlayoffPoints.toFixed(1)}
+                  {player.displayPoints.toFixed(1)}
                   <span className="text-xs font-normal text-[#5a6b57] ml-1">proj</span>
                 </div>
                 <div className="text-xs text-[#5a6b57]">
-                  {player.projectedPlayoffGames.toFixed(1)} gp
+                  {player.displayGames.toFixed(1)} gp
                 </div>
                 <div className="text-xs text-[#5a6b57]">
                   {player.pointsPerGame.toFixed(2)} ppg

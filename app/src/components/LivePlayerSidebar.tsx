@@ -135,10 +135,10 @@ export default function LivePlayerSidebar({
               </div>
               <div className="text-right shrink-0">
                 <div className="text-lg font-bold text-[#6b9b7a]">
-                  {player.projectedPlayoffPoints.toFixed(1)}
+                  {player.displayPoints.toFixed(1)}
                 </div>
                 <div className="text-xs text-[#5a6b57]">
-                  {player.projectedPlayoffGames.toFixed(1)} gp
+                  {player.displayGames.toFixed(1)} gp
                 </div>
               </div>
             </div>

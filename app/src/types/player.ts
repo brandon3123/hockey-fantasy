@@ -28,8 +28,8 @@ export interface Player {
   projectedPlayoffPoints: number;
   gamesRemaining: number;
   projectedPoints: number;
-  displayPoints?: number;
-  displayGames?: number;
+  displayPoints: number;
+  displayGames: number;
   rank: number;
   adp?: number;
   injury: {

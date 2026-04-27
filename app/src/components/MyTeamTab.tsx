@@ -65,7 +65,7 @@ export default function MyTeamTab({
     () =>
       myPicks.reduce((total, pick) => {
         const player = players.find((p) => p.name === pick.player_name);
-        return total + (player?.projectedPlayoffPoints || 0);
+        return total + (player?.displayPoints || 0);
       }, 0),
     [myPicks, players]
   );
@@ -177,7 +177,7 @@ export default function MyTeamTab({
               </div>
               <div className="text-right">
                 <div className="text-sm font-bold text-[#6b9b7a]">
-                  {player?.projectedPlayoffPoints.toFixed(1) || '-'}
+                  {player?.displayPoints.toFixed(1) || '-'}
                 </div>
               </div>
             </div>

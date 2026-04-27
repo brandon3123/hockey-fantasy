@@ -12,7 +12,7 @@ interface PlayerTableProps {
   onToggleWatchlist?: (playerName: string) => void;
 }
 
-type SortField = 'rank' | 'name' | 'team' | 'position' | 'pointsPerGame' | 'projectedPlayoffPoints' | 'adp';
+type SortField = 'rank' | 'name' | 'team' | 'position' | 'pointsPerGame' | 'displayPoints' | 'adp';
 type SortOrder = 'asc' | 'desc';
 
 export default function PlayerTable({ players, watchlist = new Set(), onToggleWatchlist }: PlayerTableProps) {
@@ -166,7 +166,7 @@ export default function PlayerTable({ players, watchlist = new Set(), onToggleWa
                 </div>
                 <div className="text-center">
                   <div className="text-xs text-[#5a6b57]">PROJ PTS</div>
-                  <div className="font-bold text-[#6b9b7a]">{player.projectedPlayoffPoints.toFixed(1)}</div>
+                  <div className="font-bold text-[#6b9b7a]">{player.displayPoints.toFixed(1)}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-xs text-[#5a6b57]">ADP</div>

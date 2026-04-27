@@ -221,7 +221,7 @@ export default function DraftCoach({
                   <div>
                     <div className="font-semibold text-[#c8d9c3]">{rec.player.name}</div>
                     <div className="text-xs text-[#5a6b57]">
-                      {rec.player.team} • {rec.player.position} • {rec.player.projectedPlayoffPoints.toFixed(1)} pts
+                      {rec.player.team} • {rec.player.position} • {rec.player.displayPoints.toFixed(1)} pts
                     </div>
                   </div>
                 </div>

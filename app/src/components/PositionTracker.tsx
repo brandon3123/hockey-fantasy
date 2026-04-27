@@ -141,7 +141,7 @@ export default function PositionTracker({ draftState, allPlayers }: PositionTrac
                     </div>
                   </div>
                   <div className="text-sm font-bold text-[#6b9b7a]">
-                    {player.projectedPlayoffPoints.toFixed(1)}
+                    {player.displayPoints.toFixed(1)}
                   </div>
                 </div>
               );

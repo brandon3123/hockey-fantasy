@@ -65,7 +65,7 @@ export function getAvailableTeammates(
 ): Player[] {
   return availablePlayers.filter(
     p => p.team === player.team && p.name !== player.name
-  ).sort((a, b) => b.projectedPlayoffPoints - a.projectedPlayoffPoints);
+  ).sort((a, b) => b.displayPoints - a.displayPoints);
 }
 
 export function formatInjuryReturn(expectedReturn: string | null): string {

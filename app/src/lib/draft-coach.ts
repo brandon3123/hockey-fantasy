@@ -183,7 +183,7 @@ export function scorePlayer(
   let score = 0;
 
   // Base talent
-  score += player.projectedPlayoffPoints * strategy.weights.talent;
+  score += player.displayPoints * strategy.weights.talent;
 
   // Team stacking
   const stackBonus = calculateStackBonus(player, context.yourTeam, lineCache);
@@ -363,10 +363,10 @@ function generateReasoning(
 
   // Talent indicator
   const reasonsTalent: string[] = [];
-  if (player.projectedPlayoffPoints > 25) {
-    reasonsTalent.push(`Elite talent (${player.projectedPlayoffPoints.toFixed(1)} pts)`);
-  } else if (player.projectedPlayoffPoints > 20) {
-    reasonsTalent.push(`Strong producer (${player.projectedPlayoffPoints.toFixed(1)} pts)`);
+  if (player.displayPoints > 25) {
+    reasonsTalent.push(`Elite talent (${player.displayPoints.toFixed(1)} pts)`);
+  } else if (player.displayPoints > 20) {
+    reasonsTalent.push(`Strong producer (${player.displayPoints.toFixed(1)} pts)`);
   }
 
   return {

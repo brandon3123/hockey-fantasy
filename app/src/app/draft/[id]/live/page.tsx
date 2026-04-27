@@ -148,11 +148,11 @@ function ReplacePickModal({
               </div>
               <div className="text-right">
                 <div className="text-lg font-bold text-[#6b9b7a]">
-                  {player.projectedPlayoffPoints.toFixed(1)}
+                  {player.displayPoints.toFixed(1)}
                   <span className="text-xs font-normal text-[#5a6b57] ml-1">proj</span>
                 </div>
                 <div className="text-xs text-[#5a6b57]">
-                  {player.projectedPlayoffGames.toFixed(1)} gp
+                  {player.displayGames.toFixed(1)} gp
                 </div>
               </div>
             </div>
@@ -222,7 +222,7 @@ function DraftBoardGrid({
       .filter((p) => p.participant_id === participantId)
       .reduce((total, pick) => {
         const player = players.find((pl) => pl.name === pick.player_name);
-        return total + (player?.projectedPlayoffPoints || 0);
+        return total + (player?.displayPoints || 0);
       }, 0);
   };
 

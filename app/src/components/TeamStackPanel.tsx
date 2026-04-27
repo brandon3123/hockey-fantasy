@@ -57,7 +57,7 @@ export default function TeamStackPanel({
       {sortedTeams.map(([team, count], index) => {
         const teammates = availablePlayers
           .filter(p => p.team === team)
-          .sort((a, b) => b.projectedPlayoffPoints - a.projectedPlayoffPoints);
+          .sort((a, b) => b.displayPoints - a.displayPoints);
 
         return (
           <div key={team} className="bg-[#050a05] border border-[#141e12] rounded-lg p-4">
@@ -101,7 +101,7 @@ export default function TeamStackPanel({
                       <div className="text-xs text-[#5a6b57]">{player.position}</div>
                     </div>
                     <div className="text-sm font-bold text-[#6b9b7a] shrink-0">
-                      {player.projectedPlayoffPoints.toFixed(1)}
+                      {player.displayPoints.toFixed(1)}
                     </div>
                   </div>
                 ))}
