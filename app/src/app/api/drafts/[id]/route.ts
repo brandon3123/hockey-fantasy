@@ -19,8 +19,14 @@ export async function GET(
     return NextResponse.json({ error: 'Draft not found' }, { status: 404 });
   }
 
+  const { data: picks } = await supabase
+    .from('draft_picks')
+    .select('*')
+    .eq('draft_id', id)
+    .order('created_at', { ascending: true });
+
   if (!user) {
-    return NextResponse.json({ draft, invites: [], participants: [], is_admin: false });
+    return NextResponse.json({ draft, invites: [], participants: [], picks: picks || [], is_admin: false });
   }
 
   const { data: invites } = await supabase
@@ -39,6 +45,7 @@ export async function GET(
     draft,
     invites: invites || [],
     participants: participants || [],
+    picks: picks || [],
     is_admin: draft.admin_user_id === user.id,
   });
 }
