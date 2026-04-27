@@ -1,10 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import Link from 'next/link';
 
-export default function LoginPage() {
+function LoginForm() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const nextUrl = searchParams.get('next') || '/';
   const { signInWithEmail, signInWithGoogle } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,7 +20,11 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
     const { error } = await signInWithEmail(email, password);
-    if (error) setError(error);
+    if (error) {
+      setError(error);
+    } else {
+      router.push(nextUrl);
+    }
     setLoading(false);
   };
 
@@ -84,11 +92,19 @@ export default function LoginPage() {
 
         <p className="text-center text-sm text-[#5a6b57] mt-4">
           Don&apos;t have an account?{' '}
-          <Link href="/auth/signup" className="text-[#6b9b7a] hover:underline">
+          <Link href={`/auth/signup?next=${encodeURIComponent(nextUrl)}`} className="text-[#6b9b7a] hover:underline">
             Sign Up
           </Link>
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }

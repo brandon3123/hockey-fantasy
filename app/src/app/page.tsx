@@ -127,7 +127,7 @@ export default function HomePage() {
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-[#c8d9c3] mb-4">
-            Hockey Fantasy Pool
+            Top Shelf Draft
           </h1>
         </div>
 

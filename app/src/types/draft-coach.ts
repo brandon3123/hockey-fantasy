@@ -57,7 +57,7 @@ export interface DraftCoachAnalysis {
   yourTeam: {
     composition: Record<string, number>;
     teams: Record<string, number>;
-    lines: LineCombination[];
+    lines: Array<{ line: LineCombination; yourPlayerCount: number }>;
     needs: string[];
   };
   opponents: Record<string, {

@@ -123,14 +123,19 @@ export default function DraftGrid({ draftState, managerNames, availablePlayers, 
                   <tr
                     key={managerIndex}
                     className={`border-b border-[#141e12] ${
-                      isCurrentRow ? 'bg-[#0a0f0a]' : ''
+                      isYourRow ? 'bg-[#1a2f1a]' : ''
+                    } ${
+                      isCurrentRow && !isYourRow ? 'bg-[#0a0f0a]' : ''
                     }`}
                   >
                     <td className={`px-2 py-2 border-r border-[#141e12] font-semibold text-xs ${
-                      isYourRow ? 'text-[#6b9b7a]' : 'text-[#c8d9c3]'
+                      isYourRow ? 'text-[#4a7c59]' : 'text-[#c8d9c3]'
                     }`}>
-                      {managerNames[managerIndex] || `M${managerIndex + 1}`}
-                      {isCurrentRow && ' ←'}
+                      <div className="flex items-center gap-1">
+                        {managerNames[managerIndex] || `M${managerIndex + 1}`}
+                        {isYourRow && <span className="text-[10px] text-[#4a7c59]">(YOU)</span>}
+                        {isCurrentRow && !isYourRow && <span className="text-[10px] text-[#5a6b57]">←</span>}
+                      </div>
                     </td>
                     {row.map((pick, roundIndex) => {
                       const isCurrentPick =

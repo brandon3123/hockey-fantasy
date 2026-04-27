@@ -1,5 +1,5 @@
 """
-Entry point for the hockey fantasy scraper.
+Entry point for the Top Shelf Draft scraper.
 """
 
 import sys
@@ -11,7 +11,7 @@ from combine import combine_data, save_players_json, save_lines_json
 
 def main():
     print("=" * 60)
-    print("Hockey Fantasy Playoff Draft Scraper")
+    print("Top Shelf Draft Scraper")
     print("=" * 60)
     print()
 

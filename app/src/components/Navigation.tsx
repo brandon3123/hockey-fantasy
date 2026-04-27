@@ -8,12 +8,20 @@ export default function Navigation() {
   const pathname = usePathname();
   const { user, loading, signOut } = useAuth();
 
-  const navItems = [
-    { href: '/', label: 'Player Rankings' },
-    { href: '/draft', label: 'Draft Board' },
-    { href: '/rosters', label: 'Team Rosters' },
-    { href: '/bracket', label: 'Playoff Bracket' },
-  ];
+  const navItems = user
+    ? [
+        { href: '/dashboard', label: 'Dashboard' },
+        { href: '/', label: 'Player Rankings' },
+        { href: '/draft', label: 'Draft Board' },
+        { href: '/rosters', label: 'Team Rosters' },
+        { href: '/bracket', label: 'Playoff Bracket' },
+      ]
+    : [
+        { href: '/', label: 'Player Rankings' },
+        { href: '/draft', label: 'Draft Board' },
+        { href: '/rosters', label: 'Team Rosters' },
+        { href: '/bracket', label: 'Playoff Bracket' },
+      ];
 
   return (
     <nav className="bg-[#0a0f0a] border-b border-[#141e12]">
@@ -22,7 +30,7 @@ export default function Navigation() {
           <div className="flex items-center gap-3">
             <span className="text-2xl">&#127953;</span>
             <span className="font-bold text-xl text-[#c8d9c3]">
-              Hockey Draft
+              Top Shelf Draft
             </span>
           </div>
           <div className="flex items-center gap-1">
