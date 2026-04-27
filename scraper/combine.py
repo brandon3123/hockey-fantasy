@@ -6,7 +6,7 @@ import json
 import os
 from typing import List, Dict, Optional, Tuple
 from scrape_rosters import scrape_playoff_rosters
-from scrape_moneypuck import scrape_moneypuck_team_odds, scrape_player_stats, generate_stats_for_player, parse_lines_csv, parse_rankings_csv
+from scrape_moneypuck import scrape_moneypuck_team_odds, scrape_player_stats, generate_stats_for_player, parse_lines_csv, parse_rankings_csv, download_all_moneypuck_files
 from scrape_fantasypros_ros import load_fantasypros_ros
 
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -31,13 +31,7 @@ def combine_data() -> Tuple[List[Dict], List[Dict], List[Dict]]:
 
     print("  - Fetching rosters...")
     rosters = scrape_playoff_rosters()
-
-    # Import playoff teams list
-    from scrape_rosters import PLAYOFF_TEAMS_2026
-
-    # Filter to only playoff teams
-    playoff_rosters = [p for p in rosters if p['team'] in PLAYOFF_TEAMS_2026]
-    print(f"    Found {len(rosters)} total players, {len(playoff_rosters)} from playoff teams")
+    print(f"    Found {len(rosters)} total players from all teams")
 
     # Scrape injury data from ESPN (optional)
     print("  - Fetching injury data from ESPN...")
@@ -50,18 +44,15 @@ def combine_data() -> Tuple[List[Dict], List[Dict], List[Dict]]:
         print(f"    Continuing with default healthy status for all players")
         injury_data = {}
 
-    # Merge injury data onto rosters
-    for player in playoff_rosters:
+    for player in rosters:
         name = player['name']
         if name in injury_data:
             player['injury'] = injury_data[name]
 
-    # Filter out players out for playoffs
-    rosters = [p for p in playoff_rosters if p['injury']['status'] != 'out for playoffs']
-    print(f"    Found {len(rosters)} eligible players after injury filter")
+    moneypuck_paths = download_all_moneypuck_files()
 
     print("  - Fetching team advancement odds from MoneyPuck...")
-    team_odds = scrape_moneypuck_team_odds()
+    team_odds = scrape_moneypuck_team_odds(moneypuck_paths.get('simulations_recent.csv'))
     print(f"    Found odds for {len(team_odds)} teams")
 
     print("  - Fetching player stats...")
@@ -73,11 +64,11 @@ def combine_data() -> Tuple[List[Dict], List[Dict], List[Dict]]:
     print(f"    Found {len(ros_data)} players with ROS data")
 
     print("  - Loading MoneyPuck lines data...")
-    lines_data = parse_lines_csv()
+    lines_data = parse_lines_csv(moneypuck_paths.get('lines.csv'))
     print(f"    Found {len(lines_data)} line combinations")
 
     print("  - Loading MoneyPuck rankings data...")
-    rankings_data = parse_rankings_csv()
+    rankings_data = parse_rankings_csv(moneypuck_paths.get('rankings_current.csv'))
     print(f"    Found {len(rankings_data)} team rankings")
 
     print("  - Merging data...")
@@ -111,12 +102,7 @@ def combine_data() -> Tuple[List[Dict], List[Dict], List[Dict]]:
             stats = generate_stats_for_player(name, team, position)
 
         # Get team odds, default to 50/25/12/6 if no data
-        odds = team_odds.get(team, {
-            'round1': 0.5,
-            'round2': 0.25,
-            'round3': 0.12,
-            'round4': 0.06,
-        })
+        odds = team_odds.get(team, None)
 
         # Extract stats safely - handle both dict formats
         if isinstance(stats, dict) and 'pointsPerGame' in stats:
@@ -136,8 +122,15 @@ def combine_data() -> Tuple[List[Dict], List[Dict], List[Dict]]:
             last10 = None
             last20 = None
 
-        projected_games = calculate_projected_playoff_games(odds)
-        projected_points = ppg * projected_games
+        games_remaining = max(0, 82 - games)
+        projected_points = round(ppg * games_remaining, 1)
+
+        if odds:
+            projected_playoff_games = calculate_projected_playoff_games(odds)
+            projected_playoff_points = round(ppg * projected_playoff_games, 1)
+        else:
+            projected_playoff_games = 0
+            projected_playoff_points = 0
 
         # Get ROS from FantasyPros data (better than ADP for playoff drafts)
         ros_rank = ros_data.get(name)  # Returns None if not found
@@ -152,15 +145,17 @@ def combine_data() -> Tuple[List[Dict], List[Dict], List[Dict]]:
             'pointsPerGame': round(ppg, 2),
             'last10Games': last10,
             'last20Games': last20,
+            'gamesRemaining': games_remaining,
+            'projectedPoints': projected_points,
             'teamAdvancementOdds': {
                 'round1': round(odds['round1'], 2),
                 'round2': round(odds['round2'], 2),
                 'round3': round(odds['round3'], 2),
                 'round4': round(odds['round4'], 2),
-            },
-            'projectedPlayoffGames': round(projected_games, 1),
-            'projectedPlayoffPoints': round(projected_points, 1),
-            'adp': round(ros_rank, 1) if ros_rank else None,  # Using ROS data (better than ADP for playoffs)
+            } if odds else None,
+            'projectedPlayoffGames': round(projected_playoff_games, 1),
+            'projectedPlayoffPoints': projected_playoff_points,
+            'adp': round(ros_rank, 1) if ros_rank else None,
             'injury': roster_player['injury'],
         }
 
