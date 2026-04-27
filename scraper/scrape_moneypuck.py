@@ -31,7 +31,10 @@ def download_csv_with_fallback(filename: str, url: str, local_dir: str) -> str:
     try:
         print(f"  Downloading {filename} from {url}...")
         os.makedirs(local_dir, exist_ok=True)
-        urllib.request.urlretrieve(url, local_path)
+        request = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(request) as response:
+            with open(local_path, 'wb') as f:
+                f.write(response.read())
         downloaded = True
         print(f"  ✓ Downloaded {filename}")
     except Exception as e:
