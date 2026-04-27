@@ -85,7 +85,18 @@ export async function POST(
   }
 
   const positionParticipantIds = new Set(positions.map((p: { participant_id: string }) => p.participant_id));
-  if (adminParticipantId && !positionParticipantIds.has(adminParticipantId)) {
+  const hasPlaceholder = positionParticipantIds.has('__admin__');
+
+  if (hasPlaceholder) {
+    const placeholderIndex = positions.findIndex((p: { participant_id: string }) => p.participant_id === '__admin__');
+    if (placeholderIndex !== -1 && adminParticipantId) {
+      positions[placeholderIndex].participant_id = adminParticipantId;
+    } else if (placeholderIndex !== -1) {
+      positions.splice(placeholderIndex, 1);
+    }
+  }
+
+  if (adminParticipantId && !positions.some((p: { participant_id: string }) => p.participant_id === adminParticipantId)) {
     const usedPositions = new Set(positions.map((p: { draft_position: number }) => p.draft_position));
     let nextPos = 1;
     while (usedPositions.has(nextPos)) nextPos++;

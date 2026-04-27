@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'next/navigation';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/auth-context';
 import InviteForm from '@/components/InviteForm';
 import ParticipantList from '@/components/ParticipantList';
 import DraftStartModal from '@/components/DraftStartModal';
@@ -43,6 +43,7 @@ interface Invite {
 export default function DraftDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { user } = useAuth();
   const draftId = params.id as string;
 
   const [draft, setDraft] = useState<Draft | null>(null);
@@ -152,6 +153,13 @@ export default function DraftDetailPage() {
     );
   }
 
+  const participantsWithAdmin = useMemo(() => {
+    if (!isAdmin || !user) return participants;
+    const adminInList = participants.some((p) => p.team_name === 'Commissioner');
+    if (adminInList) return participants;
+    return [...participants, { id: '__admin__', team_name: 'Commissioner', draft_position: null, has_paid: true, created_at: new Date().toISOString() }];
+  }, [participants, isAdmin, user]);
+
   const statusLabels: Record<string, string> = {
     setup: 'Setup',
     inviting: 'Inviting Participants',
@@ -250,7 +258,7 @@ export default function DraftDetailPage() {
         {showStartModal && (
           <DraftStartModal
             draftId={draftId}
-            participants={participants}
+            participants={participantsWithAdmin}
             onStart={() => {
               setShowStartModal(false);
               router.push(`/draft/${draftId}/live`);
