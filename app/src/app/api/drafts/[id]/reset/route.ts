@@ -54,8 +54,6 @@ export async function POST(
       status: 'setup',
       current_round: 1,
       current_pick: 1,
-      pick_entry_mode: null,
-      pick_timer_seconds: null,
     })
     .eq('id', id);
 
