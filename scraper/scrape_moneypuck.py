@@ -6,11 +6,56 @@ Replaces hardcoded stats and fake data with live scraping.
 import os
 import csv
 import random
+import sys
+import urllib.request
 from typing import Dict, List
 from scrape_nhl_api import scrape_all_player_stats, scrape_player_game_log, get_player_id_from_name, clear_cache
 
 # Keep the hardcoded stats as fallback
 from top_players_stats import TOP_PLAYER_STATS
+
+MONEYPUCK_BASE_URL = "https://moneypuck.com"
+MONEYPUCK_LOCAL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "moneypuck")
+
+MONEYPUCK_FILES = {
+    "simulations_recent.csv": f"{MONEYPUCK_BASE_URL}/simulations_recent.csv",
+    "lines.csv": f"{MONEYPUCK_BASE_URL}/lines.csv",
+    "rankings_current.csv": f"{MONEYPUCK_BASE_URL}/rankings_current.csv",
+}
+
+
+def download_csv_with_fallback(filename: str, url: str, local_dir: str) -> str:
+    local_path = os.path.join(local_dir, filename)
+    downloaded = False
+
+    try:
+        print(f"  Downloading {filename} from {url}...")
+        os.makedirs(local_dir, exist_ok=True)
+        urllib.request.urlretrieve(url, local_path)
+        downloaded = True
+        print(f"  ✓ Downloaded {filename}")
+    except Exception as e:
+        print(f"  ✗ Download failed: {e}")
+
+    if not downloaded:
+        if os.path.exists(local_path):
+            print(f"  ⚠ Using existing local file: {local_path}")
+        else:
+            response = input(f"  Auto-download of {filename} failed and no local file found. Continue? (y/n): ").strip().lower()
+            if response != 'y':
+                print("  Aborting.")
+                sys.exit(1)
+
+    return local_path
+
+
+def download_all_moneypuck_files():
+    print("Downloading MoneyPuck data files...")
+    paths = {}
+    for filename, url in MONEYPUCK_FILES.items():
+        paths[filename] = download_csv_with_fallback(filename, url, MONEYPUCK_LOCAL_DIR)
+    print()
+    return paths
 
 
 def _get_moneypuck_path():
@@ -162,7 +207,7 @@ def generate_stats_for_player(name: str, team: str, position: str) -> Dict:
     }
 
 
-def scrape_moneypuck_team_odds() -> Dict[str, Dict[str, float]]:
+def scrape_moneypuck_team_odds(csv_path: str = None) -> Dict[str, Dict[str, float]]:
     """
     Load team advancement odds from MoneyPuck Monte Carlo simulations.
     Reads local simulations_recent.csv file.
@@ -172,15 +217,16 @@ def scrape_moneypuck_team_odds() -> Dict[str, Dict[str, float]]:
     """
     print("Loading team odds from MoneyPuck CSV...")
 
+    if csv_path is None:
+        csv_path = _get_moneypuck_path()
+
     team_odds = {}
 
     try:
-        with open(_MONEYPUCK_CSV_PATH, 'r') as f:
+        with open(csv_path, 'r') as f:
             reader = csv.DictReader(f)
 
             for row in reader:
-                # Only use the ALL scenario (not conditional win/loss rows)
-                # Note: CSV has typo 'scenerio' not 'scenario'
                 if row.get('scenerio', '') != 'ALL':
                     continue
 
@@ -210,19 +256,20 @@ def scrape_moneypuck_team_odds() -> Dict[str, Dict[str, float]]:
         print(f"  Found MoneyPuck odds for {len(team_odds)} teams")
 
     except FileNotFoundError:
-        print(f"  Error: MoneyPuck CSV not found at {_MONEYPUCK_CSV_PATH}")
+        print(f"  Error: MoneyPuck CSV not found at {csv_path}")
     except Exception as e:
         print(f"  Error loading MoneyPuck CSV: {e}")
 
     return team_odds
 
 
-def parse_lines_csv() -> List[Dict]:
+def parse_lines_csv(csv_path: str = None) -> List[Dict]:
     """
     Parse MoneyPuck lines.csv to extract line combinations.
     Returns list of line combinations with players, icetime, and metrics.
     """
-    csv_path = _get_moneypuck_path().replace('simulations_recent.csv', 'lines.csv')
+    if csv_path is None:
+        csv_path = _get_moneypuck_path().replace('simulations_recent.csv', 'lines.csv')
 
     lines = []
     try:
@@ -268,18 +315,19 @@ def parse_lines_csv() -> List[Dict]:
     return lines
 
 
-def parse_rankings_csv() -> List[Dict]:
+def parse_rankings_csv(csv_path: str = None) -> List[Dict]:
     """
     Parse MoneyPuck team rankings from CSV file.
 
     Returns:
         List of dicts with team rankings data
     """
-    rankings_path = _get_moneypuck_path().replace('simulations_recent.csv', 'rankings_current.csv')
+    if csv_path is None:
+        csv_path = _get_moneypuck_path().replace('simulations_recent.csv', 'rankings_current.csv')
     rankings = []
 
     try:
-        with open(rankings_path, 'r') as f:
+        with open(csv_path, 'r') as f:
             reader = csv.DictReader(f)
 
             for row in reader:
@@ -315,7 +363,7 @@ def parse_rankings_csv() -> List[Dict]:
         print(f"  Found MoneyPuck rankings for {len(rankings)} teams")
 
     except FileNotFoundError:
-        print(f"  Error: MoneyPuck rankings CSV not found at {rankings_path}")
+        print(f"  Error: MoneyPuck rankings CSV not found at {csv_path}")
     except Exception as e:
         print(f"  Error loading MoneyPuck rankings CSV: {e}")
 
