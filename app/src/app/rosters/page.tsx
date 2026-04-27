@@ -532,6 +532,8 @@ export default function RostersPage() {
                                   teamAdvancementOdds: { round1: 0, round2: 0, round3: 0, round4: 0 },
                                   projectedPlayoffGames: 0,
                                   projectedPlayoffPoints: player.projectedPoints,
+                                  gamesRemaining: 0,
+                                  projectedPoints: 0,
                                   rank: 0,
                                   injury: player.injury
                                 }} />

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Player } from '@/types/player'
 import { useDraftRealtime, DraftPickRow } from './useDraftRealtime'
@@ -59,6 +59,8 @@ interface PlayerRow {
   team_advancement_r4: number
   projected_playoff_games: number
   projected_playoff_points: number
+  games_remaining: number
+  projected_points: number
   rank: number
   adp: number | null
   injury_status: string
@@ -99,6 +101,8 @@ function mapPlayerRow(row: PlayerRow): Player {
     },
     projectedPlayoffGames: row.projected_playoff_games,
     projectedPlayoffPoints: row.projected_playoff_points,
+    gamesRemaining: row.games_remaining ?? 0,
+    projectedPoints: row.projected_points ?? 0,
     rank: row.rank,
     adp: row.adp ?? undefined,
     injury: {
@@ -175,10 +179,30 @@ export function useDraftState(draftId: string) {
     }, [fetchDraftData]),
   })
 
+  const seasonType = draft?.season_type ?? 'playoffs'
+
+  const enrichedPlayers = useMemo(() => {
+    return players.map(p => ({
+      ...p,
+      displayPoints: seasonType === 'playoffs'
+        ? (p.projectedPlayoffPoints || p.projectedPoints || 0)
+        : (p.projectedPoints || 0),
+      displayGames: seasonType === 'playoffs'
+        ? (p.projectedPlayoffGames || 0)
+        : (p.gamesRemaining || 0),
+    }))
+  }, [players, seasonType])
+
+  const playoffTeamPlayers = useMemo(() => {
+    if (seasonType !== 'playoffs') return enrichedPlayers
+    return enrichedPlayers.filter(p => (p.teamAdvancementOdds?.round1 ?? 0) > 0)
+  }, [enrichedPlayers, seasonType])
+
   const pickedPlayerSlugs = new Set(
     picks.map(p => p.player_name.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
   )
-  const availablePlayers = players.filter(
+  const allPlayers = playoffTeamPlayers
+  const availablePlayers = allPlayers.filter(
     p => !pickedPlayerSlugs.has(p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
   )
 
@@ -196,7 +220,7 @@ export function useDraftState(draftId: string) {
     draft,
     participants,
     picks,
-    players,
+    players: enrichedPlayers,
     availablePlayers,
     loading,
     isAdmin,

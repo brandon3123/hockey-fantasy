@@ -27,6 +27,8 @@ interface PlayerRow {
   team_advancement_r4: number;
   projected_playoff_games: number;
   projected_playoff_points: number;
+  games_remaining: number;
+  projected_points: number;
   rank: number;
   adp: number | null;
   injury_status: string;
@@ -57,6 +59,8 @@ function mapRowToPlayer(row: PlayerRow): Player {
     },
     projectedPlayoffGames: row.projected_playoff_games,
     projectedPlayoffPoints: row.projected_playoff_points,
+    gamesRemaining: 0,
+    projectedPoints: 0,
     rank: row.rank,
     adp: row.adp ?? undefined,
     injury: {
