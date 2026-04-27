@@ -53,56 +53,90 @@ function TeamLogoInline({ team }: { team: string }) {
 function ReplacePickModal({
   pick,
   availablePlayers,
+  participantName,
   onReplace,
   onClose,
+  replacing,
 }: {
   pick: DraftPickRow;
   availablePlayers: Player[];
+  participantName: string;
   onReplace: (newPlayer: Player) => void;
   onClose: () => void;
+  replacing: boolean;
 }) {
   const [search, setSearch] = useState('');
 
+  const currentPlayer = availablePlayers.find((p) => p.name === pick.player_name);
+
+  const draftedNames = useMemo(() => {
+    const names = new Set<string>();
+    names.add(pick.player_name.toLowerCase());
+    return names;
+  }, [pick]);
+
   const filtered = useMemo(() => {
-    if (!search) return availablePlayers.slice(0, 50);
-    const q = search.toLowerCase();
-    return availablePlayers.filter(
-      (p) => p.name.toLowerCase().includes(q) || p.team.toLowerCase().includes(q)
-    );
-  }, [availablePlayers, search]);
+    let result = availablePlayers.filter((p) => !draftedNames.has(p.name.toLowerCase()));
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (p) => p.name.toLowerCase().includes(q) || p.team.toLowerCase().includes(q)
+      );
+    }
+    return result.slice(0, 50);
+  }, [availablePlayers, search, draftedNames]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-      <div className="bg-[#0a0f0a] rounded-lg border border-[#141e12] max-w-md w-full mx-4 max-h-[80vh] flex flex-col">
-        <div className="p-4 border-b border-[#141e12] bg-[#4a7c59]">
-          <h3 className="text-lg font-bold text-[#c8d9c3]">Replace Pick</h3>
-          <div className="text-sm text-[#c8d9c3] opacity-80">
-            {pick.player_name} (R{pick.round})
+      <div className="bg-[#0a0f0a] rounded-lg border border-[#141e12] max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden">
+        <div className="p-6 border-b border-[#141e12] bg-[#8ab89a]">
+          <h3 className="text-xl font-bold text-[#050a05] mb-2">Replace Player</h3>
+          <div className="text-[#050a05]">
+            <div className="flex items-center gap-2">
+              <div>
+                <div className="text-lg font-semibold">{pick.player_name}</div>
+                <div className="text-sm opacity-70">
+                  {participantName} | Round {pick.round}
+                </div>
+              </div>
+              {currentPlayer && currentPlayer.injury.status !== 'healthy' && (
+                <div className="ml-auto">
+                  <InjuryFlag player={currentPlayer} />
+                </div>
+              )}
+            </div>
           </div>
         </div>
-        <div className="p-3 border-b border-[#141e12]">
+
+        <div className="p-4 border-b border-[#141e12]">
           <input
             type="text"
             placeholder="Search players..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-3 py-2 border border-[#141e12] rounded-lg bg-[#050a05] text-[#c8d9c3] placeholder-[#2d3c28] focus:outline-none focus:ring-2 focus:ring-[#4a7c59] text-sm"
+            className="w-full px-4 py-2 border border-[#141e12] rounded-lg bg-[#050a05] text-[#c8d9c3] placeholder-[#2d3c28] focus:outline-none focus:ring-2 focus:ring-[#4a7c59] text-sm"
             autoFocus
           />
+          {search && (
+            <div className="text-sm text-[#5a6b57] mt-2">
+              Found: {filtered.length} players
+            </div>
+          )}
         </div>
-        <div className="flex-1 overflow-y-auto">
+
+        <div className="overflow-y-auto max-h-[400px]">
           {filtered.map((player) => (
             <div
               key={player.name}
-              onClick={() => onReplace(player)}
-              className="flex items-center gap-3 p-3 border-b border-[#141e12] cursor-pointer hover:bg-[#050a05] transition-colors"
+              onClick={() => !replacing && onReplace(player)}
+              className={`flex items-center gap-3 p-3 border-b border-[#141e12] hover:border-[#4a7c59] hover:bg-[#0a0f0a] transition-all ${
+                replacing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+              }`}
             >
-              <div className="w-7 text-center text-xs text-[#5a6b57] font-semibold">
-                #{player.rank}
-              </div>
-              <TeamLogo team={player.team} className="w-7 h-7" />
+              <div className="text-sm text-[#5a6b57] font-semibold w-8">#{player.rank}</div>
+              <TeamLogo team={player.team} className="w-8 h-8" />
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2">
                   <span className="text-sm font-semibold text-[#c8d9c3] truncate">
                     {player.name}
                   </span>
@@ -112,18 +146,35 @@ function ReplacePickModal({
                   {player.team} &bull; {player.position}
                 </div>
               </div>
-              <div className="text-sm font-bold text-[#6b9b7a]">
-                {player.projectedPlayoffPoints.toFixed(1)}
+              <div className="text-right">
+                <div className="text-lg font-bold text-[#6b9b7a]">
+                  {player.projectedPlayoffPoints.toFixed(1)}
+                  <span className="text-xs font-normal text-[#5a6b57] ml-1">proj</span>
+                </div>
+                <div className="text-xs text-[#5a6b57]">
+                  {player.projectedPlayoffGames.toFixed(1)} gp
+                </div>
               </div>
             </div>
           ))}
         </div>
-        <div className="p-3 border-t border-[#141e12]">
+
+        <div className="p-4 border-t border-[#141e12] flex gap-3">
           <button
             onClick={onClose}
-            className="w-full px-4 py-2 text-sm font-medium text-[#5a6b57] bg-[#050a05] border border-[#141e12] rounded-lg hover:bg-[#141e12] transition-colors"
+            disabled={replacing}
+            className="flex-1 px-4 py-2 text-sm font-medium text-[#5a6b57] bg-[#050a05] border border-[#141e12] rounded-lg hover:bg-[#141e12] transition-colors"
           >
             Cancel
+          </button>
+          <button
+            onClick={() => {
+              if (filtered.length > 0) onReplace(filtered[0]);
+            }}
+            disabled={replacing || filtered.length === 0}
+            className="flex-1 px-4 py-2 text-sm font-medium text-[#c8d9c3] bg-[#4a7c59] rounded-lg hover:bg-[#3d664a] transition-colors disabled:opacity-50"
+          >
+            {replacing ? 'Replacing...' : 'Auto-Pick Best'}
           </button>
         </div>
       </div>
@@ -156,8 +207,6 @@ function DraftBoardGrid({
     () => [...participants].sort((a, b) => (a.draft_position ?? 0) - (b.draft_position ?? 0)),
     [participants]
   );
-
-  const managers = sortedParticipants.length;
 
   const getPickForCell = (participantId: string, round: number) => {
     return picks.find((p) => p.participant_id === participantId && p.round === round);
@@ -245,7 +294,8 @@ function DraftBoardGrid({
                         {pick ? (
                           <div
                             onClick={() => onPickClick(pick)}
-                            className="p-1 border border-[#141e12] bg-[#050a05] rounded hover:border-[#4a7c59] hover:bg-[#0a0f0a] cursor-pointer transition-colors"
+                            className="cursor-pointer p-1 border border-[#141e12] bg-[#050a05] rounded hover:border-[#4a7c59] transition-all"
+                            title="Click to replace this player"
                           >
                             <div className="text-[11px] font-medium text-[#c8d9c3] leading-tight truncate">
                               {pick.player_name}
@@ -256,6 +306,11 @@ function DraftBoardGrid({
                                 {player?.position}
                               </span>
                             </div>
+                            {player && player.injury.status !== 'healthy' && (
+                              <div className="flex justify-center mt-0.5">
+                                <InjuryFlag player={player} />
+                              </div>
+                            )}
                           </div>
                         ) : isCell ? (
                           <div className="text-[11px] text-[#6b9b7a] animate-pulse font-semibold">
@@ -288,6 +343,7 @@ export default function LiveDraftPage() {
   const [picking, setPicking] = useState(false);
   const [sidebarTab, setSidebarTab] = useState<SidebarTab>('players');
   const [replacePick, setReplacePick] = useState<DraftPickRow | null>(null);
+  const [replacing, setReplacing] = useState(false);
 
   const {
     draft,
@@ -366,37 +422,39 @@ export default function LiveDraftPage() {
   };
 
   const handleReplacePick = async (newPlayer: Player) => {
-    if (!replacePick) return;
+    if (!replacePick || replacing) return;
+    setReplacing(true);
 
     try {
-      const undoRes = await fetch(`/api/drafts/${draftId}/picks/last`, {
-        method: 'DELETE',
-      });
-      if (!undoRes.ok) {
-        alert('Failed to replace pick');
-        return;
-      }
-
-      const pickRes = await fetch(`/api/drafts/${draftId}/picks`, {
+      const res = await fetch(`/api/drafts/${draftId}/picks/replace`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          participant_id: replacePick.participant_id,
-          player_id: newPlayer.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-          player_name: newPlayer.name,
+          pick_id: replacePick.id,
+          new_player_id: newPlayer.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          new_player_name: newPlayer.name,
         }),
       });
-      if (!pickRes.ok) {
-        const data = await pickRes.json();
-        alert(data.error || 'Failed to make replacement pick');
+
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || 'Failed to replace pick');
       }
 
       setReplacePick(null);
       refresh();
     } catch {
       alert('Failed to replace pick');
+    } finally {
+      setReplacing(false);
     }
   };
+
+  const replacePickParticipant = useMemo(() => {
+    if (!replacePick) return '';
+    const p = participants.find((pt) => pt.id === replacePick.participant_id);
+    return p?.team_name || '';
+  }, [replacePick, participants]);
 
   if (loading) {
     return (
@@ -418,12 +476,8 @@ export default function LiveDraftPage() {
     return (
       <div className="min-h-screen bg-[#050a05] flex items-center justify-center">
         <div className="text-center">
-          <div className="text-[#5a6b57] text-lg mb-2">
-            Draft has not started yet
-          </div>
-          <div className="text-[#5a6b57] text-sm">
-            Status: {draft.status}
-          </div>
+          <div className="text-[#5a6b57] text-lg mb-2">Draft has not started yet</div>
+          <div className="text-[#5a6b57] text-sm">Status: {draft.status}</div>
         </div>
       </div>
     );
@@ -437,9 +491,7 @@ export default function LiveDraftPage() {
       <div className="shrink-0 border-b border-[#141e12] bg-[#0a0f0a] px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="text-lg font-bold text-[#c8d9c3]">
-              {draft.name}
-            </h1>
+            <h1 className="text-lg font-bold text-[#c8d9c3]">{draft.name}</h1>
             <div className="text-sm text-[#5a6b57]">
               Round {currentRound} &bull; Pick {currentPick}
             </div>
@@ -549,8 +601,10 @@ export default function LiveDraftPage() {
         <ReplacePickModal
           pick={replacePick}
           availablePlayers={availablePlayers}
+          participantName={replacePickParticipant}
           onReplace={handleReplacePick}
           onClose={() => setReplacePick(null)}
+          replacing={replacing}
         />
       )}
     </div>
