@@ -19,7 +19,33 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ drafts: data });
+  const { data: participations } = await supabase
+    .from('draft_participants')
+    .select('draft_id, team_name, has_paid')
+    .eq('user_id', user.id);
+
+  const joinedDraftIds = (participations || []).map(p => p.draft_id);
+
+  let joinedDrafts: any[] = [];
+  if (joinedDraftIds.length > 0) {
+    const { data: joinedData } = await supabase
+      .from('drafts')
+      .select('*')
+      .in('id', joinedDraftIds)
+      .order('created_at', { ascending: false });
+    joinedDrafts = (joinedData || []).filter(d => d.admin_user_id !== user.id);
+  }
+
+  const participationMap = new Map((participations || []).map(p => [p.draft_id, p]));
+
+  return NextResponse.json({
+    drafts: data,
+    joined: joinedDrafts.map(d => ({
+      ...d,
+      team_name: participationMap.get(d.id)?.team_name,
+      has_paid: participationMap.get(d.id)?.has_paid,
+    })),
+  });
 }
 
 export async function POST(request: Request) {

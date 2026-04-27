@@ -26,6 +26,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Not your draft' }, { status: 403 });
   }
 
+  const adminClient = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: {
+        getAll() { return []; },
+        setAll() {},
+      },
+    }
+  );
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   const results = [];
 
   for (const email of emails) {
@@ -43,7 +55,17 @@ export async function POST(request: Request) {
       continue;
     }
 
-    results.push({ email: trimmed, status: 'recorded', invite_id: invite.id });
+    const { error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(
+      trimmed,
+      { redirectTo:       `${appUrl}/auth/verify` }
+    );
+
+    if (inviteError) {
+      console.error('inviteUserByEmail error:', inviteError.message, inviteError.status);
+      results.push({ email: trimmed, status: 'invited_no_email', invite_id: invite.id, error: inviteError.message, code: inviteError.status, note: 'Supabase invite failed. Share the join link manually.' });
+    } else {
+      results.push({ email: trimmed, status: 'invited', invite_id: invite.id });
+    }
   }
 
   return NextResponse.json({ results });

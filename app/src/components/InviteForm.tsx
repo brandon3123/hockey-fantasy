@@ -10,7 +10,7 @@ interface InviteFormProps {
 export default function InviteForm({ draftId, onInviteSent }: InviteFormProps) {
   const [emailInput, setEmailInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<Array<{ email: string; status: string; note?: string }> | null>(null);
+  const [results, setResults] = useState<Array<{ email: string; status: string; note?: string; error?: string }> | null>(null);
 
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,8 +84,8 @@ export default function InviteForm({ draftId, onInviteSent }: InviteFormProps) {
             >
               <span className="font-medium">{r.email}</span>
               {r.status === 'invited' && ' \u2014 Invite sent'}
-              {r.status === 'invited_no_email' && ` \u2014 ${r.note}`}
-              {r.status === 'error' && ' \u2014 Error'}
+              {r.status === 'invited_no_email' && ` \u2014 ${r.error || r.note}`}
+              {r.status === 'error' && ` \u2014 ${r.error || 'Error'}`}
             </div>
           ))}
         </div>

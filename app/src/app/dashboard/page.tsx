@@ -14,9 +14,15 @@ interface Draft {
   created_at: string;
 }
 
+interface JoinedDraft extends Draft {
+  team_name: string;
+  has_paid: boolean;
+}
+
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
   const [drafts, setDrafts] = useState<Draft[]>([]);
+  const [joined, setJoined] = useState<JoinedDraft[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
 
@@ -25,6 +31,7 @@ export default function DashboardPage() {
     if (res.ok) {
       const data = await res.json();
       setDrafts(data.drafts || []);
+      setJoined(data.joined || []);
     }
     setLoading(false);
   }, []);
@@ -72,6 +79,17 @@ export default function DashboardPage() {
     complete: 'Complete',
   };
 
+  const formatDate = (d: Draft) => {
+    const parts = [];
+    if (d.draft_date) parts.push(new Date(d.draft_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }));
+    if (d.draft_time) parts.push(`at ${d.draft_time}`);
+    if (d.draft_date) parts.push('\u2022');
+    parts.push(d.season_type === 'playoffs' ? 'Playoffs' : 'Regular Season');
+    return parts.join(' ');
+  };
+
+  const allEmpty = drafts.length === 0 && joined.length === 0;
+
   return (
     <div className="min-h-screen bg-[#050a05]">
       <div className="max-w-5xl mx-auto px-4 py-8">
@@ -87,11 +105,11 @@ export default function DashboardPage() {
 
         {loading ? (
           <div className="text-[#5a6b57]">Loading drafts...</div>
-        ) : drafts.length === 0 ? (
+        ) : allEmpty ? (
           <div className="text-center py-16">
             <div className="text-6xl mb-4">&#127953;</div>
             <h2 className="text-xl font-bold text-[#c8d9c3] mb-2">No drafts yet</h2>
-            <p className="text-[#5a6b57] mb-6">Create your first draft to get started</p>
+            <p className="text-[#5a6b57] mb-6">Create your first draft or join one with an invite link</p>
             <Link
               href="/dashboard/drafts/new"
               className="inline-block px-6 py-3 bg-[#4a7c59] text-[#c8d9c3] rounded-lg font-semibold hover:bg-[#3d664a] transition-colors"
@@ -100,40 +118,75 @@ export default function DashboardPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid gap-4">
-            {drafts.map((draft) => (
-              <div
-                key={draft.id}
-                className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-6 hover:border-[#4a7c59] transition-colors"
-              >
-                <div className="flex items-center justify-between">
-                  <Link href={`/dashboard/drafts/${draft.id}`} className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-lg font-bold text-[#c8d9c3]">{draft.name}</h3>
-                        <div className="text-sm text-[#5a6b57] mt-1">
-                          {draft.draft_date && new Date(draft.draft_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                          {draft.draft_time && ` at ${draft.draft_time}`}
-                          {draft.draft_date && ' \u2022 '}
-                          {draft.season_type === 'playoffs' ? 'Playoffs' : 'Regular Season'}
-                        </div>
+          <div className="space-y-8">
+            {drafts.length > 0 && (
+              <div>
+                <h2 className="text-lg font-semibold text-[#6b9b7a] mb-3">Admin</h2>
+                <div className="grid gap-4">
+                  {drafts.map((draft) => (
+                    <div
+                      key={draft.id}
+                      className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-6 hover:border-[#4a7c59] transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <Link href={`/dashboard/drafts/${draft.id}`} className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h3 className="text-lg font-bold text-[#c8d9c3]">{draft.name}</h3>
+                              <div className="text-sm text-[#5a6b57] mt-1">{formatDate(draft)}</div>
+                            </div>
+                            <span className={`text-sm font-semibold ${statusColors[draft.status] || 'text-[#5a6b57]'}`}>
+                              {statusLabels[draft.status] || draft.status}
+                            </span>
+                          </div>
+                        </Link>
+                        <button
+                          onClick={(e) => handleDeleteDraft(e, draft.id, draft.name)}
+                          disabled={deleting === draft.id}
+                          className="ml-4 text-[#5a6b57] hover:text-red-400 transition-colors text-sm disabled:opacity-50"
+                          title="Delete draft"
+                        >
+                          {deleting === draft.id ? '...' : '\u2715'}
+                        </button>
                       </div>
-                      <span className={`text-sm font-semibold ${statusColors[draft.status] || 'text-[#5a6b57]'}`}>
-                        {statusLabels[draft.status] || draft.status}
-                      </span>
                     </div>
-                  </Link>
-                  <button
-                    onClick={(e) => handleDeleteDraft(e, draft.id, draft.name)}
-                    disabled={deleting === draft.id}
-                    className="ml-4 text-[#5a6b57] hover:text-red-400 transition-colors text-sm disabled:opacity-50"
-                    title="Delete draft"
-                  >
-                    {deleting === draft.id ? '...' : '\u2715'}
-                  </button>
+                  ))}
                 </div>
               </div>
-            ))}
+            )}
+
+            {joined.length > 0 && (
+              <div>
+                <h2 className="text-lg font-semibold text-[#9b8f6b] mb-3">Joined</h2>
+                <div className="grid gap-4">
+                  {joined.map((draft) => (
+                    <Link
+                      key={draft.id}
+                      href={`/join/${draft.id}`}
+                      className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-6 hover:border-[#9b8f6b] transition-colors block"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-lg font-bold text-[#c8d9c3]">{draft.name}</h3>
+                          <div className="text-sm text-[#5a6b57] mt-1">
+                            {formatDate(draft)}
+                            {draft.team_name && ` \u2022 Team: ${draft.team_name}`}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span className={`text-sm font-semibold ${statusColors[draft.status] || 'text-[#5a6b57]'}`}>
+                            {statusLabels[draft.status] || draft.status}
+                          </span>
+                          {draft.has_paid && (
+                            <div className="text-xs text-[#6b9b7a] mt-1">Paid</div>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

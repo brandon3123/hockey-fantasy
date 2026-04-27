@@ -9,10 +9,6 @@ export async function GET(
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
   const { data: draft, error } = await supabase
     .from('drafts')
     .select('*')
@@ -21,6 +17,10 @@ export async function GET(
 
   if (error || !draft) {
     return NextResponse.json({ error: 'Draft not found' }, { status: 404 });
+  }
+
+  if (!user) {
+    return NextResponse.json({ draft, invites: [], participants: [], is_admin: false });
   }
 
   const { data: invites } = await supabase
