@@ -65,18 +65,31 @@ export async function POST(
     .eq('user_id', user.id)
     .maybeSingle();
 
+  let adminParticipantId = existingParticipant?.id || null;
+
   if (!existingParticipant) {
-    const { error: createError } = await adminClient
+    const { data: newParticipant, error: createError } = await adminClient
       .from('draft_participants')
       .insert({
         draft_id: id,
         user_id: user.id,
         team_name: 'Commissioner',
-      });
+      })
+      .select('id')
+      .single();
 
     if (createError) {
       return NextResponse.json({ error: createError.message }, { status: 500 });
     }
+    adminParticipantId = newParticipant.id;
+  }
+
+  const positionParticipantIds = new Set(positions.map((p: { participant_id: string }) => p.participant_id));
+  if (adminParticipantId && !positionParticipantIds.has(adminParticipantId)) {
+    const usedPositions = new Set(positions.map((p: { draft_position: number }) => p.draft_position));
+    let nextPos = 1;
+    while (usedPositions.has(nextPos)) nextPos++;
+    positions.push({ participant_id: adminParticipantId, draft_position: nextPos });
   }
 
   for (const pos of positions) {
