@@ -6,8 +6,7 @@ import { useDraftState, DraftPickRow, ParticipantData } from '@/hooks/useDraftSt
 import { Player } from '@/types/player';
 import MyTeamTab from '@/components/MyTeamTab';
 import TeamBrowserTab from '@/components/TeamBrowserTab';
-import TeamLogo from '@/components/TeamLogo';
-import InjuryFlag from '@/components/InjuryFlag';
+import FullPlayerList from '@/components/FullPlayerList';
 import Link from 'next/link';
 
 type Tab = 'myteam' | 'available' | 'teams' | 'board';
@@ -120,7 +119,7 @@ function MiniDraftBoard({
                             {player && <TeamLogoInline team={player.team} />}
                           </div>
                         ) : isCell ? (
-                          <div className="text-[10px] text-[#6b9b7a] animate-pulse">...</div>
+                          <div className="text-[10px] text-[#6b9b7a] animate-pulse font-semibold">Picking...</div>
                         ) : (
                           <span className="text-[#2d3c28]">-</span>
                         )}
@@ -142,7 +141,6 @@ export default function TeamPage() {
   const draftId = params.id as string;
   const [activeTab, setActiveTab] = useState<Tab>('myteam');
   const [picking, setPicking] = useState(false);
-  const [positionFilter, setPositionFilter] = useState<string>('ALL');
 
   const {
     draft,
@@ -158,6 +156,7 @@ export default function TeamPage() {
     currentPick,
     currentParticipant,
     isDraftComplete,
+    refresh,
   } = useDraftState(draftId);
 
   const myParticipant = useMemo(
@@ -191,11 +190,6 @@ export default function TeamPage() {
       setPicking(false);
     }
   };
-
-  const filteredAvailable = useMemo(() => {
-    if (positionFilter === 'ALL') return availablePlayers;
-    return availablePlayers.filter((p) => p.position === positionFilter);
-  }, [availablePlayers, positionFilter]);
 
   if (loading) {
     return (
@@ -324,57 +318,12 @@ export default function TeamPage() {
                 Tell the admin your pick
               </div>
             )}
-            <div className="flex gap-1 mb-3">
-              {['ALL', 'C', 'LW', 'RW', 'D'].map((pos) => (
-                <button
-                  key={pos}
-                  onClick={() => setPositionFilter(pos)}
-                  className={`flex-1 px-2 py-1.5 text-xs font-semibold rounded transition-colors ${
-                    positionFilter === pos
-                      ? 'bg-[#4a7c59] text-[#c8d9c3]'
-                      : 'bg-[#0a0f0a] text-[#5a6b57] hover:bg-[#141e12]'
-                  }`}
-                >
-                  {pos}
-                </button>
-              ))}
-            </div>
-            <div className="space-y-1">
-              {filteredAvailable.map((player) => (
-                <div
-                  key={player.name}
-                  onClick={() => isSelfDraft && handleDraftPlayer(player)}
-                  className={`flex items-center gap-3 p-3 border-b border-[#141e12] ${
-                    isSelfDraft && !isDraftComplete
-                      ? 'cursor-pointer hover:bg-[#0a0f0a]'
-                      : ''
-                  }`}
-                >
-                  <div className="w-7 text-center">
-                    <span className="text-xs text-[#5a6b57] font-semibold">
-                      #{player.rank}
-                    </span>
-                  </div>
-                  <TeamLogo team={player.team} className="w-7 h-7" />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-sm font-semibold text-[#c8d9c3] truncate">
-                        {player.name}
-                      </span>
-                      <InjuryFlag player={player} />
-                    </div>
-                    <div className="text-xs text-[#5a6b57]">
-                      {player.team} &bull; {player.position}
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm font-bold text-[#6b9b7a]">
-                      {player.projectedPlayoffPoints.toFixed(1)}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <FullPlayerList
+              availablePlayers={availablePlayers}
+              currentPick={(currentRound - 1) * managers + currentPick}
+              onDraftPlayer={isSelfDraft ? handleDraftPlayer : () => {}}
+              draftComplete={isDraftComplete}
+            />
           </div>
         )}
 
