@@ -5,6 +5,7 @@ import { useState, useCallback } from 'react';
 interface DraftStartModalProps {
   draftId: string;
   participants: Array<{ id: string; team_name: string; draft_position: number | null }>;
+  adminTeamName: string;
   onStart: () => void;
   onClose: () => void;
 }
@@ -12,6 +13,7 @@ interface DraftStartModalProps {
 export default function DraftStartModal({
   draftId,
   participants,
+  adminTeamName,
   onStart,
   onClose,
 }: DraftStartModalProps) {
@@ -65,6 +67,7 @@ export default function DraftStartModal({
           positions: positionArray,
           pick_entry_mode: mode,
           pick_timer_seconds: timerEnabled ? timerSeconds : null,
+          admin_team_name: adminTeamName,
         }),
       });
 
@@ -125,9 +128,18 @@ export default function DraftStartModal({
               {participants.map((p) => (
                 <div
                   key={p.id}
-                  className="flex items-center justify-between p-2 bg-[#050a05] border border-[#141e12] rounded"
+                  className={`flex items-center justify-between p-2 bg-[#050a05] border border-[#141e12] rounded ${
+                    p.id === '__admin__' ? 'border-l-2 border-l-[#4a7c59]' : ''
+                  }`}
                 >
-                  <span className="text-sm text-[#c8d9c3]">{p.team_name}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-[#c8d9c3]">{p.team_name}</span>
+                    {p.id === '__admin__' && (
+                      <span className="text-[10px] px-1.5 py-0.5 bg-[#4a7c59] text-[#c8d9c3] rounded font-semibold">
+                        ADMIN
+                      </span>
+                    )}
+                  </div>
                   {randomize ? (
                     <span className="text-sm font-bold text-[#6b9b7a]">
                       #{positions.get(p.id) || '-'}

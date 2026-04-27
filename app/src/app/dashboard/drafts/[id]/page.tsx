@@ -52,6 +52,7 @@ export default function DraftDetailPage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showStartModal, setShowStartModal] = useState(false);
+  const [adminTeamName, setAdminTeamName] = useState('');
 
   const fetchDraft = useCallback(async () => {
     const res = await fetch(`/api/drafts/${draftId}`);
@@ -104,10 +105,10 @@ export default function DraftDetailPage() {
 
   const participantsWithAdmin = useMemo(() => {
     if (!isAdmin || !user) return participants;
-    const adminInList = participants.some((p) => p.team_name === 'Commissioner');
+    const adminInList = participants.some((p) => p.team_name === (adminTeamName || 'Commissioner'));
     if (adminInList) return participants;
-    return [...participants, { id: '__admin__', team_name: 'Commissioner', draft_position: null, has_paid: true, created_at: new Date().toISOString() }];
-  }, [participants, isAdmin, user]);
+    return [...participants, { id: '__admin__', team_name: adminTeamName || 'Commissioner', draft_position: null, has_paid: true, created_at: new Date().toISOString() }];
+  }, [participants, isAdmin, user, adminTeamName]);
 
   if (loading) {
     return (
@@ -243,11 +244,24 @@ export default function DraftDetailPage() {
 
         <div className="space-y-6">
           {(draft.status === 'setup' || draft.status === 'inviting') && (
+            <div className="bg-[#050a05] border border-[#141e12] rounded-lg p-6">
+              <h3 className="text-sm font-semibold text-[#6b9b7a] mb-3">Your Team Name</h3>
+              <input
+                type="text"
+                placeholder="Enter your team name..."
+                value={adminTeamName}
+                onChange={(e) => setAdminTeamName(e.target.value)}
+                className="w-full px-4 py-2 border border-[#141e12] rounded-lg bg-[#0a0f0a] text-[#c8d9c3] placeholder-[#2d3c28] focus:outline-none focus:ring-2 focus:ring-[#4a7c59] text-sm"
+              />
+            </div>
+          )}
+
+          {(draft.status === 'setup' || draft.status === 'inviting') && (
             <InviteForm draftId={draftId} onInviteSent={fetchDraft} />
           )}
 
           <ParticipantList
-            participants={participants}
+            participants={draft.status === 'setup' || draft.status === 'inviting' ? participantsWithAdmin : participants}
             invites={invites}
             onRemoveParticipant={handleRemoveParticipant}
             onRemoveInvite={handleRemoveInvite}
@@ -259,6 +273,7 @@ export default function DraftDetailPage() {
           <DraftStartModal
             draftId={draftId}
             participants={participantsWithAdmin}
+            adminTeamName={adminTeamName || 'Commissioner'}
             onStart={() => {
               setShowStartModal(false);
               router.push(`/draft/${draftId}/live`);

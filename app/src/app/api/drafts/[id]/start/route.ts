@@ -37,7 +37,7 @@ export async function POST(
   }
 
   const body = await request.json();
-  const { positions, pick_entry_mode, pick_timer_seconds } = body;
+  const { positions, pick_entry_mode, pick_timer_seconds, admin_team_name } = body;
 
   if (!positions || !Array.isArray(positions) || positions.length === 0) {
     return NextResponse.json({ error: 'positions array required' }, { status: 400 });
@@ -73,7 +73,7 @@ export async function POST(
       .insert({
         draft_id: id,
         user_id: user.id,
-        team_name: 'Commissioner',
+        team_name: admin_team_name || 'Commissioner',
       })
       .select('id')
       .single();
