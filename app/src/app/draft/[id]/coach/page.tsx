@@ -98,7 +98,9 @@ export default function CoachPage() {
           player_name: player.name,
         }),
       });
-      if (!res.ok) {
+      if (res.ok) {
+        refresh();
+      } else {
         const data = await res.json();
         alert(data.error || 'Failed to make pick');
       }
@@ -215,7 +217,7 @@ export default function CoachPage() {
               playerId: p.player_id,
               playerName: p.player_name,
               round: p.round,
-              managerIndex: p.manager_index,
+    managerIndex: p.manager_index - 1,
             }))}
             availablePlayers={availablePlayers}
             allPlayers={players}

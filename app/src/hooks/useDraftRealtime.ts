@@ -18,17 +18,22 @@ export interface DraftPickRow {
 interface UseDraftRealtimeOptions {
   draftId: string
   onPickAdded?: (pick: DraftPickRow) => void
-  onPickRemoved?: (pickId: string) => void
+  onPickRemoved?: () => void
 }
 
 export function useDraftRealtime({ draftId, onPickAdded, onPickRemoved }: UseDraftRealtimeOptions) {
   const onPickAddedRef = useRef(onPickAdded)
   const onPickRemovedRef = useRef(onPickRemoved)
+  const knownPickIdsRef = useRef<Set<string>>(new Set())
 
   useEffect(() => {
     onPickAddedRef.current = onPickAdded
     onPickRemovedRef.current = onPickRemoved
   })
+
+  const trackPick = (pick: DraftPickRow) => {
+    knownPickIdsRef.current.add(pick.id)
+  }
 
   useEffect(() => {
     const supabase = createClient()
@@ -44,7 +49,9 @@ export function useDraftRealtime({ draftId, onPickAdded, onPickRemoved }: UseDra
           filter: `draft_id=eq.${draftId}`,
         },
         (payload) => {
-          onPickAddedRef.current?.(payload.new as DraftPickRow)
+          const pick = payload.new as DraftPickRow
+          trackPick(pick)
+          onPickAddedRef.current?.(pick)
         }
       )
       .on(
@@ -54,8 +61,12 @@ export function useDraftRealtime({ draftId, onPickAdded, onPickRemoved }: UseDra
           schema: 'public',
           table: 'draft_picks',
         },
-        () => {
-          onPickRemovedRef.current?.('')
+        (payload) => {
+          const deletedId = (payload.old as { id: string }).id
+          if (knownPickIdsRef.current.has(deletedId)) {
+            knownPickIdsRef.current.delete(deletedId)
+            onPickRemovedRef.current?.()
+          }
         }
       )
       .subscribe()

@@ -180,7 +180,9 @@ export default function TeamPage() {
           player_name: player.name,
         }),
       });
-      if (!res.ok) {
+      if (res.ok) {
+        refresh();
+      } else {
         const data = await res.json();
         alert(data.error || 'Failed to make pick');
       }

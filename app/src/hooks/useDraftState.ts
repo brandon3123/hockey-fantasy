@@ -170,7 +170,7 @@ export function useDraftState(draftId: string) {
       setPicks(prev => [...prev, pick])
       fetchDraftData()
     }, [fetchDraftData]),
-    onPickRemoved: useCallback((_pickId: string) => {
+    onPickRemoved: useCallback(() => {
       fetchDraftData()
     }, [fetchDraftData]),
   })
