@@ -24,7 +24,7 @@ Replace local file reads with download-then-fallback:
 Logic per file:
 1. Try download from URL → save to local path
 2. If download fails AND local file exists → print warning, use local file
-3. If download fails AND no local file → print error, exit
+3. If download fails AND no local file → prompt user: "Auto-download of MoneyPuck data failed. Continue with available data? (y/n)" — abort if no
 
 FantasyPros ROS CSV is manual-only. Error if missing.
 
@@ -48,15 +48,14 @@ projected_playoff_points = points_per_game * expected_playoff_games  # only if t
 - `projected_playoff_points` is only populated for players on teams with `team_advancement_r1 > 0`
 - `games_remaining` is stored as a new field
 
-### Ranking
+### Injury handling
 
-Sort by `projected_playoff_points` descending for the `rank` column. Players without playoff projection get ranked last (they're irrelevant for playoff drafts). Regular season drafts will use the ROS rank or `projected_points` for ordering instead.
+The scraper currently removes "out for playoffs" players entirely. Change to:
 
-### Injury filter
+- **Scraper:** Keep all players. Store injury status as-is (no filtering).
+- **Frontend:** Show all players including injured ones. Display their injury status (InjuryFlag component already does this). Players with status "Out" or "Out for season" are shown but **unpickable** — greyed out, click disabled, with the injury reason visible. Admin can still see them for reference but cannot draft them.
 
-Remove the "out for playoffs" filter at the scraper level. Instead, store the injury status and let the frontend decide:
-- Regular season: show all players regardless of injury (they could return during the season)
-- Playoffs: filter out "out for playoffs" players in the frontend based on `season_type`
+This applies to both regular season and playoff drafts. The injury status text varies ("Out for playoffs", "Out for season", "Day-to-day") but the behavior is the same: visible but unpickable if the status indicates they can't play.
 
 ## Database Schema
 
