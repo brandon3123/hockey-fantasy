@@ -160,29 +160,40 @@ export default function DashboardPage() {
                 <h2 className="text-lg font-semibold text-[#9b8f6b] mb-3">Joined</h2>
                 <div className="grid gap-4">
                   {joined.map((draft) => (
-                    <Link
+                    <div
                       key={draft.id}
-                      href={`/join/${draft.id}`}
-                      className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-6 hover:border-[#9b8f6b] transition-colors block"
+                      className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-6 hover:border-[#9b8f6b] transition-colors"
                     >
                       <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="text-lg font-bold text-[#c8d9c3]">{draft.name}</h3>
-                          <div className="text-sm text-[#5a6b57] mt-1">
-                            {formatDate(draft)}
-                            {draft.team_name && ` \u2022 Team: ${draft.team_name}`}
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h3 className="text-lg font-bold text-[#c8d9c3]">{draft.name}</h3>
+                              <div className="text-sm text-[#5a6b57] mt-1">
+                                {formatDate(draft)}
+                                {draft.team_name && ` \u2022 Team: ${draft.team_name}`}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className={`text-sm font-semibold ${statusColors[draft.status] || 'text-[#5a6b57]'}`}>
+                                {statusLabels[draft.status] || draft.status}
+                              </span>
+                              {(draft.status === 'in_progress' || draft.status === 'complete') && (
+                                <Link
+                                  href={`/draft/${draft.id}/team`}
+                                  className="px-3 py-1.5 text-xs font-medium text-[#c8d9c3] bg-[#4a7c59] rounded-lg hover:bg-[#3d664a] transition-colors"
+                                >
+                                  {draft.status === 'in_progress' ? 'My Team' : 'View Board'}
+                                </Link>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                        <div className="text-right">
-                          <span className={`text-sm font-semibold ${statusColors[draft.status] || 'text-[#5a6b57]'}`}>
-                            {statusLabels[draft.status] || draft.status}
-                          </span>
                           {draft.has_paid && (
-                            <div className="text-xs text-[#6b9b7a] mt-1">Paid</div>
+                            <div className="text-xs text-[#6b9b7a] mt-2">Paid</div>
                           )}
                         </div>
                       </div>
-                    </Link>
+                    </div>
                   ))}
                 </div>
               </div>
