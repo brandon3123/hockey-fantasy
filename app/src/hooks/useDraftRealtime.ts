@@ -53,10 +53,9 @@ export function useDraftRealtime({ draftId, onPickAdded, onPickRemoved }: UseDra
           event: 'DELETE',
           schema: 'public',
           table: 'draft_picks',
-          filter: `draft_id=eq.${draftId}`,
         },
-        (payload) => {
-          onPickRemovedRef.current?.((payload.old as { id: string }).id)
+        () => {
+          onPickRemovedRef.current?.('')
         }
       )
       .subscribe()
