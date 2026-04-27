@@ -77,7 +77,7 @@ export default function RostersPage() {
                   name: p.playerName,
                   team: playerData?.team ?? '',
                   position: playerData?.position ?? '',
-                  projectedPoints: playerData?.projectedPlayoffPoints ?? 0,
+                  projectedPoints: playerData?.projectedPoints ?? 0,
                   injury: playerData?.injury ?? { status: 'healthy', expectedReturn: null, description: null },
                 };
               });
@@ -167,7 +167,7 @@ export default function RostersPage() {
               name: p.playerName,
               team: playerData?.team ?? '',
               position: playerData?.position ?? '',
-              projectedPoints: playerData?.projectedPlayoffPoints ?? 0,
+              projectedPoints: playerData?.projectedPoints ?? 0,
               injury: playerData?.injury ?? { status: 'healthy', expectedReturn: null, description: null },
             };
           });
@@ -265,7 +265,7 @@ export default function RostersPage() {
             name: p.playerName,
             team: playerData?.team ?? '',
             position: playerData?.position ?? '',
-            projectedPoints: playerData?.projectedPlayoffPoints ?? 0,
+            projectedPoints: playerData?.projectedPoints ?? 0,
             injury: playerData?.injury ?? { status: 'healthy', expectedReturn: null, description: null },
           };
         });
@@ -441,7 +441,7 @@ export default function RostersPage() {
                       </div>
                       <div className="text-right">
                         <div className="text-sm font-bold text-[#6b9b7a]">
-                          {player.projectedPlayoffPoints.toFixed(1)}
+                          {player.projectedPoints.toFixed(1)}
                         </div>
                       </div>
                     </div>
@@ -533,7 +533,9 @@ export default function RostersPage() {
                                   projectedPlayoffGames: 0,
                                   projectedPlayoffPoints: player.projectedPoints,
                                   gamesRemaining: 0,
-                                  projectedPoints: 0,
+                                  projectedPoints: player.projectedPoints,
+                                  displayPoints: player.projectedPoints,
+                                  displayGames: 0,
                                   rank: 0,
                                   injury: player.injury
                                 }} />

@@ -61,6 +61,8 @@ function mapRowToPlayer(row: PlayerRow): Player {
     projectedPlayoffPoints: row.projected_playoff_points,
     gamesRemaining: row.games_remaining,
     projectedPoints: row.projected_points,
+    displayPoints: row.projected_points,
+    displayGames: row.games_remaining,
     rank: row.rank,
     adp: row.adp ?? undefined,
     injury: {
@@ -82,7 +84,7 @@ export default function HomePage() {
       const { data, error } = await supabase
         .from('players')
         .select('*')
-        .order('projected_playoff_points', { ascending: false });
+        .order('projected_points', { ascending: false });
 
       if (error) {
         console.error('Failed to load players from Supabase:', error);
@@ -140,7 +142,7 @@ export default function HomePage() {
             Player Rankings
           </h2>
           <p className="text-[#5a6b57]">
-            Players ranked by projected playoff points. Sort, filter, and build your watchlist.
+            Players ranked by projected points. Sort, filter, and build your watchlist.
           </p>
         </div>
 

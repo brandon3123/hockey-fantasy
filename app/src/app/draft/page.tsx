@@ -272,7 +272,7 @@ export default function DraftPage() {
     draftState.picks.forEach(pick => {
       const player = players.find(p => p.name === pick.playerName);
       csv += `"${managerNames[pick.managerIndex]}",${pick.round},"${pick.playerName}",`;
-      csv += player ? `"${player.team}","${player.position}",${player.projectedPlayoffPoints.toFixed(1)}` : '","","",0';
+      csv += player ? `"${player.team}","${player.position}",${player.projectedPoints.toFixed(1)}` : '","","",0';
       csv += '\\n';
     });
 
@@ -480,7 +480,7 @@ export default function DraftPage() {
               <span className="font-semibold text-[#6b9b7a]">
                 {yourPicks.reduce((sum, pick) => {
                   const player = players.find(p => p.name === pick.playerName);
-                  return sum + (player?.projectedPlayoffPoints || 0);
+                  return sum + (player?.projectedPoints || 0);
                 }, 0).toFixed(1)}
               </span>
             </div>
