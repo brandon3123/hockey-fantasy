@@ -25,6 +25,8 @@ interface PlayerJSON {
   teamAdvancementOdds: { round1: number; round2: number; round3: number; round4: number };
   projectedPlayoffGames: number;
   projectedPlayoffPoints: number;
+  gamesRemaining: number;
+  projectedPoints: number;
   rank: number;
   adp?: number;
   injury: {
@@ -62,6 +64,8 @@ async function importPlayers() {
     team_advancement_r4: p.teamAdvancementOdds.round4,
     projected_playoff_games: p.projectedPlayoffGames,
     projected_playoff_points: p.projectedPlayoffPoints,
+    games_remaining: p.gamesRemaining,
+    projected_points: p.projectedPoints,
     rank: p.rank,
     adp: p.adp ?? null,
     injury_status: p.injury.status,
