@@ -139,13 +139,29 @@ export default function DraftDetailPage() {
             <div className="text-sm text-[#5a6b57] mt-1">
               {draft.status === 'in_progress' ? 'Draft In Progress' : 'Draft Complete'} &bull; {draft.season_type === 'playoffs' ? 'Playoffs' : 'Regular Season'}
             </div>
-            <div className="mt-6">
+            <div className="mt-6 flex gap-3">
               <Link
                 href={`/draft/${draftId}/team`}
-                className="inline-block px-6 py-3 bg-[#4a7c59] text-[#c8d9c3] rounded-lg font-semibold hover:bg-[#3d664a] transition-colors"
+                className="inline-block px-6 py-3 bg-[#0a0f0a] border border-[#141e12] text-[#c8d9c3] rounded-lg font-semibold hover:border-[#4a7c59] transition-colors"
               >
                 {draft.status === 'in_progress' ? 'View My Team' : 'View Draft Board'}
               </Link>
+              {draft.status === 'complete' && (
+                <>
+                  <Link
+                    href={`/draft/${draftId}/results`}
+                    className="inline-block px-6 py-3 bg-[#4a7c59] text-[#c8d9c3] rounded-lg font-semibold hover:bg-[#3d664a] transition-colors"
+                  >
+                    View Results
+                  </Link>
+                  <Link
+                    href={`/draft/${draftId}/standings`}
+                    className="inline-block px-6 py-3 bg-[#0a0f0a] border border-[#141e12] text-[#c8d9c3] rounded-lg font-semibold hover:border-[#4a7c59] transition-colors"
+                  >
+                    Standings
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -205,12 +221,20 @@ export default function DraftDetailPage() {
               </>
             )}
             {draft.status === 'complete' && (
-              <Link
-                href={`/draft/${draftId}/live`}
-                className="px-4 py-2 text-sm font-medium text-[#5a6b57] bg-[#0a0f0a] border border-[#141e12] rounded-lg hover:border-[#4a7c59] transition-colors"
-              >
-                View Results
-              </Link>
+              <>
+                <Link
+                  href={`/draft/${draftId}/results`}
+                  className="px-4 py-2 text-sm font-medium text-[#5a6b57] bg-[#0a0f0a] border border-[#141e12] rounded-lg hover:border-[#4a7c59] transition-colors"
+                >
+                  Draft Recap
+                </Link>
+                <Link
+                  href={`/draft/${draftId}/standings`}
+                  className="px-4 py-2 text-sm font-medium text-[#c8d9c3] bg-[#4a7c59] rounded-lg hover:bg-[#3d664a] transition-colors"
+                >
+                  Standings
+                </Link>
+              </>
             )}
           </div>
         </div>

@@ -133,7 +133,21 @@ export default function TeamPage() {
           </div>
         )}
         {isDraftComplete && (
-          <div className="text-sm text-[#6b9b7a] mt-1">Draft Complete</div>
+          <div className="flex items-center gap-2 mt-1">
+            <div className="text-sm text-[#6b9b7a]">Draft Complete</div>
+            <Link
+              href={`/draft/${draftId}/results`}
+              className="text-xs font-medium text-[#c8d9c3] bg-[#4a7c59] px-3 py-1 rounded hover:bg-[#3d664a] transition-colors"
+            >
+              View Results
+            </Link>
+            <Link
+              href={`/draft/${draftId}/standings`}
+              className="text-xs font-medium text-[#050a05] bg-[#6b9b7a] px-3 py-1 rounded hover:bg-[#8ab89a] transition-colors"
+            >
+              Standings
+            </Link>
+          </div>
         )}
       </div>
 
@@ -220,12 +234,14 @@ export default function TeamPage() {
 
         {activeTab === 'board' && (
           <DraftBoard
+            draftId={draftId}
             participants={participants}
             picks={picks}
             players={players}
             playersPerTeam={draft.players_per_team}
             currentRound={currentRound}
             currentParticipant={currentParticipant}
+            isDraftComplete={isDraftComplete}
           />
         )}
       </div>
