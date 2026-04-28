@@ -65,7 +65,7 @@ export default function BestAvailable({
 
           return (
             <div
-              key={player.name}
+              key={`${player.name}-${player.team}-${player.position}`}
               onClick={(e) => {
                 if (draftComplete || !pickable) {
                   e.preventDefault();

@@ -104,7 +104,7 @@ export default function FullPlayerList({
       <div className="grid grid-cols-1 gap-3 max-h-[400px] overflow-y-auto p-2 bg-[#0a0f0a] rounded-lg border border-[#141e12]">
         {filtered.slice(0, 50).map((player) => (
           <div
-            key={player.name}
+            key={`${player.name}-${player.team}-${player.position}`}
             onClick={(e) => {
               if (draftComplete || !isPlayerPickable(player)) {
                 e.preventDefault();

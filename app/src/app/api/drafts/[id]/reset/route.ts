@@ -48,6 +48,15 @@ export async function POST(
     return NextResponse.json({ error: deletePicksError.message }, { status: 500 });
   }
 
+  const { error: clearPositionsError } = await adminClient
+    .from('draft_participants')
+    .update({ draft_position: null })
+    .eq('draft_id', id);
+
+  if (clearPositionsError) {
+    return NextResponse.json({ error: clearPositionsError.message }, { status: 500 });
+  }
+
   const { error: updateError } = await adminClient
     .from('drafts')
     .update({

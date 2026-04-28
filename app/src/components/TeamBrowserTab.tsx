@@ -12,6 +12,7 @@ interface TeamBrowserTabProps {
   participants: ParticipantData[];
   onDraftPlayer?: (player: Player) => void;
   isDraftComplete: boolean;
+  seasonType?: string;
 }
 
 export default function TeamBrowserTab({
@@ -20,6 +21,7 @@ export default function TeamBrowserTab({
   participants,
   onDraftPlayer,
   isDraftComplete,
+  seasonType = 'playoffs',
 }: TeamBrowserTabProps) {
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
 
@@ -97,7 +99,7 @@ export default function TeamBrowserTab({
                   {availableCount} available, {draftedCount} drafted
                 </div>
               </div>
-              {teamAdvancementOdds && (
+              {seasonType === 'playoffs' && teamAdvancementOdds && (
                 <div className="ml-auto flex gap-1">
                   {Object.entries(teamAdvancementOdds).map(([round, odds]) => {
                     const pct = odds * 100;
@@ -129,7 +131,7 @@ export default function TeamBrowserTab({
 
               return (
                 <div
-                  key={player.name}
+                  key={`${player.name}-${player.team}-${player.position}`}
                   onClick={() => {
                     if (!isDrafted && onDraftPlayer && !isDraftComplete && isPlayerPickable(player)) {
                       onDraftPlayer(player);

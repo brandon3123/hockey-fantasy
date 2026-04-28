@@ -187,11 +187,11 @@ export function useDraftState(draftId: string) {
     return players.map(p => ({
       ...p,
       displayPoints: seasonType === 'playoffs'
-        ? (p.projectedPlayoffPoints || p.projectedPoints || 0)
-        : (p.projectedPoints || 0),
+        ? (p.projectedPlayoffPoints ?? 0)
+        : (p.regularSeasonGoals + p.regularSeasonAssists),
       displayGames: seasonType === 'playoffs'
-        ? (p.projectedPlayoffGames || 0)
-        : (p.gamesRemaining || 0),
+        ? (p.projectedPlayoffGames ?? 0)
+        : p.gamesPlayed,
     }))
   }, [players, seasonType])
 
@@ -200,13 +200,13 @@ export function useDraftState(draftId: string) {
     return enrichedPlayers.filter(p => (p.teamAdvancementOdds?.round1 ?? 0) > 0)
   }, [enrichedPlayers, seasonType])
 
-  const pickedPlayerSlugs = new Set(
-    picks.map(p => p.player_name.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
-  )
+  const pickedPlayerIds = new Set(picks.map(p => p.player_id))
   const allPlayers = playoffTeamPlayers
-  const availablePlayers = allPlayers.filter(
-    p => !pickedPlayerSlugs.has(p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
-  )
+  const availablePlayers = allPlayers
+    .filter(
+      p => !pickedPlayerIds.has(`${p.name}-${p.team}-${p.position}`.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
+    )
+    .sort((a, b) => b.displayPoints - a.displayPoints)
 
   const managers = participants.length
   const currentRound = draft?.current_round ?? 1

@@ -82,7 +82,7 @@ export default function TeamStackPanel({
               <div className="space-y-2">
                 {teammates.slice(0, 5).map((player) => (
                   <div
-                    key={player.name}
+                    key={`${player.name}-${player.team}-${player.position}`}
                     onClick={(e) => {
                       if (draftComplete || !isPlayerPickable(player)) {
                         e.preventDefault();

@@ -16,25 +16,34 @@ const teamLogos: Record<string, string> = {
   BOS: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/bos.png',
   BUF: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/buf.png',
   CAR: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/car.png',
+  CBJ: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/cbj.png',
+  CGY: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/cgy.png',
+  CHI: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/chi.png',
   COL: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/col.png',
   DAL: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/dal.png',
+  DET: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/det.png',
   EDM: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/edm.png',
   FLA: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/fla.png',
   LAK: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/la.png',
   MIN: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/min.png',
   MTL: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/mtl.png',
   NJD: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/nj.png',
+  NSH: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/nsh.png',
   NYI: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/nyi.png',
   NYR: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/nyr.png',
   OTT: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/ott.png',
   PHI: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/phi.png',
   PIT: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/pit.png',
+  SEA: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/sea.png',
+  SJS: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/sj.png',
+  STL: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/stl.png',
   TBL: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/tb.png',
   TOR: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/tor.png',
   UTA: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/uta.png',
   VAN: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/van.png',
   VGK: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/vgk.png',
   WPG: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/wpg.png',
+  WSH: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/wsh.png',
 };
 
 function TeamLogoInline({ team }: { team: string }) {
@@ -176,7 +185,7 @@ export default function TeamPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           participant_id: myParticipant.id,
-          player_id: player.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          player_id: `${player.name}-${player.team}-${player.position}`.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
           player_name: player.name,
         }),
       });
@@ -336,6 +345,7 @@ export default function TeamPage() {
             participants={participants}
             onDraftPlayer={isSelfDraft ? handleDraftPlayer : undefined}
             isDraftComplete={isDraftComplete}
+            seasonType={draft?.season_type ?? 'playoffs'}
           />
         )}
 

@@ -248,7 +248,7 @@ export default function DraftGrid({ draftState, managerNames, availablePlayers, 
                 .slice(0, 20)
                 .map(player => (
                   <div
-                    key={player.name}
+                    key={`${player.name}-${player.team}-${player.position}`}
                     onClick={() => handleReplacePlayer(player)}
                     className="flex items-center gap-3 p-3 mb-2 border border-[#141e12] rounded-lg hover:border-[#4a7c59] hover:bg-[#0a0f0a] cursor-pointer transition-all"
                   >

@@ -375,7 +375,7 @@ export default function RostersPage() {
                 <div className="space-y-2 max-h-[500px] overflow-y-auto border border-[#141e12] rounded-lg p-3 bg-[#050a05]">
                   {rosters[editingManager].players.map((player) => (
                     <div
-                      key={player.name}
+                      key={`${player.name}-${player.team}-${player.position}`}
                       className="flex items-center gap-3 p-3 bg-[#0a0f0a] border border-[#141e12] rounded-lg"
                     >
                       <TeamLogo team={player.team} className="w-8 h-8" />
@@ -423,7 +423,7 @@ export default function RostersPage() {
                 <div className="space-y-2 max-h-[420px] overflow-y-auto border border-[#141e12] rounded-lg p-3 bg-[#050a05]">
                   {filteredAvailablePlayers.map(player => (
                     <div
-                      key={player.name}
+                      key={`${player.name}-${player.team}-${player.position}`}
                       onClick={() => handleAddPlayer(editingManager, player)}
                       className="flex items-center gap-3 p-3 bg-[#0a0f0a] border border-[#141e12] rounded-lg hover:border-[#4a7c59] hover:bg-[#050a05] cursor-pointer transition-all"
                     >
@@ -514,7 +514,7 @@ export default function RostersPage() {
                   </thead>
                   <tbody>
                     {roster.players.map((player) => (
-                      <tr key={player.name} className="border-b border-[#141e12] group">
+                      <tr key={`${player.name}-${player.team}-${player.position}`} className="border-b border-[#141e12] group">
                         <td className="py-3">
                           <div className="flex items-center gap-2">
                             <TeamLogo team={player.team} className="w-6 h-6" />

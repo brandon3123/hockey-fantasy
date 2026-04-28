@@ -94,7 +94,7 @@ export default function CoachPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           participant_id: adminParticipant.id,
-          player_id: player.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          player_id: `${player.name}-${player.team}-${player.position}`.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
           player_name: player.name,
         }),
       });
@@ -233,6 +233,7 @@ export default function CoachPage() {
             participants={participants}
             onDraftPlayer={handleDraftPlayer}
             isDraftComplete={isDraftComplete}
+            seasonType={draft?.season_type ?? 'playoffs'}
           />
         )}
 

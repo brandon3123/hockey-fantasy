@@ -43,9 +43,11 @@ async function importPlayers() {
 
   console.log(`Found ${players.length} players to import`);
 
-  const rows = players.map((p) => ({
-    id: p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-    name: p.name,
+  const rows = players.map((p) => {
+    const id = (p.name + '-' + p.team + '-' + p.position).toLowerCase().replace(/[^a-z0-9]+/g, '-')
+    return {
+      id,
+      name: p.name,
     team: p.team,
     position: p.position,
     regular_season_goals: p.regularSeasonGoals,
@@ -58,10 +60,10 @@ async function importPlayers() {
     last_20_goals: p.last20Games?.goals ?? null,
     last_20_assists: p.last20Games?.assists ?? null,
     last_20_games: p.last20Games?.games ?? null,
-    team_advancement_r1: p.teamAdvancementOdds.round1,
-    team_advancement_r2: p.teamAdvancementOdds.round2,
-    team_advancement_r3: p.teamAdvancementOdds.round3,
-    team_advancement_r4: p.teamAdvancementOdds.round4,
+    team_advancement_r1: p.teamAdvancementOdds?.round1 ?? 0,
+    team_advancement_r2: p.teamAdvancementOdds?.round2 ?? 0,
+    team_advancement_r3: p.teamAdvancementOdds?.round3 ?? 0,
+    team_advancement_r4: p.teamAdvancementOdds?.round4 ?? 0,
     projected_playoff_games: p.projectedPlayoffGames,
     projected_playoff_points: p.projectedPlayoffPoints,
     games_remaining: p.gamesRemaining,
@@ -72,7 +74,8 @@ async function importPlayers() {
     injury_expected_return: p.injury.expectedReturn,
     injury_description: p.injury.description,
     updated_at: new Date().toISOString(),
-  }));
+    };
+  });
 
   const batchSize = 100;
   for (let i = 0; i < rows.length; i += batchSize) {

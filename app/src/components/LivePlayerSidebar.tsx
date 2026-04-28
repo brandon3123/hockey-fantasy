@@ -14,6 +14,7 @@ interface LivePlayerSidebarProps {
   pickTimerSeconds: number | null;
   onPickPlayer: (player: Player) => void;
   loading: boolean;
+  picking: boolean;
 }
 
 export default function LivePlayerSidebar({
@@ -24,6 +25,7 @@ export default function LivePlayerSidebar({
   pickTimerSeconds,
   onPickPlayer,
   loading,
+  picking,
 }: LivePlayerSidebarProps) {
   const [search, setSearch] = useState('');
   const [positionFilter, setPositionFilter] = useState<string>('ALL');
@@ -90,7 +92,15 @@ export default function LivePlayerSidebar({
         ))}
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto relative">
+        {picking && (
+          <div className="absolute inset-0 bg-[#050a05]/80 z-10 flex items-center justify-center">
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-6 h-6 border-2 border-[#4a7c59] border-t-transparent rounded-full animate-spin" />
+              <span className="text-xs text-[#6b9b7a]">Making pick...</span>
+            </div>
+          </div>
+        )}
         {loading ? (
           <div className="p-4 text-center text-[#5a6b57] text-sm">
             Loading players...
@@ -102,7 +112,7 @@ export default function LivePlayerSidebar({
         ) : (
           filteredPlayers.map((player, index) => (
             <div
-              key={player.name}
+              key={`${player.name}-${player.team}-${player.position}`}
               onClick={() => {
                 if (!isDraftComplete && isPlayerPickable(player)) onPickPlayer(player);
               }}
@@ -140,7 +150,7 @@ export default function LivePlayerSidebar({
                   {player.displayPoints.toFixed(1)}
                 </div>
                 <div className="text-xs text-[#5a6b57]">
-                  {player.displayGames.toFixed(1)} gp
+                  pts
                 </div>
               </div>
             </div>
