@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { useDraftState, DraftPickRow, ParticipantData } from '@/hooks/useDraftState';
-import LivePlayerSidebar from '@/components/LivePlayerSidebar';
+import PlayerList from '@/components/PlayerList';
 import TeamBrowserTab from '@/components/TeamBrowserTab';
 import TeamLogo from '@/components/TeamLogo';
 import InjuryFlag from '@/components/InjuryFlag';
@@ -583,15 +583,16 @@ export default function LiveDraftPage() {
           </div>
 
           {sidebarTab === 'players' ? (
-            <LivePlayerSidebar
+            <PlayerList
               availablePlayers={availablePlayers}
-              currentParticipant={currentParticipant}
-              participants={participants}
-              isDraftComplete={isDraftComplete}
-              pickTimerSeconds={draft.pick_timer_seconds}
               onPickPlayer={handlePickPlayer}
               loading={loading}
               picking={picking}
+              isDraftComplete={isDraftComplete}
+              currentParticipant={currentParticipant}
+              pickTimerSeconds={draft.pick_timer_seconds}
+              showSearch={true}
+              showHeader={true}
             />
           ) : (
             <div className="flex-1 overflow-y-auto p-4">

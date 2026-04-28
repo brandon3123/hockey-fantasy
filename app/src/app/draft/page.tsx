@@ -6,7 +6,7 @@ import { initializeDraft, assignPlayerToManager, getManagerPicks, getCurrentMana
 import DraftGrid from '@/components/DraftGrid';
 import BestAvailable from '@/components/BestAvailable';
 import TeamStackPanel from '@/components/TeamStackPanel';
-import FullPlayerList from '@/components/FullPlayerList';
+import PlayerList from '@/components/PlayerList';
 import PositionTracker from '@/components/PositionTracker';
 import TeamCompositionVisualizer from '@/components/TeamCompositionVisualizer';
 import WatchlistToggle from '@/components/WatchlistToggle';
@@ -611,13 +611,11 @@ export default function DraftPage() {
             )}
 
             {activeTab === 'full' && (
-              <FullPlayerList
+              <PlayerList
                 availablePlayers={draftState.availablePlayers}
-                currentPick={currentPickNumber}
-                onDraftPlayer={handleDraftForCurrentManager}
-                watchlist={watchlist}
-                onToggleWatchlist={handleToggleWatchlist}
-                draftComplete={isDraftComplete}
+                onPickPlayer={handleDraftForCurrentManager}
+                isDraftComplete={isDraftComplete}
+                showSearch={true}
               />
             )}
 
