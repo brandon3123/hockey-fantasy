@@ -189,12 +189,20 @@ export default function DraftDetailPage() {
               </button>
             )}
             {draft.status === 'in_progress' && (
-              <Link
-                href={`/draft/${draftId}/live`}
-                className="px-4 py-2 text-sm font-medium text-[#c8d9c3] bg-[#4a7c59] rounded-lg hover:bg-[#3d664a] transition-colors"
-              >
-                Go to Live Draft
-              </Link>
+              <>
+                <Link
+                  href={`/draft/${draftId}/coach`}
+                  className="px-4 py-2 text-sm font-medium text-[#5a6b57] bg-[#0a0f0a] border border-[#141e12] rounded-lg hover:border-[#4a7c59] transition-colors"
+                >
+                  My Team
+                </Link>
+                <Link
+                  href={`/draft/${draftId}/live`}
+                  className="px-4 py-2 text-sm font-medium text-[#c8d9c3] bg-[#4a7c59] rounded-lg hover:bg-[#3d664a] transition-colors"
+                >
+                  Go to Live Draft
+                </Link>
+              </>
             )}
             {draft.status === 'complete' && (
               <Link
