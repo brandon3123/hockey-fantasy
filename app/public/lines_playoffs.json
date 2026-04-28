@@ -1,0 +1,1770 @@
+[
+  {
+    "lineId": "84745748483425",
+    "team": "DAL",
+    "name": "Bichsel-Myers",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 2981.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.41,
+      "corsiPercentage": 0.41
+    }
+  },
+  {
+    "lineId": "847578684784028483512",
+    "team": "EDM",
+    "name": "Hyman-Mcdavid-Savoie",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1341.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.55,
+      "corsiPercentage": 0.57
+    }
+  },
+  {
+    "lineId": "84815468482142",
+    "team": "PHI",
+    "name": "York-Drysdale",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 2971.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.51,
+      "corsiPercentage": 0.34
+    }
+  },
+  {
+    "lineId": "84745638479998",
+    "team": "LAK",
+    "name": "Anderson-Doughty",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 4189.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.48,
+      "corsiPercentage": 0.45
+    }
+  },
+  {
+    "lineId": "847751184817258485414",
+    "team": "PIT",
+    "name": "Soderblom-Kindel-Mantha",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1284.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.57,
+      "corsiPercentage": 0.69
+    }
+  },
+  {
+    "lineId": "848001584815338482159",
+    "team": "PHI",
+    "name": "Foerster-Zegras-Tippett",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1540.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.47,
+      "corsiPercentage": 0.46
+    }
+  },
+  {
+    "lineId": "84826558482929",
+    "team": "TBL",
+    "name": "Moser-Lilleberg",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 622.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.95,
+      "corsiPercentage": 0.85
+    }
+  },
+  {
+    "lineId": "848152384827378482775",
+    "team": "MTL",
+    "name": "Dach-Kapanen-Bolduc",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 760.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.84,
+      "corsiPercentage": 0.5
+    }
+  },
+  {
+    "lineId": "84752188480803",
+    "team": "EDM",
+    "name": "Ekholm-Bouchard",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 3514.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.43,
+      "corsiPercentage": 0.48
+    }
+  },
+  {
+    "lineId": "847645384785198479542",
+    "team": "TBL",
+    "name": "Hagel-Cirelli-Kucherov",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 814.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.77,
+      "corsiPercentage": 0.7
+    }
+  },
+  {
+    "lineId": "847745184788648481553",
+    "team": "MIN",
+    "name": "Kaprizov-Hartman-Brink",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1185.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.81,
+      "corsiPercentage": 0.63
+    }
+  },
+  {
+    "lineId": "84745748481581",
+    "team": "DAL",
+    "name": "Harley-Myers",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 802.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.47,
+      "corsiPercentage": 0.56
+    }
+  },
+  {
+    "lineId": "847569284774518478864",
+    "team": "MIN",
+    "name": "Kaprizov-Hartman-Zuccarello",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 669.0,
+    "games_played": 1,
+    "metrics": {
+      "xGoalsPercentage": 0.45,
+      "corsiPercentage": 0.5
+    }
+  },
+  {
+    "lineId": "847168584779608478550",
+    "team": "LAK",
+    "name": "Panarin-Kopitar-Kempe",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 2372.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.43,
+      "corsiPercentage": 0.54
+    }
+  },
+  {
+    "lineId": "847687384774788480762",
+    "team": "CAR",
+    "name": "Robinson-Jankowski-Carrier",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1380.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.57,
+      "corsiPercentage": 0.5
+    }
+  },
+  {
+    "lineId": "848217784834898485395",
+    "team": "BOS",
+    "name": "Khusnutdinov-Minten-Hagens",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1361.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.39,
+      "corsiPercentage": 0.46
+    }
+  },
+  {
+    "lineId": "847418984763938480188",
+    "team": "OTT",
+    "name": "Zetterlund-Eller-Cousins",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 702.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.73,
+      "corsiPercentage": 0.62
+    }
+  },
+  {
+    "lineId": "84820878483457",
+    "team": "MTL",
+    "name": "Hutson-Guhle",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 3449.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.46,
+      "corsiPercentage": 0.38
+    }
+  },
+  {
+    "lineId": "84772208478507",
+    "team": "UTA",
+    "name": "Schmidt-Marino",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 2217.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.61,
+      "corsiPercentage": 0.49
+    }
+  },
+  {
+    "lineId": "84781788482655",
+    "team": "TBL",
+    "name": "Moser-Raddysh",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 3468.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.65,
+      "corsiPercentage": 0.65
+    }
+  },
+  {
+    "lineId": "84775078479369",
+    "team": "BOS",
+    "name": "Zadorov-Peeke",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 3089.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.62,
+      "corsiPercentage": 0.54
+    }
+  },
+  {
+    "lineId": "847842084827408484829",
+    "team": "DAL",
+    "name": "Hryckowian-Johnston-Rantanen",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 2569.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.33,
+      "corsiPercentage": 0.42
+    }
+  },
+  {
+    "lineId": "847514984784938481557",
+    "team": "MIN",
+    "name": "Boldy-Eriksson Ek-Johansson",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 2010.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.31,
+      "corsiPercentage": 0.49
+    }
+  },
+  {
+    "lineId": "847121584764838478438",
+    "team": "PIT",
+    "name": "Malkin-Novak-Rakell",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 900.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.37,
+      "corsiPercentage": 0.58
+    }
+  },
+  {
+    "lineId": "847351284815288482092",
+    "team": "OTT",
+    "name": "Greig-Giroux-Cozens",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 825.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.36,
+      "corsiPercentage": 0.44
+    }
+  },
+  {
+    "lineId": "84745908483490",
+    "team": "ANA",
+    "name": "Mintyukov-Carlson",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 4264.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.38,
+      "corsiPercentage": 0.43
+    }
+  },
+  {
+    "lineId": "84745788478450",
+    "team": "PIT",
+    "name": "Wotherspoon-Karlsson",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 3072.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.47,
+      "corsiPercentage": 0.58
+    }
+  },
+  {
+    "lineId": "84768548479325",
+    "team": "BOS",
+    "name": "Lindholm-Mcavoy",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 1037.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.53,
+      "corsiPercentage": 0.57
+    }
+  },
+  {
+    "lineId": "84820958484321",
+    "team": "OTT",
+    "name": "Kleven-Matinpalo",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 900.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.5,
+      "corsiPercentage": 0.42
+    }
+  },
+  {
+    "lineId": "848080184815288482092",
+    "team": "OTT",
+    "name": "Tkachuk-Cozens-Greig",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1278.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.43,
+      "corsiPercentage": 0.42
+    }
+  },
+  {
+    "lineId": "847847284824088482726",
+    "team": "LAK",
+    "name": "Malott-Helenius-Joseph",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 728.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.1,
+      "corsiPercentage": 0.41
+    }
+  },
+  {
+    "lineId": "847967584821248482155",
+    "team": "LAK",
+    "name": "Moore-Byfield-Laferriere",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 2611.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.5,
+      "corsiPercentage": 0.44
+    }
+  },
+  {
+    "lineId": "847682684768788477426",
+    "team": "TBL",
+    "name": "Gourde-Paul-Girgensons",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 889.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.13,
+      "corsiPercentage": 0.5
+    }
+  },
+  {
+    "lineId": "84740138480434",
+    "team": "UTA",
+    "name": "Cole-Durzi",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 1858.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.45,
+      "corsiPercentage": 0.42
+    }
+  },
+  {
+    "lineId": "847522084774468481477",
+    "team": "MIN",
+    "name": "Foligno-Mccarron-Sturm",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 715.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.47,
+      "corsiPercentage": 0.55
+    }
+  },
+  {
+    "lineId": "84769068482100",
+    "team": "CAR",
+    "name": "Gostisbehere-Nikishin",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 2981.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.62,
+      "corsiPercentage": 0.55
+    }
+  },
+  {
+    "lineId": "847841384793598482896",
+    "team": "BUF",
+    "name": "Malenstyn-Kozak-Greenway",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 870.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.47,
+      "corsiPercentage": 0.31
+    }
+  },
+  {
+    "lineId": "847351284780208481596",
+    "team": "OTT",
+    "name": "Amadio-Pinto-Giroux",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 611.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.29,
+      "corsiPercentage": 0.37
+    }
+  },
+  {
+    "lineId": "847519184768818478434",
+    "team": "VGK",
+    "name": "Smith-Hertl-Kolesar",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 949.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.88,
+      "corsiPercentage": 0.72
+    }
+  },
+  {
+    "lineId": "84706138476967",
+    "team": "COL",
+    "name": "Kulak-Burns",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 612.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.79,
+      "corsiPercentage": 0.5
+    }
+  },
+  {
+    "lineId": "847849384788648481557",
+    "team": "MIN",
+    "name": "Kaprizov-Eriksson Ek-Boldy",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1236.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.8,
+      "corsiPercentage": 0.69
+    }
+  },
+  {
+    "lineId": "847645384780108482201",
+    "team": "TBL",
+    "name": "Goncalves-Point-Kucherov",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 834.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.47,
+      "corsiPercentage": 0.61
+    }
+  },
+  {
+    "lineId": "84769028480036",
+    "team": "DAL",
+    "name": "Lindell-Heiskanen",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 3655.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.43,
+      "corsiPercentage": 0.45
+    }
+  },
+  {
+    "lineId": "847795184784748479343",
+    "team": "UTA",
+    "name": "Crouse-Schmaltz-Keller",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1633.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.33,
+      "corsiPercentage": 0.35
+    }
+  },
+  {
+    "lineId": "848022084841428484387",
+    "team": "PHI",
+    "name": "Barkey-Cates-Michkov",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1150.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.27,
+      "corsiPercentage": 0.26
+    }
+  },
+  {
+    "lineId": "84816068482105",
+    "team": "OTT",
+    "name": "Sanderson-Spence",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 1039.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.78,
+      "corsiPercentage": 0.72
+    }
+  },
+  {
+    "lineId": "848007484815238482737",
+    "team": "MTL",
+    "name": "Texier-Dach-Bolduc",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 890.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.68,
+      "corsiPercentage": 0.56
+    }
+  },
+  {
+    "lineId": "84706138476312",
+    "team": "COL",
+    "name": "Burns-Manson",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 1653.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.53,
+      "corsiPercentage": 0.61
+    }
+  },
+  {
+    "lineId": "84769678484258",
+    "team": "COL",
+    "name": "Kulak-Malinski",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 2976.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.42,
+      "corsiPercentage": 0.47
+    }
+  },
+  {
+    "lineId": "84764738477498",
+    "team": "EDM",
+    "name": "Nurse-Murphy",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 4015.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.46,
+      "corsiPercentage": 0.44
+    }
+  },
+  {
+    "lineId": "847856984809808481481",
+    "team": "PIT",
+    "name": "Dewar-Acciari-Lizotte",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1753.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.63,
+      "corsiPercentage": 0.68
+    }
+  },
+  {
+    "lineId": "847534384769258482062",
+    "team": "VGK",
+    "name": "Sissons-Dowd-Smith",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 979.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.53,
+      "corsiPercentage": 0.53
+    }
+  },
+  {
+    "lineId": "84768858481605",
+    "team": "ANA",
+    "name": "Lacombe-Trouba",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 4869.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.64,
+      "corsiPercentage": 0.61
+    }
+  },
+  {
+    "lineId": "847353384769218477940",
+    "team": "CAR",
+    "name": "Martinook-Staal-Ehlers",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1925.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.63,
+      "corsiPercentage": 0.57
+    }
+  },
+  {
+    "lineId": "847575484775018480448",
+    "team": "COL",
+    "name": "Kelly-Nelson-Nichushkin",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1202.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.62,
+      "corsiPercentage": 0.55
+    }
+  },
+  {
+    "lineId": "847647984769818478133",
+    "team": "MTL",
+    "name": "Evans-Danault-Anderson",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 2051.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.42,
+      "corsiPercentage": 0.43
+    }
+  },
+  {
+    "lineId": "84763728478454",
+    "team": "PHI",
+    "name": "Seeler-Juulsen",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 1323.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.2,
+      "corsiPercentage": 0.38
+    }
+  },
+  {
+    "lineId": "84751888477447",
+    "team": "VGK",
+    "name": "Theodore-Mcnabb",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 2127.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.4,
+      "corsiPercentage": 0.5
+    }
+  },
+  {
+    "lineId": "847167584758108482475",
+    "team": "PIT",
+    "name": "Rust-Crosby-Chinakhov",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 998.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.48,
+      "corsiPercentage": 0.54
+    }
+  },
+  {
+    "lineId": "84829298483398",
+    "team": "TBL",
+    "name": "Lilleberg-Carlile",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 1317.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.31,
+      "corsiPercentage": 0.44
+    }
+  },
+  {
+    "lineId": "847841384793598482623",
+    "team": "BUF",
+    "name": "Malenstyn-Dunne-Greenway",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 754.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.86,
+      "corsiPercentage": 0.61
+    }
+  },
+  {
+    "lineId": "848265984835008484145",
+    "team": "BUF",
+    "name": "Benson-Ostlund-Doan",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1067.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.71,
+      "corsiPercentage": 0.76
+    }
+  },
+  {
+    "lineId": "84785028484321",
+    "team": "OTT",
+    "name": "Gilbert-Matinpalo",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 800.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.54,
+      "corsiPercentage": 0.38
+    }
+  },
+  {
+    "lineId": "847517284764558478462",
+    "team": "COL",
+    "name": "Landeskog-Roy-Kadri",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1574.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.54,
+      "corsiPercentage": 0.49
+    }
+  },
+  {
+    "lineId": "847517284774768478462",
+    "team": "COL",
+    "name": "Lehkonen-Roy-Kadri",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 731.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.96,
+      "corsiPercentage": 0.86
+    }
+  },
+  {
+    "lineId": "847518484800688482745",
+    "team": "ANA",
+    "name": "Kreider-Poehling-Mctavish",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1533.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.42,
+      "corsiPercentage": 0.55
+    }
+  },
+  {
+    "lineId": "847799884780208481596",
+    "team": "OTT",
+    "name": "Foegele-Pinto-Amadio",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1021.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.73,
+      "corsiPercentage": 0.55
+    }
+  },
+  {
+    "lineId": "847572284808028482097",
+    "team": "BUF",
+    "name": "Zucker-Mcleod-Quinn",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 2055.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.5,
+      "corsiPercentage": 0.62
+    }
+  },
+  {
+    "lineId": "847798984784398485406",
+    "team": "PHI",
+    "name": "Martone-Dvorak-Konecny",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 2296.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.53,
+      "corsiPercentage": 0.47
+    }
+  },
+  {
+    "lineId": "847842084793518482740",
+    "team": "DAL",
+    "name": "Steel-Johnston-Rantanen",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 600.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.36,
+      "corsiPercentage": 0.31
+    }
+  },
+  {
+    "lineId": "84815938482964",
+    "team": "MTL",
+    "name": "Struble-Xhekaj",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 1923.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.84,
+      "corsiPercentage": 0.71
+    }
+  },
+  {
+    "lineId": "847645584774928480039",
+    "team": "COL",
+    "name": "Landeskog-Mackinnon-Necas",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 988.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.69,
+      "corsiPercentage": 0.63
+    }
+  },
+  {
+    "lineId": "84784688481527",
+    "team": "VGK",
+    "name": "Lauzon-Korczak",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 1370.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.58,
+      "corsiPercentage": 0.57
+    }
+  },
+  {
+    "lineId": "848083584811868481641",
+    "team": "COL",
+    "name": "Kiviranta-Drury-O'Connor",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 810.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.69,
+      "corsiPercentage": 0.62
+    }
+  },
+  {
+    "lineId": "84784698481606",
+    "team": "OTT",
+    "name": "Chabot-Spence",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 3392.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.59,
+      "corsiPercentage": 0.52
+    }
+  },
+  {
+    "lineId": "847627884768898480840",
+    "team": "DAL",
+    "name": "Bck-Faksa-Blackwell",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1413.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.33,
+      "corsiPercentage": 0.53
+    }
+  },
+  {
+    "lineId": "848001884815408483515",
+    "team": "MTL",
+    "name": "Slafkovsk-Suzuki-Caufield",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 2736.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.35,
+      "corsiPercentage": 0.44
+    }
+  },
+  {
+    "lineId": "847794984794208481522",
+    "team": "BUF",
+    "name": "Krebs-Thompson-Tuch",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 2352.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.62,
+      "corsiPercentage": 0.56
+    }
+  },
+  {
+    "lineId": "847351284802088482116",
+    "team": "OTT",
+    "name": "Batherson-Sttzle-Giroux",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 899.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.45,
+      "corsiPercentage": 0.44
+    }
+  },
+  {
+    "lineId": "84769588478970",
+    "team": "CAR",
+    "name": "Slavin-Chatfield",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 3749.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.54,
+      "corsiPercentage": 0.49
+    }
+  },
+  {
+    "lineId": "847749684779568479987",
+    "team": "BOS",
+    "name": "Geekie-Lindholm-Pastrnak",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 2106.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.34,
+      "corsiPercentage": 0.34
+    }
+  },
+  {
+    "lineId": "847579184827028482809",
+    "team": "CAR",
+    "name": "Hall-Stankoven-Blake",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 2833.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.74,
+      "corsiPercentage": 0.65
+    }
+  },
+  {
+    "lineId": "848020884808018482116",
+    "team": "OTT",
+    "name": "Tkachuk-Sttzle-Batherson",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1176.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.49,
+      "corsiPercentage": 0.5
+    }
+  },
+  {
+    "lineId": "847591384779648478403",
+    "team": "VGK",
+    "name": "Barbashev-Eichel-Stone",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1180.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.37,
+      "corsiPercentage": 0.44
+    }
+  },
+  {
+    "lineId": "84808008482122",
+    "team": "MIN",
+    "name": "Hughes-Faber",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 5034.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.61,
+      "corsiPercentage": 0.55
+    }
+  },
+  {
+    "lineId": "84783968478397",
+    "team": "VGK",
+    "name": "Hanifin-Andersson",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 2645.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.52,
+      "corsiPercentage": 0.61
+    }
+  },
+  {
+    "lineId": "84808078480839",
+    "team": "BUF",
+    "name": "Dahlin-Samuelsson",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 2861.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.48,
+      "corsiPercentage": 0.5
+    }
+  },
+  {
+    "lineId": "84815638482731",
+    "team": "ANA",
+    "name": "Helleson-Hinds",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 1351.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.4,
+      "corsiPercentage": 0.54
+    }
+  },
+  {
+    "lineId": "847516884800278482145",
+    "team": "DAL",
+    "name": "Robertson-Duchene-Bourque",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 3018.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.63,
+      "corsiPercentage": 0.6
+    }
+  },
+  {
+    "lineId": "84793258481219",
+    "team": "BOS",
+    "name": "Aspirot-Mcavoy",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 2358.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.31,
+      "corsiPercentage": 0.43
+    }
+  },
+  {
+    "lineId": "847399484793518484938",
+    "team": "DAL",
+    "name": "Benn-Hyry-Steel",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1949.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.71,
+      "corsiPercentage": 0.6
+    }
+  },
+  {
+    "lineId": "848044884808358481186",
+    "team": "COL",
+    "name": "Kelly-Drury-O'Connor",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 792.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.52,
+      "corsiPercentage": 0.71
+    }
+  },
+  {
+    "lineId": "84768758478851",
+    "team": "MTL",
+    "name": "Matheson-Carrier",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 3117.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.3,
+      "corsiPercentage": 0.35
+    }
+  },
+  {
+    "lineId": "847518484788738484153",
+    "team": "ANA",
+    "name": "Kreider-Carlsson-Terry",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 714.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.83,
+      "corsiPercentage": 0.56
+    }
+  },
+  {
+    "lineId": "847848384793538481604",
+    "team": "VGK",
+    "name": "Howden-Marner-Dorofeyev",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 834.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.52,
+      "corsiPercentage": 0.61
+    }
+  },
+  {
+    "lineId": "848161884827758484984",
+    "team": "MTL",
+    "name": "Kapanen-Newhook-Demidov",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 806.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.31,
+      "corsiPercentage": 0.43
+    }
+  },
+  {
+    "lineId": "84815248482671",
+    "team": "BUF",
+    "name": "Byram-Power",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 2929.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.54,
+      "corsiPercentage": 0.55
+    }
+  },
+  {
+    "lineId": "84774478478468",
+    "team": "VGK",
+    "name": "Theodore-Lauzon",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 648.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.12,
+      "corsiPercentage": 0.38
+    }
+  },
+  {
+    "lineId": "84803368480817",
+    "team": "CAR",
+    "name": "Miller-Walker",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 3919.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.49,
+      "corsiPercentage": 0.59
+    }
+  },
+  {
+    "lineId": "847578684764548478402",
+    "team": "EDM",
+    "name": "Hyman-Mcdavid-Nugent-Hopkins",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 625.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.31,
+      "corsiPercentage": 0.3
+    }
+  },
+  {
+    "lineId": "847707084788318479293",
+    "team": "UTA",
+    "name": "Tanev-Stenlund-O'Brien",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 600.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.38,
+      "corsiPercentage": 0.4
+    }
+  },
+  {
+    "lineId": "847793484779538481617",
+    "team": "EDM",
+    "name": "Kapanen-Draisaitl-Podkolzin",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 2675.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.68,
+      "corsiPercentage": 0.55
+    }
+  },
+  {
+    "lineId": "847398684757988484762",
+    "team": "ANA",
+    "name": "Killorn-Granlund-Sennecke",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 3055.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.53,
+      "corsiPercentage": 0.53
+    }
+  },
+  {
+    "lineId": "84773658478854",
+    "team": "PIT",
+    "name": "Shea-Clifton",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 1662.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.73,
+      "corsiPercentage": 0.57
+    }
+  },
+  {
+    "lineId": "84747168476463",
+    "team": "MIN",
+    "name": "Brodin-Spurgeon",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 3796.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.42,
+      "corsiPercentage": 0.38
+    }
+  },
+  {
+    "lineId": "847842784808308482093",
+    "team": "CAR",
+    "name": "Jarvis-Aho-Svechnikov",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 2816.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.34,
+      "corsiPercentage": 0.47
+    }
+  },
+  {
+    "lineId": "84741518478416",
+    "team": "TBL",
+    "name": "Mcdonagh-Cernak",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 2800.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.33,
+      "corsiPercentage": 0.51
+    }
+  },
+  {
+    "lineId": "84784698484321",
+    "team": "OTT",
+    "name": "Chabot-Matinpalo",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 644.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.69,
+      "corsiPercentage": 0.57
+    }
+  },
+  {
+    "lineId": "848007484816188484984",
+    "team": "MTL",
+    "name": "Texier-Newhook-Demidov",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1060.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.53,
+      "corsiPercentage": 0.33
+    }
+  },
+  {
+    "lineId": "847804284784018479999",
+    "team": "BOS",
+    "name": "Arvidsson-Zacha-Mittelstadt",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1579.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.55,
+      "corsiPercentage": 0.46
+    }
+  },
+  {
+    "lineId": "847997784826998483431",
+    "team": "UTA",
+    "name": "Guenther-Cooley-Yamamoto",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1752.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.81,
+      "corsiPercentage": 0.6
+    }
+  },
+  {
+    "lineId": "84717248479398",
+    "team": "PIT",
+    "name": "Girard-Letang",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 3032.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.48,
+      "corsiPercentage": 0.68
+    }
+  },
+  {
+    "lineId": "847342284757658483525",
+    "team": "MIN",
+    "name": "Tarasenko-Foligno-Yurov",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 928.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.27,
+      "corsiPercentage": 0.27
+    }
+  },
+  {
+    "lineId": "84764418482730",
+    "team": "LAK",
+    "name": "Edmundson-Clarke",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 3132.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.43,
+      "corsiPercentage": 0.52
+    }
+  },
+  {
+    "lineId": "84808788481581",
+    "team": "DAL",
+    "name": "Harley-Lundkvist",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 2966.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.62,
+      "corsiPercentage": 0.59
+    }
+  },
+  {
+    "lineId": "847575484775018479525",
+    "team": "COL",
+    "name": "Colton-Nelson-Nichushkin",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 970.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.52,
+      "corsiPercentage": 0.53
+    }
+  },
+  {
+    "lineId": "847646184768228477903",
+    "team": "PHI",
+    "name": "Couturier-Glendening-Hathaway",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1952.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.41,
+      "corsiPercentage": 0.28
+    }
+  },
+  {
+    "lineId": "847514984774518481553",
+    "team": "MIN",
+    "name": "Johansson-Hartman-Brink",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 686.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.54,
+      "corsiPercentage": 0.64
+    }
+  },
+  {
+    "lineId": "84773468479410",
+    "team": "UTA",
+    "name": "Sergachev-Weegar",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 2339.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.47,
+      "corsiPercentage": 0.45
+    }
+  },
+  {
+    "lineId": "848006484826598484145",
+    "team": "BUF",
+    "name": "Benson-Norris-Doan",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 998.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.38,
+      "corsiPercentage": 0.63
+    }
+  },
+  {
+    "lineId": "847646984768728483756",
+    "team": "LAK",
+    "name": "Wright-Laughton-Armia",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1324.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.23,
+      "corsiPercentage": 0.36
+    }
+  },
+  {
+    "lineId": "84780138480834",
+    "team": "EDM",
+    "name": "Walman-Emberson",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 2575.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.51,
+      "corsiPercentage": 0.51
+    }
+  },
+  {
+    "lineId": "84793788479982",
+    "team": "BUF",
+    "name": "Stanley-Timmins",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 2160.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.47,
+      "corsiPercentage": 0.55
+    }
+  },
+  {
+    "lineId": "84774998477948",
+    "team": "PHI",
+    "name": "Sanheim-Ristolainen",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 3508.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.43,
+      "corsiPercentage": 0.41
+    }
+  },
+  {
+    "lineId": "847637484796618480355",
+    "team": "BOS",
+    "name": "Jeannot-Kuraly-Kastelic",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1619.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.27,
+      "corsiPercentage": 0.45
+    }
+  },
+  {
+    "lineId": "847887384834458484153",
+    "team": "ANA",
+    "name": "Gauthier-Carlsson-Terry",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 2117.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.56,
+      "corsiPercentage": 0.59
+    }
+  },
+  {
+    "lineId": "84745678478136",
+    "team": "MIN",
+    "name": "Middleton-Bogosian",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 2136.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.42,
+      "corsiPercentage": 0.44
+    }
+  },
+  {
+    "lineId": "84752088476879",
+    "team": "LAK",
+    "name": "Dumoulin-Ceci",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 3027.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.41,
+      "corsiPercentage": 0.36
+    }
+  },
+  {
+    "lineId": "847747684774928480039",
+    "team": "COL",
+    "name": "Lehkonen-Mackinnon-Necas",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1845.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.52,
+      "corsiPercentage": 0.55
+    }
+  },
+  {
+    "lineId": "847167584758108476483",
+    "team": "PIT",
+    "name": "Rust-Crosby-Rakell",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1587.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.68,
+      "corsiPercentage": 0.7
+    }
+  },
+  {
+    "lineId": "847740484785198479542",
+    "team": "TBL",
+    "name": "Hagel-Cirelli-Guentzel",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1123.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.69,
+      "corsiPercentage": 0.67
+    }
+  },
+  {
+    "lineId": "847702184796198482175",
+    "team": "UTA",
+    "name": "Carcone-Kerfoot-Peterka",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 1412.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.43,
+      "corsiPercentage": 0.4
+    }
+  },
+  {
+    "lineId": "84780388480069",
+    "team": "COL",
+    "name": "Toews-Makar",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 3496.0,
+    "games_played": 4,
+    "metrics": {
+      "xGoalsPercentage": 0.58,
+      "corsiPercentage": 0.51
+    }
+  },
+  {
+    "lineId": "84821058484321",
+    "team": "OTT",
+    "name": "Sanderson-Matinpalo",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 1558.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.13,
+      "corsiPercentage": 0.2
+    }
+  },
+  {
+    "lineId": "847121584784388482475",
+    "team": "PIT",
+    "name": "Malkin-Novak-Chinakhov",
+    "position": "line",
+    "situation": "5on5",
+    "icetime": 829.0,
+    "games_played": 2,
+    "metrics": {
+      "xGoalsPercentage": 0.55,
+      "corsiPercentage": 0.61
+    }
+  },
+  {
+    "lineId": "84768548482511",
+    "team": "BOS",
+    "name": "Lindholm-Lohrei",
+    "position": "pairing",
+    "situation": "5on5",
+    "icetime": 1830.0,
+    "games_played": 3,
+    "metrics": {
+      "xGoalsPercentage": 0.45,
+      "corsiPercentage": 0.31
+    }
+  }
+]
