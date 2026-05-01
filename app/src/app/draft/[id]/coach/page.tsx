@@ -144,7 +144,7 @@ export default function CoachPage() {
   return (
     <div className="min-h-screen bg-[#050a05] flex flex-col">
       <div className="border-b border-[#141e12] bg-[#0a0f0a] px-4 py-3">
-        <div className="text-lg font-bold text-[#c8d9c3]">{draft.name}</div>
+        <div className="text-base md:text-lg font-bold text-[#c8d9c3]">{draft.name}</div>
         {draft.status === 'in_progress' && !isDraftComplete && (
           <div className="text-sm text-[#6b9b7a] mt-1">
             Round {currentRound}, Pick {currentPick}
@@ -155,13 +155,13 @@ export default function CoachPage() {
             <div className="text-sm text-[#6b9b7a]">Draft Complete</div>
             <Link
               href={`/draft/${draftId}/results`}
-              className="text-xs font-medium text-[#c8d9c3] bg-[#4a7c59] px-3 py-1 rounded hover:bg-[#3d664a] transition-colors"
+              className="text-xs font-medium text-[#c8d9c3] bg-[#4a7c59] px-4 py-2 rounded hover:bg-[#3d664a] transition-colors"
             >
               View Results
             </Link>
             <Link
               href={`/draft/${draftId}/standings`}
-              className="text-xs font-medium text-[#050a05] bg-[#6b9b7a] px-3 py-1 rounded hover:bg-[#8ab89a] transition-colors"
+              className="text-xs font-medium text-[#050a05] bg-[#6b9b7a] px-4 py-2 rounded hover:bg-[#8ab89a] transition-colors"
             >
               Standings
             </Link>
@@ -174,7 +174,7 @@ export default function CoachPage() {
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
+            className={`px-3 py-2.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
               activeTab === tab.key
                 ? 'bg-[#4a7c59] text-[#c8d9c3]'
                 : 'bg-[#0a0f0a] text-[#5a6b57] hover:bg-[#141e12]'
