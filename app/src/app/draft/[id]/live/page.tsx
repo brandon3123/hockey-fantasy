@@ -246,13 +246,13 @@ function DraftBoardGrid({
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-[#4a7c59] text-[#c8d9c3]">
-              <th className="px-3 py-2.5 text-left font-semibold text-xs border-r border-[#3d664a] whitespace-nowrap min-w-[120px]">
+              <th className="px-3 py-2.5 text-left font-semibold text-xs border-r border-[#3d664a] whitespace-nowrap min-w-[80px]">
                 MANAGER
               </th>
               {Array.from({ length: playersPerTeam }, (_, i) => (
                 <th
                   key={i}
-                  className="px-1 py-2.5 text-center font-semibold text-xs border-r border-[#3d664a] min-w-[70px]"
+                  className="px-1 py-2.5 text-center font-semibold text-xs border-r border-[#3d664a] min-w-[50px]"
                 >
                   R{i + 1}
                 </th>
@@ -282,7 +282,7 @@ function DraftBoardGrid({
                         {participant.team_name}
                       </span>
                       {isCurrentRow && (
-                        <span className="text-[10px] text-[#6b9b7a] animate-pulse">
+                        <span className="text-xs text-[#6b9b7a] animate-pulse">
                           &#9654;
                         </span>
                       )}
@@ -297,7 +297,7 @@ function DraftBoardGrid({
                     return (
                       <td
                         key={roundIndex}
-                        className={`px-1 py-1 border-r border-[#141e12] text-center ${
+                        className={`px-1 py-2 border-r border-[#141e12] text-center ${
                           isCell ? 'bg-[#1a2f1a]' : ''
                         }`}
                       >
@@ -307,12 +307,12 @@ function DraftBoardGrid({
                             className="cursor-pointer p-1 border border-[#141e12] bg-[#050a05] rounded hover:border-[#4a7c59] transition-all"
                             title="Click to replace this player"
                           >
-                            <div className="text-[11px] font-medium text-[#c8d9c3] leading-tight truncate">
+                            <div className="text-xs font-medium text-[#c8d9c3] leading-tight truncate">
                               {pick.player_name}
                             </div>
                             <div className="flex items-center justify-center gap-0.5">
                               {player && <TeamLogoInline team={player.team} />}
-                              <span className="text-[10px] text-[#5a6b57]">
+                              <span className="text-xs text-[#5a6b57]">
                                 {player?.position}
                               </span>
                             </div>
@@ -323,7 +323,7 @@ function DraftBoardGrid({
                             )}
                           </div>
                         ) : isCell ? (
-                          <div className="text-[11px] text-[#6b9b7a] animate-pulse font-semibold">
+                          <div className="text-xs text-[#6b9b7a] animate-pulse font-semibold">
                             Picking...
                           </div>
                         ) : (
@@ -354,6 +354,7 @@ export default function LiveDraftPage() {
   const [sidebarTab, setSidebarTab] = useState<SidebarTab>('players');
   const [replacePick, setReplacePick] = useState<DraftPickRow | null>(null);
   const [replacing, setReplacing] = useState(false);
+  const [mobileBoardTab, setMobileBoardTab] = useState<'board' | 'players'>('board');
 
   const {
     draft,
@@ -500,53 +501,50 @@ export default function LiveDraftPage() {
   return (
     <div className="h-screen bg-[#050a05] flex flex-col">
       <div className="shrink-0 border-b border-[#141e12] bg-[#0a0f0a] px-4 py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className="text-lg font-bold text-[#c8d9c3]">{draft.name}</h1>
-            <div className="text-sm text-[#5a6b57]">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-2 md:gap-4">
+            <h1 className="text-base md:text-lg font-bold text-[#c8d9c3]">{draft.name}</h1>
+            <div className="text-xs md:text-sm text-[#5a6b57]">
               Round {currentRound} &bull; Pick {currentPick}
             </div>
           </div>
-
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3 flex-wrap">
             {isDraftComplete ? (
               <div className="flex items-center gap-2">
-                <div className="px-4 py-1.5 bg-[#4a7c59] rounded-lg text-sm font-bold text-[#c8d9c3]">
+                <div className="px-3 py-1.5 bg-[#4a7c59] rounded-lg text-xs md:text-sm font-bold text-[#c8d9c3]">
                   DRAFT COMPLETE
                 </div>
                 <Link
                   href={`/draft/${draftId}/results`}
-                  className="px-4 py-1.5 text-sm font-bold text-[#050a05] bg-[#6b9b7a] rounded-lg hover:bg-[#8ab89a] transition-colors"
+                  className="px-3 py-1.5 text-xs md:text-sm font-bold text-[#050a05] bg-[#6b9b7a] rounded-lg hover:bg-[#8ab89a] transition-colors"
                 >
                   View Results
                 </Link>
               </div>
             ) : (
-              <div className="px-4 py-1.5 bg-[#4a7c59] rounded-lg text-sm font-bold text-white animate-pulse">
+              <div className="px-3 py-1.5 bg-[#4a7c59] rounded-lg text-xs md:text-sm font-bold text-white animate-pulse">
                 ON THE CLOCK: {currentParticipant?.team_name || '...'}
               </div>
             )}
-
-            <div className="text-sm text-[#5a6b57]">
-              {totalPicks}/{totalSlots} picks
+            <div className="text-xs md:text-sm text-[#5a6b57]">
+              {totalPicks}/{totalSlots}
             </div>
-
             {isAdmin && (
               <>
                 {!isDraftComplete && (
                   <button
                     onClick={handleUndo}
                     disabled={totalPicks === 0}
-                    className="px-3 py-1.5 text-xs font-medium text-[#c8d9c3] bg-[#050a05] border border-[#141e12] rounded-lg hover:bg-[#141e12] hover:border-[#4a7c59] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="px-3 py-2 text-xs font-medium text-[#c8d9c3] bg-[#050a05] border border-[#141e12] rounded-lg hover:bg-[#141e12] hover:border-[#4a7c59] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                   >
-                    Undo Pick
+                    Undo
                   </button>
                 )}
                 <button
                   onClick={handleReset}
-                  className="px-3 py-1.5 text-xs font-medium text-red-400 bg-[#050a05] border border-[#3d1a1a] rounded-lg hover:bg-[#3d1a1a] transition-colors"
+                  className="px-3 py-2 text-xs font-medium text-red-400 bg-[#050a05] border border-[#3d1a1a] rounded-lg hover:bg-[#3d1a1a] transition-colors"
                 >
-                  Reset Draft
+                  Reset
                 </button>
               </>
             )}
@@ -554,8 +552,27 @@ export default function LiveDraftPage() {
         </div>
       </div>
 
+      <div className="lg:hidden flex border-b border-[#141e12]">
+        <button
+          onClick={() => setMobileBoardTab('board')}
+          className={`flex-1 py-3 text-center text-sm font-semibold transition-colors ${
+            mobileBoardTab === 'board' ? 'text-[#c8d9c3] bg-[#1a2f1a] border-b-2 border-[#4a7c59]' : 'text-[#5a6b57]'
+          }`}
+        >
+          Draft Board
+        </button>
+        <button
+          onClick={() => setMobileBoardTab('players')}
+          className={`flex-1 py-3 text-center text-sm font-semibold transition-colors ${
+            mobileBoardTab === 'players' ? 'text-[#c8d9c3] bg-[#1a2f1a] border-b-2 border-[#4a7c59]' : 'text-[#5a6b57]'
+          }`}
+        >
+          Players
+        </button>
+      </div>
+
       <div className="flex-1 flex min-h-0">
-        <div className="flex-1 overflow-auto p-4">
+        <div className={`flex-1 overflow-auto p-4 ${mobileBoardTab !== 'board' ? 'hidden lg:block' : ''}`}>
           <DraftBoardGrid
             participants={participants}
             picks={picks}
@@ -568,11 +585,11 @@ export default function LiveDraftPage() {
           />
         </div>
 
-        <div className="w-96 shrink-0 border-l border-[#141e12] flex flex-col bg-[#050a05]">
+        <div className={`${mobileBoardTab !== 'players' ? 'hidden lg:flex' : 'flex'} w-full lg:w-96 shrink-0 flex-col border-t lg:border-t-0 lg:border-l border-[#141e12] bg-[#050a05]`}>
           <div className="shrink-0 flex gap-1 p-2 border-b border-[#141e12]">
             <button
               onClick={() => setSidebarTab('players')}
-              className={`flex-1 px-2 py-1.5 text-xs font-semibold rounded transition-colors ${
+              className={`flex-1 px-2 py-2.5 text-xs font-semibold rounded transition-colors ${
                 sidebarTab === 'players'
                   ? 'bg-[#4a7c59] text-[#c8d9c3]'
                   : 'bg-[#0a0f0a] text-[#5a6b57] hover:bg-[#141e12]'
@@ -582,7 +599,7 @@ export default function LiveDraftPage() {
             </button>
             <button
               onClick={() => setSidebarTab('teams')}
-              className={`flex-1 px-2 py-1.5 text-xs font-semibold rounded transition-colors ${
+              className={`flex-1 px-2 py-2.5 text-xs font-semibold rounded transition-colors ${
                 sidebarTab === 'teams'
                   ? 'bg-[#4a7c59] text-[#c8d9c3]'
                   : 'bg-[#0a0f0a] text-[#5a6b57] hover:bg-[#141e12]'
@@ -591,7 +608,6 @@ export default function LiveDraftPage() {
               Teams
             </button>
           </div>
-
           {sidebarTab === 'players' ? (
             <PlayerList
               availablePlayers={availablePlayers}
