@@ -140,9 +140,9 @@ export default function Navigation() {
 
         {mobileOpen && (
           <div className="md:hidden border-t border-[#141e12] py-2">
-            <Link href="/" onClick={() => setMobileOpen(false)} className="block px-4 py-3 text-sm text-[#c8d9c3] hover:bg-[#141e12]">Dashboard</Link>
-            <Link href="/rankings" onClick={() => setMobileOpen(false)} className="block px-4 py-3 text-sm text-[#5a6b57] hover:bg-[#141e12]">Rankings</Link>
-            <Link href="/bracket" onClick={() => setMobileOpen(false)} className="block px-4 py-3 text-sm text-[#5a6b57] hover:bg-[#141e12]">Bracket</Link>
+            <Link href="/" onClick={() => setMobileOpen(false)} className={`block px-4 py-3 text-sm hover:bg-[#141e12] ${isActive('/') ? 'text-[#c8d9c3]' : 'text-[#5a6b57]'}`}>Dashboard</Link>
+            <Link href="/rankings" onClick={() => setMobileOpen(false)} className={`block px-4 py-3 text-sm hover:bg-[#141e12] ${isActive('/rankings') ? 'text-[#c8d9c3]' : 'text-[#5a6b57]'}`}>Rankings</Link>
+            <Link href="/bracket" onClick={() => setMobileOpen(false)} className={`block px-4 py-3 text-sm hover:bg-[#141e12] ${isActive('/bracket') ? 'text-[#c8d9c3]' : 'text-[#5a6b57]'}`}>Bracket</Link>
             {user && isAdmin && (
               <>
                 <div className="h-px bg-[#141e12] my-1 mx-4" />
