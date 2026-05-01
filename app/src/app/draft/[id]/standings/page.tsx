@@ -115,7 +115,7 @@ export default function StandingsPage() {
       <div className="min-h-screen bg-[#050a05] flex items-center justify-center">
         <div className="text-center">
           <div className="text-[#5a6b57] text-lg mb-2">{error || 'Standings not available'}</div>
-          <Link href="/dashboard" className="text-sm text-[#6b9b7a] hover:underline">
+          <Link href="/" className="text-sm text-[#6b9b7a] hover:underline">
             Back to Dashboard
           </Link>
         </div>
@@ -128,7 +128,7 @@ export default function StandingsPage() {
   return (
     <div className="min-h-screen bg-[#050a05]">
       <div className="max-w-3xl mx-auto px-4 py-8">
-        <Link href="/dashboard" className="text-sm text-[#5a6b57] hover:text-[#c8d9c3]">
+        <Link href="/" className="text-sm text-[#5a6b57] hover:text-[#c8d9c3]">
           &larr; Back to Dashboard
         </Link>
 

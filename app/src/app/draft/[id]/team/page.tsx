@@ -83,7 +83,7 @@ export default function TeamPage() {
       <div className="min-h-screen bg-[#050a05] flex items-center justify-center">
         <div className="text-center">
           <div className="text-[#5a6b57] text-lg mb-2">Draft not found</div>
-          <Link href="/dashboard" className="text-sm text-[#6b9b7a] hover:underline">
+          <Link href="/" className="text-sm text-[#6b9b7a] hover:underline">
             Back to Dashboard
           </Link>
         </div>
@@ -109,7 +109,7 @@ export default function TeamPage() {
       <div className="min-h-screen bg-[#050a05] flex items-center justify-center">
         <div className="text-center">
           <div className="text-[#c8d9c3] text-lg mb-2">You&apos;re not in this draft</div>
-          <Link href="/dashboard" className="text-sm text-[#6b9b7a] hover:underline">
+          <Link href="/" className="text-sm text-[#6b9b7a] hover:underline">
             Back to Dashboard
           </Link>
         </div>

@@ -123,7 +123,7 @@ export default function DraftDetailPage() {
       <div className="min-h-screen bg-[#050a05] flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-[#c8d9c3] mb-4">Draft Not Found</h1>
-          <Link href="/dashboard" className="text-[#6b9b7a] hover:underline">Back to Dashboard</Link>
+          <Link href="/" className="text-[#6b9b7a] hover:underline">Back to Dashboard</Link>
         </div>
       </div>
     );
@@ -134,7 +134,7 @@ export default function DraftDetailPage() {
       return (
         <div className="min-h-screen bg-[#050a05]">
           <div className="max-w-3xl mx-auto px-4 py-8">
-            <Link href="/dashboard" className="text-sm text-[#5a6b57] hover:text-[#c8d9c3]">&larr; Back to Dashboard</Link>
+            <Link href="/" className="text-sm text-[#5a6b57] hover:text-[#c8d9c3]">&larr; Back to Dashboard</Link>
             <h1 className="text-3xl font-bold text-[#c8d9c3] mt-2">{draft.name}</h1>
             <div className="text-sm text-[#5a6b57] mt-1">
               {draft.status === 'in_progress' ? 'Draft In Progress' : 'Draft Complete'} &bull; {draft.season_type === 'playoffs' ? 'Playoffs' : 'Regular Season'}
@@ -171,7 +171,7 @@ export default function DraftDetailPage() {
       <div className="min-h-screen bg-[#050a05] flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-[#c8d9c3] mb-4">Waiting for Draft</h1>
-          <Link href="/dashboard" className="text-[#6b9b7a] hover:underline">Back to Dashboard</Link>
+          <Link href="/" className="text-[#6b9b7a] hover:underline">Back to Dashboard</Link>
         </div>
       </div>
     );
@@ -189,7 +189,7 @@ export default function DraftDetailPage() {
       <div className="max-w-3xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <Link href="/dashboard" className="text-sm text-[#5a6b57] hover:text-[#c8d9c3]">&larr; Back to Dashboard</Link>
+            <Link href="/" className="text-sm text-[#5a6b57] hover:text-[#c8d9c3]">&larr; Back to Dashboard</Link>
             <h1 className="text-3xl font-bold text-[#c8d9c3] mt-2">{draft.name}</h1>
             <div className="text-sm text-[#5a6b57] mt-1">
               {statusLabels[draft.status] || draft.status} &bull; {draft.season_type === 'playoffs' ? 'Playoffs' : 'Regular Season'}
