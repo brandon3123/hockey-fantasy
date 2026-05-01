@@ -240,9 +240,44 @@ function DraftBoardGrid({
     return players.find((pl) => pl.name === pick.player_name);
   };
 
+  const renderPickCell = (pick: DraftPickRow | undefined, isCell: boolean, player: Player | null | undefined) => {
+    if (pick) {
+      return (
+        <div
+          onClick={() => onPickClick(pick)}
+          className="cursor-pointer p-1 border border-[#141e12] bg-[#050a05] rounded hover:border-[#4a7c59] transition-all"
+          title="Click to replace this player"
+        >
+          <div className="text-xs font-medium text-[#c8d9c3] leading-tight truncate">
+            {pick.player_name}
+          </div>
+          <div className="flex items-center justify-center gap-0.5">
+            {player && <TeamLogoInline team={player.team} />}
+            <span className="text-xs text-[#5a6b57]">
+              {player?.position}
+            </span>
+          </div>
+          {player && player.injury.status !== 'healthy' && (
+            <div className="flex justify-center mt-0.5">
+              <InjuryFlag player={player} />
+            </div>
+          )}
+        </div>
+      );
+    }
+    if (isCell) {
+      return (
+        <div className="text-xs text-[#6b9b7a] animate-pulse font-semibold">
+          Picking...
+        </div>
+      );
+    }
+    return <div className="text-xs text-[#2d3c28]">-</div>;
+  };
+
   return (
     <div className="bg-[#0a0f0a] rounded-lg border border-[#141e12] overflow-hidden">
-      <div className="overflow-x-auto">
+      <div className="hidden lg:block overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-[#4a7c59] text-[#c8d9c3]">
@@ -301,34 +336,7 @@ function DraftBoardGrid({
                           isCell ? 'bg-[#1a2f1a]' : ''
                         }`}
                       >
-                        {pick ? (
-                          <div
-                            onClick={() => onPickClick(pick)}
-                            className="cursor-pointer p-1 border border-[#141e12] bg-[#050a05] rounded hover:border-[#4a7c59] transition-all"
-                            title="Click to replace this player"
-                          >
-                            <div className="text-xs font-medium text-[#c8d9c3] leading-tight truncate">
-                              {pick.player_name}
-                            </div>
-                            <div className="flex items-center justify-center gap-0.5">
-                              {player && <TeamLogoInline team={player.team} />}
-                              <span className="text-xs text-[#5a6b57]">
-                                {player?.position}
-                              </span>
-                            </div>
-                            {player && player.injury.status !== 'healthy' && (
-                              <div className="flex justify-center mt-0.5">
-                                <InjuryFlag player={player} />
-                              </div>
-                            )}
-                          </div>
-                        ) : isCell ? (
-                          <div className="text-xs text-[#6b9b7a] animate-pulse font-semibold">
-                            Picking...
-                          </div>
-                        ) : (
-                          <div className="text-xs text-[#2d3c28]">-</div>
-                        )}
+                        {renderPickCell(pick, isCell, player)}
                       </td>
                     );
                   })}
@@ -342,6 +350,62 @@ function DraftBoardGrid({
             })}
           </tbody>
         </table>
+      </div>
+
+      <div className="lg:hidden">
+        {Array.from({ length: playersPerTeam }, (_, roundIndex) => {
+          const round = roundIndex + 1;
+          const isCurrentRound = round === currentRound;
+
+          return (
+            <div key={roundIndex} className={isCurrentRound ? 'bg-[#1a2f1a]' : ''}>
+              <div className={`px-3 py-2 flex items-center justify-between border-b border-[#141e12] ${isCurrentRound ? 'bg-[#2a4a2a]' : 'bg-[#0a0f0a]'}`}>
+                <span className={`text-xs font-bold ${isCurrentRound ? 'text-[#6b9b7a]' : 'text-[#c8d9c3]'}`}>
+                  Round {round}
+                </span>
+                {isCurrentRound && (
+                  <span className="text-xs text-[#6b9b7a] animate-pulse">&#9654;</span>
+                )}
+              </div>
+              <div className="grid grid-cols-2 gap-px bg-[#141e12]">
+                {sortedParticipants.map((participant) => {
+                  const pick = getPickForCell(participant.id, round);
+                  const isCell = isCurrentCell(participant.id, round);
+                  const player = pick ? getPlayerForPick(pick) : null;
+
+                  return (
+                    <div
+                      key={participant.id}
+                      className={`bg-[#050a05] p-2 ${isCell ? 'bg-[#1a2f1a]' : ''}`}
+                    >
+                      <div className="flex items-center gap-1 mb-1">
+                        <span className={`text-[11px] font-semibold truncate ${currentParticipant?.id === participant.id ? 'text-[#6b9b7a]' : 'text-[#5a6b57]'}`}>
+                          {participant.team_name}
+                        </span>
+                      </div>
+                      {renderPickCell(pick, isCell, player)}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+        <div className="px-3 py-2 border-t border-[#141e12] bg-[#0a0f0a]">
+          <div className="grid grid-cols-2 gap-2">
+            {sortedParticipants.map((participant) => {
+              const projectedPts = getProjectedPoints(participant.id);
+              return (
+                <div key={participant.id} className="flex items-center justify-between">
+                  <span className="text-xs text-[#5a6b57] truncate">{participant.team_name}</span>
+                  <span className="text-xs font-bold text-[#6b9b7a]">
+                    {projectedPts > 0 ? projectedPts.toFixed(1) : '-'}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );
