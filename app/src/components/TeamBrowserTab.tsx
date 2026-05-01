@@ -13,6 +13,7 @@ interface TeamBrowserTabProps {
   onDraftPlayer?: (player: Player) => void;
   isDraftComplete: boolean;
   seasonType?: string;
+  playoffTeams?: string[];
 }
 
 export default function TeamBrowserTab({
@@ -22,14 +23,20 @@ export default function TeamBrowserTab({
   onDraftPlayer,
   isDraftComplete,
   seasonType = 'playoffs',
+  playoffTeams = [],
 }: TeamBrowserTabProps) {
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
 
+  const filteredPlayers = useMemo(() => {
+    if (seasonType !== 'playoffs' || playoffTeams.length === 0) return players;
+    return players.filter((p) => playoffTeams.includes(p.team));
+  }, [players, seasonType, playoffTeams]);
+
   const teams = useMemo(() => {
     const teamSet = new Set<string>();
-    players.forEach((p) => teamSet.add(p.team));
+    filteredPlayers.forEach((p) => teamSet.add(p.team));
     return Array.from(teamSet).sort();
-  }, [players]);
+  }, [filteredPlayers]);
 
   const draftedPlayerNames = useMemo(
     () => new Set(picks.map((p) => p.player_name)),
@@ -47,16 +54,16 @@ export default function TeamBrowserTab({
 
   const teamPlayers = useMemo(() => {
     if (!selectedTeam) return [];
-    return players
+    return filteredPlayers
       .filter((p) => p.team === selectedTeam)
       .sort((a, b) => b.displayPoints - a.displayPoints);
-  }, [players, selectedTeam]);
+  }, [filteredPlayers, selectedTeam]);
 
   const teamAdvancementOdds = useMemo(() => {
     if (!selectedTeam) return null;
-    const first = players.find((p) => p.team === selectedTeam);
+    const first = filteredPlayers.find((p) => p.team === selectedTeam);
     return first?.teamAdvancementOdds || null;
-  }, [players, selectedTeam]);
+  }, [filteredPlayers, selectedTeam]);
 
   const availableCount = selectedTeam
     ? teamPlayers.filter((p) => !draftedPlayerNames.has(p.name)).length

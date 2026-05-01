@@ -5,7 +5,7 @@ Combine all scraper data and calculate playoff projections.
 import json
 import os
 from typing import List, Dict, Optional, Tuple
-from scrape_rosters import scrape_playoff_rosters
+from scrape_rosters import scrape_playoff_rosters, get_playoff_teams
 from scrape_moneypuck import scrape_moneypuck_team_odds, scrape_player_stats, generate_stats_for_player, parse_lines_csv, parse_rankings_csv, download_all_moneypuck_files
 from scrape_fantasypros_ros import load_fantasypros_ros
 
@@ -57,6 +57,14 @@ def combine_data() -> Tuple[List[Dict], Dict[str, List[Dict]], List[Dict]]:
     print("  - Fetching team advancement odds from MoneyPuck...")
     team_odds = scrape_moneypuck_team_odds(moneypuck_paths.get('simulations_recent.csv'))
     print(f"    Found odds for {len(team_odds)} teams")
+
+    print("  - Detecting playoff teams from NHL standings...")
+    playoff_teams = get_playoff_teams()
+    if playoff_teams:
+        print(f"    Zeroing odds for {len(team_odds) - len(playoff_teams)} non-playoff teams")
+        for team in list(team_odds.keys()):
+            if team not in playoff_teams:
+                team_odds[team] = {'round1': 0, 'round2': 0, 'round3': 0, 'round4': 0}
 
     print("  - Fetching player stats...")
     player_stats = scrape_player_stats()
@@ -186,7 +194,7 @@ def combine_data() -> Tuple[List[Dict], Dict[str, List[Dict]], List[Dict]]:
     print(f"    Roster requests: {api_stats['roster_requests']} (cached: {api_stats['cached_roster_requests']}, hit rate: {api_stats['roster_cache_hit_rate']})")
     print(f"    Game log requests: {api_stats['game_log_requests']} (cached: {api_stats['cached_game_log_requests']}, hit rate: {api_stats['game_log_cache_hit_rate']})")
 
-    return combined_players, lines_data, rankings_data
+    return combined_players, lines_data, rankings_data, playoff_teams
 
 def save_players_json(players: List[Dict], output_path: str = DEFAULT_OUTPUT_PATH):
     import os
@@ -213,11 +221,20 @@ def save_rankings_json(rankings: List[Dict], output_path: str = DEFAULT_OUTPUT_P
         json.dump(rankings, f, indent=2)
     print(f"Saved {len(rankings)} team rankings to {rankings_path}")
 
+def save_teams_json(playoff_teams: List[str], output_path: str = DEFAULT_OUTPUT_PATH):
+    teams_path = output_path.replace('players.json', 'teams.json')
+    import os
+    os.makedirs(os.path.dirname(teams_path), exist_ok=True)
+    with open(teams_path, 'w') as f:
+        json.dump({"playoff_teams": sorted(playoff_teams)}, f, indent=2)
+    print(f"Saved {len(playoff_teams)} playoff teams to {teams_path}")
+
 if __name__ == "__main__":
-    players, lines_data, rankings_data = combine_data()
+    players, lines_data, rankings_data, playoff_teams = combine_data()
     save_players_json(players)
     save_lines_json(lines_data)
     save_rankings_json(rankings_data)
+    save_teams_json(playoff_teams)
 
     print("\nTop 5 players by projected playoff points:")
     for player in players[:5]:

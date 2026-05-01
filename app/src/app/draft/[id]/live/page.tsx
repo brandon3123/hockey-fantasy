@@ -361,6 +361,7 @@ export default function LiveDraftPage() {
     picks,
     players,
     availablePlayers,
+    playoffTeams,
     loading,
     isAdmin,
     managers,
@@ -612,6 +613,7 @@ export default function LiveDraftPage() {
                 onDraftPlayer={handlePickPlayer}
                 isDraftComplete={isDraftComplete}
                 seasonType={draft?.season_type ?? 'playoffs'}
+                playoffTeams={playoffTeams}
               />
             </div>
           )}

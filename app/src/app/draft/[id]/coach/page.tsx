@@ -52,6 +52,7 @@ export default function CoachPage() {
     picks,
     players,
     availablePlayers,
+    playoffTeams,
     loading,
     isAdmin,
     currentUserId,
@@ -249,6 +250,7 @@ export default function CoachPage() {
             onDraftPlayer={handleDraftPlayer}
             isDraftComplete={isDraftComplete}
             seasonType={draft?.season_type ?? 'playoffs'}
+            playoffTeams={playoffTeams}
           />
         )}
 

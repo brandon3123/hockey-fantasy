@@ -7,7 +7,7 @@ import os
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-from combine import combine_data, save_players_json, save_lines_json, save_rankings_json
+from combine import combine_data, save_players_json, save_lines_json, save_rankings_json, save_teams_json
 
 def main():
     print("=" * 60)
@@ -16,10 +16,11 @@ def main():
     print()
 
     try:
-        players, lines_data, rankings_data = combine_data()
+        players, lines_data, rankings_data, playoff_teams = combine_data()
         save_players_json(players)
         save_lines_json(lines_data)
         save_rankings_json(rankings_data)
+        save_teams_json(playoff_teams)
 
         print()
         print("=" * 60)
@@ -27,6 +28,7 @@ def main():
         print("=" * 60)
         print(f"Total players: {len(players)}")
         print(f"Output: app/public/players.json")
+        print(f"Output: app/public/teams.json")
         print(f"Output: app/public/lines_regular.json")
         print(f"Output: app/public/lines_playoffs.json")
         print()

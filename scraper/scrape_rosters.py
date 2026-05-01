@@ -12,7 +12,6 @@ import time
 # Format: YYYYZZZZ where ZZZZ is YYYY+1
 CURRENT_SEASON = "20252026"
 
-# All 32 NHL teams
 ALL_TEAMS = [
     "ANA", "UTA", "BOS", "BUF", "CAR", "CBJ", "CGY", "CHI",
     "COL", "DAL", "DET", "EDM", "FLA", "LAK", "MIN", "MTL",
@@ -20,24 +19,58 @@ ALL_TEAMS = [
     "SJS", "STL", "TBL", "TOR", "VAN", "VGK", "WPG", "WSH"
 ]
 
-# 2026 Stanley Cup Playoff teams (16 teams) - Based on NHL API "If Playoffs Started Today"
-PLAYOFF_TEAMS_2026 = [
-    # Eastern Conference
-    "BUF", "BOS", "TBL", "MTL", "CAR", "OTT", "PHI", "PIT",
-    # Western Conference
-    "LAK", "COL", "MIN", "DAL", "VGK", "UTA", "EDM", "ANA"
-]
+
+def fetch_playoff_teams() -> List[str]:
+    """
+    Fetch current playoff teams from NHL standings API.
+    Returns list of team abbreviations.
+    """
+    try:
+        response = requests.get("https://api-web.nhle.com/v1/standings/now", timeout=15)
+        response.raise_for_status()
+        data = response.json()
+
+        playoff_teams = []
+        for team in data.get('standings', []):
+            clinch = team.get('clinchIndicator', '')
+            if clinch in ('p', 'x', 'y', 'z'):
+                abbrev = team.get('teamAbbrev', {})
+                if isinstance(abbrev, dict):
+                    abbrev = abbrev.get('default', '')
+                if abbrev:
+                    playoff_teams.append(abbrev)
+
+        if playoff_teams:
+            print(f"  Detected {len(playoff_teams)} playoff teams: {', '.join(sorted(playoff_teams))}")
+            return playoff_teams
+    except Exception as e:
+        print(f"  Warning: Could not fetch playoff teams from standings: {e}")
+
+    return []
+
+
+def get_playoff_teams() -> List[str]:
+    """
+    Get current playoff teams, auto-detected from NHL API.
+    Falls back to all teams if detection fails.
+    """
+    teams = fetch_playoff_teams()
+    if teams:
+        return teams
+    print("  Falling back to all teams (could not detect playoff teams)")
+    return ALL_TEAMS
 
 def scrape_playoff_rosters() -> List[Dict]:
     """
-    Scrape NHL rosters using official NHL.com API.
+    Scrape NHL rosters for playoff teams using official NHL.com API.
 
     Returns:
         List of skaters with name, team, position, injury status
     """
+    playoff_teams = get_playoff_teams()
     rosters = []
 
-    for team_abbr in ALL_TEAMS:
+    for team_abbr in playoff_teams:
         try:
             url = f"https://api-web.nhle.com/v1/roster/{team_abbr}/{CURRENT_SEASON}"
             response = requests.get(url, timeout=10)

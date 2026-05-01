@@ -120,6 +120,7 @@ export function useDraftState(draftId: string) {
   const [participants, setParticipants] = useState<ParticipantData[]>([])
   const [picks, setPicks] = useState<DraftPickRow[]>([])
   const [players, setPlayers] = useState<Player[]>([])
+  const [playoffTeams, setPlayoffTeams] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
@@ -140,16 +141,22 @@ export function useDraftState(draftId: string) {
       setLoading(true)
       const supabase = createClient()
 
-      const [authResult, draftRes, playersResult] = await Promise.all([
+      const [authResult, draftRes, playersResult, teamsRes] = await Promise.all([
         supabase.auth.getUser(),
         fetch(`/api/drafts/${draftId}`),
         supabase.from('players').select('*').order('projected_playoff_points', { ascending: false }),
+        fetch('/teams.json'),
       ])
 
       setCurrentUserId(authResult.data.user?.id ?? null)
 
       if (playersResult.data) {
         setPlayers(playersResult.data.map(mapPlayerRow))
+      }
+
+      if (teamsRes.ok) {
+        const teamsData = await teamsRes.json()
+        setPlayoffTeams(teamsData.playoff_teams ?? [])
       }
 
       if (draftRes.ok) {
@@ -196,9 +203,9 @@ export function useDraftState(draftId: string) {
   }, [players, seasonType])
 
   const playoffTeamPlayers = useMemo(() => {
-    if (seasonType !== 'playoffs') return enrichedPlayers
-    return enrichedPlayers.filter(p => (p.teamAdvancementOdds?.round1 ?? 0) > 0)
-  }, [enrichedPlayers, seasonType])
+    if (seasonType !== 'playoffs' || playoffTeams.length === 0) return enrichedPlayers
+    return enrichedPlayers.filter(p => playoffTeams.includes(p.team))
+  }, [enrichedPlayers, seasonType, playoffTeams])
 
   const pickedPlayerIds = new Set(picks.map(p => p.player_id))
   const allPlayers = playoffTeamPlayers
@@ -224,6 +231,7 @@ export function useDraftState(draftId: string) {
     picks,
     players: enrichedPlayers,
     availablePlayers,
+    playoffTeams,
     loading,
     isAdmin,
     currentUserId,

@@ -24,6 +24,7 @@ export default function TeamPage() {
     picks,
     players,
     availablePlayers,
+    playoffTeams,
     loading,
     isAdmin,
     currentUserId,
@@ -229,6 +230,7 @@ export default function TeamPage() {
             onDraftPlayer={isSelfDraft ? handleDraftPlayer : undefined}
             isDraftComplete={isDraftComplete}
             seasonType={draft?.season_type ?? 'playoffs'}
+            playoffTeams={playoffTeams}
           />
         )}
 
