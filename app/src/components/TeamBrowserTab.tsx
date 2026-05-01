@@ -74,7 +74,7 @@ export default function TeamBrowserTab({
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
         {teams.map((team) => (
           <button
             key={team}
@@ -86,7 +86,7 @@ export default function TeamBrowserTab({
             }`}
           >
             <TeamLogo team={team} className="w-8 h-8" />
-            <span className="text-[10px] text-[#5a6b57] font-semibold">
+            <span className="text-xs text-[#5a6b57] font-semibold">
               {team}
             </span>
           </button>

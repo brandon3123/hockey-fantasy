@@ -134,7 +134,7 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
       <div className="bg-[#050a05] border border-[#141e12] rounded-lg p-6">
         <h3 className="text-lg font-bold text-[#6b9b7a] mb-4">Payment Details</h3>
         <div className="space-y-4">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className={labelClass}>Entry Fee</label>
               <input type="number" value={entryFee} onChange={(e) => setEntryFee(parseInt(e.target.value, 10))} min={0} className={inputClass} />

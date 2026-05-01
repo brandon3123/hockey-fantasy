@@ -106,14 +106,14 @@ export default function PlayoffBracket({ year = 2026 }: PlayoffBracketProps) {
   return (
     <div className="bg-[#0a0f0a] rounded-lg border border-[#141e12] p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-[#c8d9c3]">NHL Playoff Bracket {year}</h2>
-        <div className="flex gap-2">
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
+        <h2 className="text-xl md:text-2xl font-bold text-[#c8d9c3]">NHL Playoff Bracket {year}</h2>
+        <div className="flex gap-2 flex-wrap">
           {rounds.map(({ key, label }) => (
             <button
               key={key}
               onClick={() => setSelectedRound(key)}
-              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
+              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
                 selectedRound === key
                   ? 'bg-[#4a7c59] text-[#c8d9c3]'
                   : 'bg-[#050a05] text-[#5a6b57] hover:bg-[#141e12]'

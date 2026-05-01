@@ -195,10 +195,10 @@ export default function DraftDetailPage() {
   return (
     <div className="min-h-screen bg-[#050a05]">
       <div className="max-w-3xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
           <div>
             <Link href="/" className="text-sm text-[#5a6b57] hover:text-[#c8d9c3]">&larr; Back to Dashboard</Link>
-            <h1 className="text-3xl font-bold text-[#c8d9c3] mt-2">{draft.name}</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-[#c8d9c3] mt-2">{draft.name}</h1>
             <div className="text-sm text-[#5a6b57] mt-1">
               {statusLabels[draft.status] || draft.status} &bull; {draft.season_type === 'playoffs' ? 'Playoffs' : 'Regular Season'}
             </div>

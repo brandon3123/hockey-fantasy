@@ -122,11 +122,11 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-[#050a05]">
       <div className="max-w-5xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-[#c8d9c3]">My Drafts</h1>
+        <div className="flex items-center justify-between mb-8 flex-wrap gap-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-[#c8d9c3]">My Drafts</h1>
           <Link
             href="/dashboard/drafts/new"
-            className="px-6 py-3 bg-[#4a7c59] text-[#c8d9c3] rounded-lg font-semibold hover:bg-[#3d664a] transition-colors"
+            className="px-4 py-2.5 md:px-6 md:py-3 bg-[#4a7c59] text-[#c8d9c3] rounded-lg font-semibold hover:bg-[#3d664a] transition-colors"
           >
             Create New Draft
           </Link>
@@ -174,7 +174,7 @@ export default function HomePage() {
                         <button
                           onClick={(e) => handleDeleteDraft(e, draft.id, draft.name)}
                           disabled={deleting === draft.id}
-                          className="ml-4 text-[#5a6b57] hover:text-red-400 transition-colors text-sm disabled:opacity-50"
+                          className="ml-4 text-[#5a6b57] hover:text-red-400 transition-colors text-sm disabled:opacity-50 p-2"
                           title="Delete draft"
                         >
                           {deleting === draft.id ? '...' : '\u2715'}
@@ -195,9 +195,9 @@ export default function HomePage() {
                       key={draft.id}
                       className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-6 hover:border-[#9b8f6b] transition-colors"
                     >
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
                         <div className="flex-1">
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between flex-wrap gap-2">
                             <div>
                               <h3 className="text-lg font-bold text-[#c8d9c3]">{draft.name}</h3>
                               <div className="text-sm text-[#5a6b57] mt-1">
@@ -212,7 +212,7 @@ export default function HomePage() {
                               {(draft.status === 'in_progress' || draft.status === 'complete') && (
                                 <Link
                                   href={`/draft/${draft.id}/team`}
-                                  className="px-3 py-1.5 text-xs font-medium text-[#c8d9c3] bg-[#4a7c59] rounded-lg hover:bg-[#3d664a] transition-colors"
+                                  className="px-3 py-2.5 text-xs font-medium text-[#c8d9c3] bg-[#4a7c59] rounded-lg hover:bg-[#3d664a] transition-colors"
                                 >
                                   {draft.status === 'in_progress' ? 'My Team' : 'View Board'}
                                 </Link>

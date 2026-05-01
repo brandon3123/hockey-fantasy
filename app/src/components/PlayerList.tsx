@@ -94,7 +94,7 @@ export default function PlayerList({
               <button
                 key={pos}
                 onClick={() => setPositionFilter(pos)}
-                className={`flex-1 px-2 py-1.5 text-xs font-semibold rounded transition-colors ${
+                className={`flex-1 px-2 py-2.5 text-xs font-semibold rounded transition-colors ${
                   positionFilter === pos
                     ? 'bg-[#4a7c59] text-[#c8d9c3]'
                     : 'bg-[#0a0f0a] text-[#5a6b57] hover:bg-[#141e12]'
