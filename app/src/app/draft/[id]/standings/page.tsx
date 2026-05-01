@@ -132,12 +132,12 @@ export default function StandingsPage() {
           &larr; Back to Dashboard
         </Link>
 
-        <div className="flex justify-between items-start mt-2 mb-8">
+        <div className="flex flex-wrap justify-between items-start gap-2 mt-2 mb-8">
           <div>
-            <div className="text-[10px] uppercase tracking-wider text-[#5a6b57] mb-1">
+            <div className="text-xs uppercase tracking-wider text-[#5a6b57] mb-1">
               Season Standings
             </div>
-            <h1 className="text-2xl font-bold text-[#c8d9c3]">{draft.name}</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-[#c8d9c3]">{draft.name}</h1>
             <div className="text-sm text-[#5a6b57] mt-1">
               {draft.season_type === 'playoffs' ? 'Playoffs' : 'Regular Season'} &bull;{' '}
               {standings.length} Managers &bull; {draft.players_per_team} Rounds
@@ -246,7 +246,7 @@ export default function StandingsPage() {
           <h2 className="text-sm font-bold text-[#6b9b7a] uppercase tracking-wider mb-3">
             Standings
           </h2>
-          <div className="bg-[#0a0f0a] border border-[#141e12] rounded-lg overflow-hidden">
+          <div className="bg-[#0a0f0a] border border-[#141e12] rounded-lg overflow-x-auto">
             <table className="w-full border-collapse text-xs">
               <thead>
                 <tr className="bg-[#4a7c59] text-[#c8d9c3]">
@@ -322,7 +322,7 @@ export default function StandingsPage() {
                               return (
                                 <div
                                   key={i}
-                                  className={`w-1.5 rounded-sm ${
+                                  className={`w-2 rounded-sm ${
                                     isLast ? 'bg-[#6b9b7a]' : 'bg-[#4a7c59]'
                                   }`}
                                   style={{ height: `${height}px` }}
@@ -347,7 +347,7 @@ export default function StandingsPage() {
                                     key={p.playerId}
                                     className="flex items-center justify-between text-xs py-1"
                                   >
-                                    <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
                                       <span className="text-[#5a6b57] w-5 text-right">
                                         {p.round}
                                       </span>
