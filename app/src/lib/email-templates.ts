@@ -69,6 +69,43 @@ export function generateDailyEmailSubject(draftName: string): string {
   return `${draftName} — Yesterday's Results & Tonight's Games`;
 }
 
+export function generateInviteEmailHtml(draftName: string, joinUrl: string, logoUrl?: string): string {
+  const logoImg = logoUrl
+    ? `<img src="${logoUrl}" alt="Top Shelf Draft" width="40" height="30" style="margin-bottom: 4px;" />`
+    : '';
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head>
+<body style="margin: 0; padding: 0; background: #050a05; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <div style="max-width: 480px; margin: 0 auto; background: #050a05; border: 1px solid #141e12; border-radius: 8px; overflow: hidden;">
+    <div style="background: linear-gradient(135deg, #1a3d1a, #0a0f0a); padding: 24px 20px; text-align: center; border-radius: 8px 8px 0 0;">
+      ${logoImg}
+      <div style="color: #c8d9c3; font-size: 18px; font-weight: bold; letter-spacing: 1px;">TOP SHELF DRAFT</div>
+      <div style="color: #5a6b57; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px;">You're Invited</div>
+    </div>
+    <div style="padding: 20px;">
+      <p style="color: #c8d9c3; font-size: 15px; line-height: 1.6; margin: 0 0 8px;">You've been invited to join a hockey fantasy draft!</p>
+      ${draftName ? `<p style="color: #5a6b57; font-size: 14px; line-height: 1.6; margin: 0 0 16px;"><strong style="color: #c8d9c3;">${escapeHtml(draftName)}</strong></p>` : ''}
+      <p style="color: #5a6b57; font-size: 13px; line-height: 1.6; margin: 0 0 20px;">Click below to see the event details (date, location, entry fee) and pick your team name.</p>
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td align="center">
+            <a href="${joinUrl}" style="background-color: #4a7c59; color: #c8d9c3; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px; display: inline-block;">Join Draft</a>
+          </td>
+        </tr>
+      </table>
+      <div style="height: 1px; background: #141e12; margin: 20px 0;"></div>
+      <p style="color: #8a9b87; font-size: 13px; line-height: 1.6; margin: 0 0 4px;">If the button doesn't work, copy and paste this link:</p>
+      <p style="color: #6b9b7a; font-size: 12px; word-break: break-all; margin: 0;">${joinUrl}</p>
+    </div>
+    <div style="padding: 16px; text-align: center; border-top: 1px solid #141e12;">
+      <div style="font-size: 12px; color: #5a6b57;">If you weren't expecting this invitation, you can safely ignore this email.</div>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
 interface EmailParams {
   draftName: string;
   seasonType: string;

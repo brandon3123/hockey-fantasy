@@ -88,6 +88,14 @@ export default function DraftDetailPage() {
     }
   };
 
+  const handleResendInvite = async (id: string) => {
+    await fetch('/api/invites', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ invite_id: id }),
+    });
+  };
+
   const handleTogglePaid = async (id: string, has_paid: boolean) => {
     const res = await fetch('/api/participants', {
       method: 'PATCH',
@@ -297,6 +305,7 @@ export default function DraftDetailPage() {
             invites={invites}
             onRemoveParticipant={handleRemoveParticipant}
             onRemoveInvite={handleRemoveInvite}
+            onResendInvite={handleResendInvite}
             onTogglePaid={handleTogglePaid}
           />
         </div>

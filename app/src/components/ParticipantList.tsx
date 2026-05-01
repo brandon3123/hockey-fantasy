@@ -24,9 +24,10 @@ interface ParticipantListProps {
   onRemoveParticipant?: (id: string) => Promise<void>;
   onRemoveInvite?: (id: string) => Promise<void>;
   onTogglePaid?: (id: string, has_paid: boolean) => Promise<void>;
+  onResendInvite?: (id: string) => Promise<void>;
 }
 
-export default function ParticipantList({ participants, invites, totalSlots, onRemoveParticipant, onRemoveInvite, onTogglePaid }: ParticipantListProps) {
+export default function ParticipantList({ participants, invites, totalSlots, onRemoveParticipant, onRemoveInvite, onTogglePaid, onResendInvite }: ParticipantListProps) {
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const pendingInvites = invites.filter((inv) => inv.status === 'pending');
   const registeredCount = participants.length;
@@ -47,6 +48,12 @@ export default function ParticipantList({ participants, invites, totalSlots, onR
   const handleRemoveInvite = async (id: string) => {
     setLoadingAction(`remove-i-${id}`);
     await onRemoveInvite?.(id);
+    setLoadingAction(null);
+  };
+
+  const handleResendInvite = async (id: string) => {
+    setLoadingAction(`resend-i-${id}`);
+    await onResendInvite?.(id);
     setLoadingAction(null);
   };
 
@@ -103,7 +110,7 @@ export default function ParticipantList({ participants, invites, totalSlots, onR
         })}
 
         {pendingInvites.map((inv) => {
-          const isLoading = loadingAction === `remove-i-${inv.id}`;
+          const isLoading = loadingAction === `remove-i-${inv.id}` || loadingAction === `resend-i-${inv.id}`;
           return (
             <div
               key={inv.id}
@@ -115,6 +122,16 @@ export default function ParticipantList({ participants, invites, totalSlots, onR
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-xs text-[#5a6b57]">Pending</span>
+                {onResendInvite && (
+                  <button
+                    onClick={() => handleResendInvite(inv.id)}
+                    disabled={isLoading}
+                    className="text-xs px-2 py-1 bg-[#1a2f1a] text-[#6b9b7a] rounded hover:bg-[#2a3f2a] transition-colors disabled:cursor-wait disabled:opacity-50"
+                    title="Resend invite email"
+                  >
+                    {loadingAction === `resend-i-${inv.id}` ? '...' : 'Resend'}
+                  </button>
+                )}
                 {onRemoveInvite && (
                   <button
                     onClick={() => handleRemoveInvite(inv.id)}
