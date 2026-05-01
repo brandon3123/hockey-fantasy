@@ -41,6 +41,11 @@ export async function sendDailyEmails(
   const standingsUrl = `${baseUrl}/draft/${draftId}/standings`;
   const recapUrl = `${baseUrl}/draft/${draftId}/recap`;
 
+  console.log(`Sending emails for draft "${draftName}" from ${fromEmail} to ${participantsWithEmail.length} participants`);
+  for (const p of participantsWithEmail) {
+    console.log(`  - ${p.teamName}: ${p.email}`);
+  }
+
   let sent = 0;
   const errors: string[] = [];
 
@@ -55,7 +60,7 @@ export async function sendDailyEmails(
       const rank = standings.findIndex(s => s.participantId === participant.participantId) + 1;
 
       const myPlayersYesterday = standing.roster
-        .filter(p => p.gamesPlayed > 0)
+        .filter(p => p.yesterdayPoints > 0)
         .map(p => {
           const game = tonightGames.find(
             g => g.away === p.team || g.home === p.team
@@ -70,9 +75,9 @@ export async function sendDailyEmails(
             team: p.team,
             opponent,
             result: '',
-            points: p.points,
-            goals: p.goals,
-            assists: p.assists,
+            points: p.yesterdayPoints,
+            goals: p.yesterdayGoals,
+            assists: p.yesterdayAssists,
           };
         });
 
@@ -105,13 +110,19 @@ export async function sendDailyEmails(
         recapUrl,
       });
 
-      await resend.emails.send({
+      const { data, error: sendError } = await resend.emails.send({
         from: fromEmail,
         to: participant.email,
         subject,
         html,
       });
 
+      if (sendError) {
+        errors.push(`Failed to send to ${participant.email}: ${sendError.message}`);
+        continue;
+      }
+
+      console.log(`Email sent to ${participant.email}: ${data?.id}`);
       sent++;
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);

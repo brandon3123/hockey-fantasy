@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
-import { fetchCompletedGames, fetchGameResults } from '@/lib/nhl-api';
+import { fetchCompletedGames, fetchGameResults, buildNhlIdToNameMap, fetchTonightGames } from '@/lib/nhl-api';
 import { sendDailyEmails } from '@/lib/send-daily-email';
 
 export async function GET(request: Request) {
@@ -8,16 +8,24 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Cron disabled' }, { status: 404 });
   }
 
-  const authHeader = request.headers.get('authorization');
-  const expectedAuth = `Bearer ${process.env.CRON_SECRET}`;
-  if (authHeader !== expectedAuth) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { searchParams } = new URL(request.url);
+  const dateParam = searchParams.get('date');
+  let dateStr: string;
+  if (dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
+    dateStr = dateParam;
+  } else {
+    const offset = parseInt(process.env.SCORES_DATE_OFFSET ?? '1', 10);
+    const etParts = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/New_York",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).formatToParts(new Date());
+    const todayET = `${etParts.find(p => p.type === "year")!.value}-${etParts.find(p => p.type === "month")!.value}-${etParts.find(p => p.type === "day")!.value}`;
+    const targetDate = new Date(`${todayET}T12:00:00`);
+    targetDate.setDate(targetDate.getDate() - offset);
+    dateStr = targetDate.toISOString().slice(0, 10);
   }
-
-  const offset = parseInt(process.env.SCORES_DATE_OFFSET ?? '1', 10);
-  const targetDate = new Date();
-  targetDate.setDate(targetDate.getDate() - offset);
-  const dateStr = targetDate.toISOString().slice(0, 10);
 
   const dryRun = process.env.SCORES_DRY_RUN === 'true';
 
@@ -36,7 +44,7 @@ export async function GET(request: Request) {
 
   const { data: drafts, error: draftsError } = await adminClient
     .from('drafts')
-    .select('id, scoring_format')
+    .select('id, scoring_format, season_type')
     .eq('status', 'complete');
 
   if (draftsError || !drafts || drafts.length === 0) {
@@ -51,6 +59,9 @@ export async function GET(request: Request) {
   }
 
   const completedGames = await fetchCompletedGames(dateStr);
+
+  const teamAbbrevs = [...new Set(completedGames.flatMap((g) => [g.away, g.home]))];
+  const nhlIdToName = await buildNhlIdToNameMap(teamAbbrevs);
 
   const allResults: Awaited<ReturnType<typeof fetchGameResults>> = [];
   for (const game of completedGames) {
@@ -90,6 +101,7 @@ export async function GET(request: Request) {
     const rowsToUpsert: {
       player_id: string;
       draft_id: string;
+      season_type: string;
       score_date: string;
       goals: number;
       assists: number;
@@ -97,7 +109,9 @@ export async function GET(request: Request) {
     }[] = [];
 
     for (const result of allResults) {
-      const playerId = pickMap.get(result.playerName.toLowerCase());
+      const fullName = nhlIdToName.get(result.nhlId);
+      if (!fullName) continue;
+      const playerId = pickMap.get(fullName.toLowerCase());
       if (!playerId) continue;
 
       let points: number;
@@ -110,6 +124,7 @@ export async function GET(request: Request) {
       rowsToUpsert.push({
         player_id: playerId,
         draft_id: draft.id,
+        season_type: draft.season_type ?? 'regular_season',
         score_date: dateStr,
         goals: result.goals,
         assists: result.assists,
@@ -203,6 +218,7 @@ export async function GET(request: Request) {
             gamesPlayed++;
           }
         }
+        const yesterdayScore = scoresByPlayer.get(pick.player_id)?.get(dateStr);
         return {
           playerId: pick.player_id,
           playerName: pick.player_name,
@@ -213,6 +229,9 @@ export async function GET(request: Request) {
           assists,
           points,
           gamesPlayed,
+          yesterdayGoals: yesterdayScore?.goals ?? 0,
+          yesterdayAssists: yesterdayScore?.assists ?? 0,
+          yesterdayPoints: yesterdayScore?.points ?? 0,
         };
       });
       const totalPoints = roster.reduce((sum, r) => sum + r.points, 0);
@@ -230,7 +249,7 @@ export async function GET(request: Request) {
       };
     }).sort((a, b) => b.totalPoints - a.totalPoints);
 
-    const tonightGames: { gameId: number; away: string; home: string; time: string }[] = [];
+    const tonightGames = await fetchTonightGames().catch(() => []);
 
     const result = await sendDailyEmails({
       draftId: draft.id,

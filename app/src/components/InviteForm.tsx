@@ -44,6 +44,15 @@ export default function InviteForm({ draftId, onInviteSent }: InviteFormProps) {
     setLoading(false);
   };
 
+  const [copied, setCopied] = useState(false);
+
+  const copyLink = async () => {
+    const url = `${window.location.origin}/join/${draftId}`;
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div className="bg-[#050a05] border border-[#141e12] rounded-lg p-6">
       <h3 className="text-lg font-bold text-[#c8d9c3] mb-4">Invite Participants</h3>
@@ -92,12 +101,17 @@ export default function InviteForm({ draftId, onInviteSent }: InviteFormProps) {
       )}
 
       <div className="mt-4 pt-4 border-t border-[#141e12]">
-        <p className="text-xs text-[#5a6b57]">
-          Or share this link directly:{' '}
-          <span className="text-[#6b9b7a] select-all">
-            {typeof window !== 'undefined' ? `${window.location.origin}/join/${draftId}` : ''}
+        <p className="text-xs text-[#5a6b57] mb-2">Or share this link directly:</p>
+        <button
+          type="button"
+          onClick={copyLink}
+          className="w-full flex items-center gap-2 px-3 py-2 bg-[#0a0f0a] border border-[#141e12] rounded-lg text-sm text-[#6b9b7a] hover:bg-[#141e12] hover:border-[#4a7c59] transition-colors"
+        >
+          <span className="truncate flex-1 text-left">{typeof window !== 'undefined' ? `${window.location.origin}/join/${draftId}` : ''}</span>
+          <span className="text-xs font-medium text-[#5a6b57] shrink-0">
+            {copied ? 'Copied!' : 'Copy'}
           </span>
-        </p>
+        </button>
       </div>
     </div>
   );

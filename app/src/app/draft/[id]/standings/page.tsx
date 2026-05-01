@@ -27,6 +27,7 @@ interface RosterPlayer {
 
 interface StandingEntry {
   participantId: string;
+  userId: string;
   teamName: string;
   rank: number;
   totalPoints: number;
@@ -57,14 +58,17 @@ const RANK_COLORS = ['#ffd700', '#c0c0c0', '#cd7f32'];
 
 function getDraftedPlayersForGame(
   game: TonightGame,
-  standings: StandingEntry[]
+  standings: StandingEntry[],
+  currentUserId: string | null
 ): { playerName: string; position: string; team: string }[] {
   const players: { playerName: string; position: string; team: string }[] = [];
-  for (const s of standings) {
-    for (const p of s.roster) {
-      if (p.team === game.home || p.team === game.away) {
-        players.push({ playerName: p.playerName, position: p.position, team: p.team });
-      }
+  const myTeam = currentUserId
+    ? standings.find((s) => s.userId === currentUserId)
+    : null;
+  if (!myTeam) return players;
+  for (const p of myTeam.roster) {
+    if (p.team === game.home || p.team === game.away) {
+      players.push({ playerName: p.playerName, position: p.position, team: p.team });
     }
   }
   return players;
@@ -159,7 +163,7 @@ export default function StandingsPage() {
             </h2>
             <div className="flex gap-3 overflow-x-auto pb-2">
               {tonightGames.map((game) => {
-                const draftedPlayers = getDraftedPlayersForGame(game, standings);
+                const draftedPlayers = getDraftedPlayersForGame(game, standings, data.currentUserId);
                 const hasPlayers = game.hasDraftedPlayers && draftedPlayers.length > 0;
                 const isExpanded = expandedGame === game.gameId;
 

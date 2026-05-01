@@ -61,16 +61,26 @@ export async function GET(
     scoresByPlayer.get(s.player_id)!.set(s.score_date, { goals: s.goals, assists: s.assists, points: s.points });
   }
 
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = yesterday.toISOString().slice(0, 10);
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const y = parts.find(p => p.type === "year")!.value;
+  const m = parts.find(p => p.type === "month")!.value;
+  const d = parts.find(p => p.type === "day")!.value;
+  const todayET = `${y}-${m}-${d}`;
+
+  const yesterdayDate = new Date(`${todayET}T12:00:00`);
+  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+  const yesterdayStr = yesterdayDate.toISOString().slice(0, 10);
 
   const last7Days: string[] = [];
   for (let i = 6; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
-    last7Days.push(d.toISOString().slice(0, 10));
+    const dd = new Date(`${todayET}T12:00:00`);
+    dd.setDate(dd.getDate() - i);
+    last7Days.push(dd.toISOString().slice(0, 10));
   }
 
   const standings = participants.map((participant) => {
@@ -127,6 +137,7 @@ export async function GET(
 
     return {
       participantId: participant.id,
+      userId: participant.user_id,
       teamName: participant.team_name,
       totalPoints,
       yesterdayPoints,
@@ -151,16 +162,19 @@ export async function GET(
 
   const tonightGames = await fetchTonightGames().catch(() => []);
 
-  const allDraftedTeams = new Set<string>();
-  for (const s of rankedStandings) {
-    for (const p of s.roster) {
-      if (p.team) allDraftedTeams.add(p.team);
+  const currentParticipant = participants.find((p) => p.user_id === user?.id);
+  const myTeamAbbrevs = new Set<string>();
+  if (currentParticipant) {
+    const myPicks = picks.filter((p) => p.participant_id === currentParticipant.id);
+    for (const pick of myPicks) {
+      const playerInfo = playerMap.get(pick.player_id);
+      if (playerInfo?.team) myTeamAbbrevs.add(playerInfo.team);
     }
   }
 
   const tonightGamesWithFlag = tonightGames.map((game) => ({
     ...game,
-    hasDraftedPlayers: allDraftedTeams.has(game.away) || allDraftedTeams.has(game.home),
+    hasDraftedPlayers: myTeamAbbrevs.has(game.away) || myTeamAbbrevs.has(game.home),
   }));
 
   return NextResponse.json({

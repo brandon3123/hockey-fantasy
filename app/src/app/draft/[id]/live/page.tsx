@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import { useDraftState, DraftPickRow, ParticipantData } from '@/hooks/useDraftState';
 import PlayerList from '@/components/PlayerList';
 import TeamBrowserTab from '@/components/TeamBrowserTab';
@@ -508,8 +509,16 @@ export default function LiveDraftPage() {
 
           <div className="flex items-center gap-3">
             {isDraftComplete ? (
-              <div className="px-4 py-1.5 bg-[#4a7c59] rounded-lg text-sm font-bold text-[#c8d9c3]">
-                DRAFT COMPLETE
+              <div className="flex items-center gap-2">
+                <div className="px-4 py-1.5 bg-[#4a7c59] rounded-lg text-sm font-bold text-[#c8d9c3]">
+                  DRAFT COMPLETE
+                </div>
+                <Link
+                  href={`/draft/${draftId}/results`}
+                  className="px-4 py-1.5 text-sm font-bold text-[#050a05] bg-[#6b9b7a] rounded-lg hover:bg-[#8ab89a] transition-colors"
+                >
+                  View Results
+                </Link>
               </div>
             ) : (
               <div className="px-4 py-1.5 bg-[#4a7c59] rounded-lg text-sm font-bold text-white animate-pulse">

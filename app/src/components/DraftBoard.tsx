@@ -1,26 +1,31 @@
 'use client';
 
 import { useMemo } from 'react';
+import Link from 'next/link';
 import { DraftPickRow, ParticipantData } from '@/hooks/useDraftState';
 import { Player } from '@/types/player';
 import TeamLogo from './TeamLogo';
 
 interface DraftBoardProps {
+  draftId: string;
   participants: ParticipantData[];
   picks: DraftPickRow[];
   players: Player[];
   playersPerTeam: number;
   currentRound: number;
   currentParticipant: ParticipantData | null;
+  isDraftComplete?: boolean;
 }
 
 export default function DraftBoard({
+  draftId,
   participants,
   picks,
   players,
   playersPerTeam,
   currentRound,
   currentParticipant,
+  isDraftComplete = false,
 }: DraftBoardProps) {
   const sorted = useMemo(
     () => [...participants].sort((a, b) => (a.draft_position ?? 0) - (b.draft_position ?? 0)),
@@ -95,6 +100,16 @@ export default function DraftBoard({
           </tbody>
         </table>
       </div>
+      {isDraftComplete && (
+        <div className="px-4 py-3 border-t border-[#141e12] flex justify-center">
+          <Link
+            href={`/draft/${draftId}/results`}
+            className="px-4 py-1.5 text-xs font-bold text-[#050a05] bg-[#6b9b7a] rounded-lg hover:bg-[#8ab89a] transition-colors"
+          >
+            View Results
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
