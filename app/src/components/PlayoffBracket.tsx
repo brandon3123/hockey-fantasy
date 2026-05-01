@@ -127,7 +127,7 @@ export default function PlayoffBracket({ year = 2026 }: PlayoffBracketProps) {
 
       {/* Conference Headers */}
       {selectedRound !== 'final' && (
-        <div className="grid grid-cols-2 gap-8 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-4">
           <div className="text-center">
             <h3 className="text-sm font-semibold text-[#5a6b57] uppercase tracking-widest">Eastern Conference</h3>
           </div>
@@ -140,7 +140,7 @@ export default function PlayoffBracket({ year = 2026 }: PlayoffBracketProps) {
       {/* Matchups */}
       <div className="space-y-3">
         {selectedRound !== 'final' && currentEastern.length > 0 && currentWestern.length > 0 && (
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
             {[{ matchups: currentEastern, key: 'east' }, { matchups: currentWestern, key: 'west' }].map(({ matchups, key }) => (
               <div key={key} className="space-y-3">
                 {matchups.map((matchup, i) => (

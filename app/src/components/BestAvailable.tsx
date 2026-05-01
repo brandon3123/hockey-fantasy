@@ -116,8 +116,8 @@ export default function BestAvailable({
                   })()}
                 </div>
 
-                <div className="text-right shrink-0 min-w-fit">
-                  <div className="text-2xl font-bold text-[#c8d9c3]">
+                <div className="text-right shrink-0 min-w-[60px]">
+                  <div className="text-lg md:text-2xl font-bold text-[#c8d9c3]">
                     {player.displayPoints.toFixed(1)}
                     <span className="text-xs font-normal text-[#5a6b57] ml-1">proj</span>
                   </div>

@@ -164,7 +164,7 @@ export default function PlayerList({
                     {player.team} &bull; {player.position} &bull; {player.pointsPerGame.toFixed(2)} ppg
                   </div>
                 </div>
-                <div className="text-right shrink-0">
+                <div className="text-right shrink-0 min-w-[50px]">
                   <div className="text-lg font-bold text-[#6b9b7a]">
                     {player.displayPoints.toFixed(1)}
                   </div>
