@@ -116,7 +116,7 @@ export function generateDailyEmailHtml(params: EmailParams): string {
 
   const headerSection = `
     <div style="background: linear-gradient(135deg, #1a3d1a, #0a0f0a); padding: 24px 20px; text-align: center; border-radius: 8px 8px 0 0;">
-      <div style="font-size: 28px; margin-bottom: 4px;">&#127953;</div>
+      <div style="margin-bottom: 4px;"><svg viewBox="0 0 60 44" width="40" height="30" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="3" height="35" rx="1" fill="#c8d9c3"/><rect x="48" y="4" width="3" height="35" rx="1" fill="#c8d9c3"/><rect x="4" y="3" width="47" height="3" rx="1" fill="#c8d9c3"/><line x1="2" y1="38" x2="53" y2="38" stroke="#7a3a3a" stroke-width="2"/><line x1="7" y1="12" x2="48" y2="12" stroke="#2a4a2a" stroke-width="0.6"/><line x1="7" y1="20" x2="48" y2="20" stroke="#2a4a2a" stroke-width="0.6"/><line x1="7" y1="28" x2="48" y2="28" stroke="#2a4a2a" stroke-width="0.6"/><line x1="18" y1="6" x2="18" y2="38" stroke="#2a4a2a" stroke-width="0.6"/><line x1="32" y1="6" x2="32" y2="38" stroke="#2a4a2a" stroke-width="0.6"/><circle cx="14" cy="11" r="12" fill="#4a7c59" opacity="0.05"/><circle cx="14" cy="11" r="8" fill="#4a7c59" opacity="0.08"/><circle cx="14" cy="11" r="5" fill="#4a7c59" opacity="0.12"/><circle cx="14" cy="11" r="3" fill="#4a7c59" opacity="0.18"/><line x1="40" y1="34" x2="18" y2="14" stroke="#4a7c59" stroke-width="1.2" opacity="0.28"/><line x1="44" y1="30" x2="22" y2="15" stroke="#4a7c59" stroke-width="0.8" opacity="0.2"/><line x1="36" y1="36" x2="14" y2="15" stroke="#4a7c59" stroke-width="0.8" opacity="0.2"/><ellipse cx="14" cy="11" rx="7" ry="3.5" fill="#4a7c59"/><ellipse cx="14" cy="10" rx="7" ry="2.5" fill="#6b9b7a"/></svg></div>
       <div style="color: #c8d9c3; font-size: 18px; font-weight: bold; letter-spacing: 1px;">TOP SHELF DRAFT</div>
       <div style="color: #5a6b57; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px;">Daily Update</div>
       <div style="color: #c8d9c3; font-size: 16px; font-weight: bold; margin-top: 8px;">${escapeHtml(draftName)}</div>
@@ -285,7 +285,7 @@ export function generateDailyEmailHtml(params: EmailParams): string {
 
   const footerSection = `
     <div style="padding: 16px; text-align: center; border-top: 1px solid #141e12; margin-top: 8px;">
-      <div style="font-size: 12px; color: #5a6b57; margin-bottom: 8px;">&#127953; Top Shelf Draft</div>
+      <div style="font-size: 12px; color: #5a6b57; margin-bottom: 8px;">Top Shelf Draft</div>
       <a href="${escapeHtml(recapUrl)}" style="color: #6b9b7a; text-decoration: none; font-size: 13px; margin: 0 12px;">Draft Recap</a>
       <a href="${escapeHtml(standingsUrl)}" style="color: #6b9b7a; text-decoration: none; font-size: 13px; margin: 0 12px;">Standings</a>
     </div>`;

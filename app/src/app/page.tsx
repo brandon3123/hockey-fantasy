@@ -69,8 +69,9 @@ export default function HomePage() {
     return (
       <div className="min-h-screen bg-[#050a05] flex items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4">&#127953;</div>
-          <h1 className="text-4xl font-bold text-[#c8d9c3] mb-2">Top Shelf Draft</h1>
+          <div className="flex justify-center mb-4">
+            <img src="/logo/logo-hero.svg" alt="Top Shelf Draft" className="w-64" />
+          </div>
           <p className="text-[#5a6b57] mb-8 max-w-md mx-auto">
             Data-driven NHL fantasy draft assistant. Research players, run your draft, track standings.
           </p>
@@ -135,7 +136,9 @@ export default function HomePage() {
           <div className="text-[#5a6b57]">Loading drafts...</div>
         ) : allEmpty ? (
           <div className="text-center py-16">
-            <div className="text-6xl mb-4">&#127953;</div>
+            <div className="flex justify-center mb-4">
+              <img src="/logo/logo-hero.svg" alt="Top Shelf Draft" className="w-48" />
+            </div>
             <h2 className="text-xl font-bold text-[#c8d9c3] mb-2">No drafts yet</h2>
             <p className="text-[#5a6b57] mb-6">Create your first draft or join one with an invite link</p>
             <Link

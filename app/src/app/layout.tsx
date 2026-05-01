@@ -7,6 +7,9 @@ import { AuthProvider } from '@/context/auth-context';
 export const metadata: Metadata = {
   title: 'Top Shelf Draft',
   description: 'Data-driven NHL playoff fantasy draft assistant',
+  icons: {
+    icon: '/logo/logo-icon-round.svg',
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

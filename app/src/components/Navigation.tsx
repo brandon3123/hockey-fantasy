@@ -52,13 +52,10 @@ export default function Navigation() {
   return (
     <nav className="bg-[#0a0f0a] border-b border-[#141e12]">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-3">
-              <span className="text-2xl">&#127953;</span>
-              <span className="font-bold text-xl text-[#c8d9c3]">
-                Top Shelf Draft
-              </span>
+        <div className="flex items-center justify-between py-2">
+          <div className="flex items-center">
+            <Link href="/" className="flex items-center">
+              <img src="/logo/logo-horizontal.svg" alt="Top Shelf Draft" className="h-[55px]" />
             </Link>
           </div>
           <div className="flex items-center gap-1">
