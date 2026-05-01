@@ -23,6 +23,7 @@ export default function DraftPage() {
   const [activeTab, setActiveTab] = useState<'coach' | 'best' | 'full' | 'team' | 'positions' | 'visualizer'>('coach');
   const [watchlist, setWatchlist] = useState<Set<string>>(new Set());
   const [strategy, setStrategy] = useState<DraftStrategy>(STRATEGIES.balanced);
+  const [mobileTab, setMobileTab] = useState<'board' | 'panel'>('board');
 
   const [managers, setManagers] = useState(7);
   const [yourPosition, setYourPosition] = useState(1);
@@ -412,9 +413,9 @@ export default function DraftPage() {
     <div className="min-h-screen bg-[#050a05] flex flex-col">
       {/* Header - Compact with team stats */}
       <div className="px-4 py-3 border-b border-[#141e12]">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
           <div>
-            <h1 className="text-xl font-bold text-[#c8d9c3]">Draft Board</h1>
+            <h1 className="text-lg md:text-xl font-bold text-[#c8d9c3]">Draft Board</h1>
             <p className="text-sm text-[#5a6b57]">
               {!isDraftComplete ? (
                 <span className="font-semibold text-[#6b9b7a]">
@@ -425,7 +426,7 @@ export default function DraftPage() {
               )}
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             {canUndo && (
               <button
                 onClick={handleUndoPick}
@@ -470,7 +471,7 @@ export default function DraftPage() {
 
       {/* Compact Team Stats Bar */}
         {yourPicks.length > 0 && (
-          <div className="flex items-center gap-4 text-xs">
+          <div className="flex items-center gap-2 md:gap-4 text-xs flex-wrap">
             <div className="flex items-center gap-2">
               <span className="text-[#5a6b57]">Your Picks:</span>
               <span className="font-semibold text-[#c8d9c3]">{yourPicks.length}</span>
@@ -503,10 +504,27 @@ export default function DraftPage() {
         )}
       </div>
 
-      {/* Main Content - Two Column Layout */}
+      <div className="lg:hidden flex border-b border-[#141e12]">
+        <button
+          onClick={() => setMobileTab('board')}
+          className={`flex-1 py-3 text-center text-sm font-semibold transition-colors ${
+            mobileTab === 'board' ? 'text-[#c8d9c3] bg-[#1a2f1a] border-b-2 border-[#4a7c59]' : 'text-[#5a6b57]'
+          }`}
+        >
+          Draft Board
+        </button>
+        <button
+          onClick={() => setMobileTab('panel')}
+          className={`flex-1 py-3 text-center text-sm font-semibold transition-colors ${
+            mobileTab === 'panel' ? 'text-[#c8d9c3] bg-[#1a2f1a] border-b-2 border-[#4a7c59]' : 'text-[#5a6b57]'
+          }`}
+        >
+          Players
+        </button>
+      </div>
+
       <div className="flex-1 flex overflow-hidden items-start">
-        {/* Draft Board - Center (75%) */}
-        <div className="flex-1 overflow-auto p-4">
+        <div className={`flex-1 overflow-auto p-4 ${mobileTab !== 'board' ? 'hidden lg:block' : ''}`}>
           <DraftGrid
             draftState={draftState}
             managerNames={managerNames}
@@ -515,14 +533,12 @@ export default function DraftPage() {
           />
         </div>
 
-        {/* Right Column - Player Selection (25%) */}
-        <div className="w-96 shrink-0 border-l border-[#141e12] bg-[#0a0f0a] flex flex-col relative z-10">
-          {/* Tabs - Outside scroll area */}
+        <div className={`${mobileTab !== 'panel' ? 'hidden lg:flex' : 'flex'} w-full lg:w-96 shrink-0 flex-col border-t lg:border-t-0 lg:border-l border-[#141e12] bg-[#0a0f0a] relative z-10`}>
           <div className="p-2 border-b border-[#141e12] shrink-0">
             <div className="flex gap-1">
               <button
                 onClick={() => setActiveTab('coach')}
-                className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-colors ${
+                className={`flex-1 px-2 py-2.5 rounded text-xs font-medium transition-colors ${
                   activeTab === 'coach'
                     ? 'bg-[#4a7c59] text-[#c8d9c3]'
                     : 'text-[#5a6b57] hover:bg-[#141e12]'
@@ -532,7 +548,7 @@ export default function DraftPage() {
               </button>
               <button
                 onClick={() => setActiveTab('best')}
-                className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-colors ${
+                className={`flex-1 px-2 py-2.5 rounded text-xs font-medium transition-colors ${
                   activeTab === 'best'
                     ? 'bg-[#4a7c59] text-[#c8d9c3]'
                     : 'text-[#5a6b57] hover:bg-[#141e12]'
@@ -542,7 +558,7 @@ export default function DraftPage() {
               </button>
               <button
                 onClick={() => setActiveTab('full')}
-                className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-colors ${
+                className={`flex-1 px-2 py-2.5 rounded text-xs font-medium transition-colors ${
                   activeTab === 'full'
                     ? 'bg-[#4a7c59] text-[#c8d9c3]'
                     : 'text-[#5a6b57] hover:bg-[#141e12]'
@@ -554,7 +570,7 @@ export default function DraftPage() {
             <div className="flex gap-1 mt-1">
               <button
                 onClick={() => setActiveTab('team')}
-                className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-colors ${
+                className={`flex-1 px-2 py-2.5 rounded text-xs font-medium transition-colors ${
                   activeTab === 'team'
                     ? 'bg-[#4a7c59] text-[#c8d9c3]'
                     : 'text-[#5a6b57] hover:bg-[#141e12]'
@@ -564,7 +580,7 @@ export default function DraftPage() {
               </button>
               <button
                 onClick={() => setActiveTab('positions')}
-                className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-colors ${
+                className={`flex-1 px-2 py-2.5 rounded text-xs font-medium transition-colors ${
                   activeTab === 'positions'
                     ? 'bg-[#4a7c59] text-[#c8d9c3]'
                     : 'text-[#5a6b57] hover:bg-[#141e12]'
@@ -574,7 +590,7 @@ export default function DraftPage() {
               </button>
               <button
                 onClick={() => setActiveTab('visualizer')}
-                className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-colors ${
+                className={`flex-1 px-2 py-2.5 rounded text-xs font-medium transition-colors ${
                   activeTab === 'visualizer'
                     ? 'bg-[#4a7c59] text-[#c8d9c3]'
                     : 'text-[#5a6b57] hover:bg-[#141e12]'
@@ -585,7 +601,6 @@ export default function DraftPage() {
             </div>
           </div>
 
-          {/* Tab Content */}
           <div className="overflow-y-auto p-4">
             {activeTab === 'coach' && (
               <div className="w-full">
