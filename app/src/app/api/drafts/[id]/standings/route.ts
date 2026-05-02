@@ -158,9 +158,12 @@ export async function GET(
     (standings[i] as typeof standings[0] & { rank: number }).rank = i + 1;
   }
 
+  const { searchParams } = new URL(request.url);
+  const timezone = searchParams.get('tz') || undefined;
+
   const rankedStandings = standings.map((s, i) => ({ ...s, rank: i + 1 }));
 
-  const tonightGames = await fetchTonightGames().catch(() => []);
+  const tonightGames = await fetchTonightGames(timezone).catch(() => []);
 
   const currentParticipant = participants.find((p) => p.user_id === user?.id);
   const myTeamAbbrevs = new Set<string>();

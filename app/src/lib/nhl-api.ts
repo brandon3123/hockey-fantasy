@@ -38,9 +38,9 @@ function formatTimeMT(isoDate: string): string {
   });
 }
 
-function getDateET(): string {
+function getDateForTimezone(tz: string = 'America/New_York'): string {
   const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/Denver",
+    timeZone: tz,
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -146,13 +146,13 @@ export async function fetchCompletedGames(
   return games.filter((g) => g.gameState === "OFF");
 }
 
-export async function fetchTonightGames(): Promise<TonightGame[]> {
-  const todayET = getDateET();
+export async function fetchTonightGames(timezone?: string): Promise<TonightGame[]> {
+  const todayTz = getDateForTimezone(timezone ?? 'America/New_York');
   try {
     const res = await fetch(`${NHL_API_BASE}/v1/schedule/now`);
-    if (!res.ok) return fetchScheduleByDate(todayET);
+    if (!res.ok) return fetchScheduleByDate(todayTz);
     const data: ScheduleResponse = await res.json();
-    const day = data.gameWeek?.find((d) => d.date === todayET);
+    const day = data.gameWeek?.find((d) => d.date === todayTz);
     if (!day || day.games.length === 0) {
       for (const d of data.gameWeek ?? []) {
         if (d.games.length > 0) return d.games.map(mapGame);
@@ -161,7 +161,7 @@ export async function fetchTonightGames(): Promise<TonightGame[]> {
     }
     return day.games.map(mapGame);
   } catch {
-    return fetchScheduleByDate(todayET);
+    return fetchScheduleByDate(todayTz);
   }
 }
 

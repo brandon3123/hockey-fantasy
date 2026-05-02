@@ -86,7 +86,8 @@ export default function StandingsPage() {
   useEffect(() => {
     async function fetchStandings() {
       try {
-        const res = await fetch(`/api/drafts/${draftId}/standings`);
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const res = await fetch(`/api/drafts/${draftId}/standings?tz=${encodeURIComponent(tz)}`);
         if (!res.ok) {
           const body = await res.json();
           setError(body.error || 'Failed to load standings');
