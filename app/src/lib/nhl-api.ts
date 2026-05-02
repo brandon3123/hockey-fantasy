@@ -40,7 +40,7 @@ function formatTimeMT(isoDate: string): string {
 
 function getDateET(): string {
   const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/New_York",
+    timeZone: "America/Denver",
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
