@@ -9,20 +9,39 @@ Post-draft standings and roster views show no player health or playoff eliminati
 
 ## Solution
 
-Enrich the standings/results API responses with live injury data (from NHL API) and playoff elimination status (from NHL playoff bracket). Display these as visual indicators on all post-draft roster views.
+Enrich the standings/results API responses with live injury data (from ESPN Injuries API) and playoff elimination status (from NHL playoff bracket API). Display these as visual indicators on all post-draft roster views.
 
-## Architecture: API-Layer Enrichment (Approach 1)
+## Architecture: API-Layer Enrichment
 
 When standings/results API endpoints are called:
 1. Fetch picks, scores, participants (existing flow)
-2. Collect all unique NHL team abbreviations from drafted players
-3. Call `fetchPlayerInjuryStatus(teamAbbrevs)` → map of `{ nhlId → injury }`
-4. Call `fetchActivePlayoffTeams()` → set of active team abbreviations
-5. If regular season (no bracket data): skip elimination check, all `isEliminated = false`
+2. Fetch ESPN injuries: `https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/injuries` → returns teams with injured athletes
+3. Fetch NHL playoff bracket: `https://api-web.nhle.com/v1/playoff-bracket/2026` → extract active teams
+4. Match ESPN injuries to our drafted players by **player name** (case-insensitive)
+5. Determine elimination: if player's NHL team is NOT in the active playoff bracket
 6. Merge injury + elimination data into each `RosterPlayer`
 7. Return enriched response
 
 **Cache:** In-memory cache with short TTL — 10 min for injuries, 30 min for playoff bracket. Resets on server cold start (fine for Vercel serverless).
+
+## Data Sources
+
+### ESPN Injuries API
+- **URL:** `https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/injuries`
+- **Returns:** JSON with teams → injuries → athlete + status + comment
+- **Status values:** `"Day-To-Day"`, `"Out"`, `"Injured Reserve"`
+- **Mapping to our format:**
+  - `"Day-To-Day"` → `"day-to-day"`
+  - `"Out"` → `"week-to-week"` (or `"out for playoffs"` if comment implies season-ending)
+  - `"Injured Reserve"` → `"out indefinitely"` (or `"out for playoffs"` if season-ending)
+- **No Playwright needed** — simple JSON fetch
+- **Player matching:** ESPN `athlete.displayName` vs our DB `players.name` (case-insensitive)
+
+### NHL Playoff Bracket API
+- **URL:** `https://api-web.nhle.com/v1/playoff-bracket/2026`
+- **Returns:** JSON with series → teams (with `abbrev` field)
+- **Active teams:** Extract all `topSeedTeam.abbrev` + `bottomSeedTeam.abbrev` from series that have team data (not TBD)
+- **Eliminated:** Any team NOT in the active set
 
 ## Data Model
 
@@ -45,20 +64,18 @@ interface RosterPlayer {
 }
 ```
 
-### New NHL API functions in `nhl-api.ts`
+### New functions in `nhl-api.ts`
 
-**`fetchPlayerInjuryStatus(teamAbbrevs: string[])`**
-- Fetches current injury data for players on the given teams
-- Returns `Map<string, { status, description }>` keyed by player name or NHL ID
+**`fetchEspnInjuries(): Promise<Map<string, { status, description }>>`**
+- Fetches ESPN injuries API
+- Returns map keyed by player display name (lowercase) → `{ status, description }`
 - 10-minute in-memory cache
-- Works for both regular season and playoffs
 
 **`fetchActivePlayoffTeams(): Promise<Set<string>>`**
-- Fetches current playoff bracket from NHL API
-- Extracts all teams still appearing in any active series
-- Returns set of team abbreviations (e.g., `{"EDM", "FLA", "DAL", "CAR"}`)
+- Fetches NHL playoff bracket
+- Returns set of active team abbreviations
 - 30-minute in-memory cache
-- During regular season (no bracket): returns empty set → no elimination logic
+- During regular season: returns empty set → no elimination logic
 
 ## Visual Design
 
@@ -98,21 +115,12 @@ Badges sit **after** the position indicator (C/LW/RW/D).
 | `/api/drafts/[id]/standings` | Enrich `RosterPlayer[]` with injury status + elimination |
 | `/api/drafts/[id]/results` | Same enrichment |
 
-## Implementation Steps
-
-1. Add `fetchPlayerInjuryStatus()` to `nhl-api.ts` with caching
-2. Add `fetchActivePlayoffTeams()` to `nhl-api.ts` with caching
-3. Update `RosterPlayer` interface in standings page and API route
-4. Enrich standings API response with injury + elimination data
-5. Enrich results API response with injury + elimination data
-6. Update standings page roster rows: InjuryFlag badges after position, strikethrough + dim for eliminated
-7. Update results page roster rows: same visual treatment
-8. Update tonight's game expansion: injury badges on drafted players
-
 ## Key Decisions
 
-- **Live NHL API fetch** over static data — always current, no DB migration needed
+- **ESPN Injuries API** for live injury data — no Playwright, simple JSON fetch
+- **Player name matching** (case-insensitive) to link ESPN athletes to our drafted players
+- **NHL playoff bracket API** for elimination detection
 - **Strikethrough only** for eliminated players — no badge or icon
 - **Injury badges after position** — keeps name clean, status is secondary info
-- **40% opacity dimming** for both OUT injuries and eliminated players — consistent "inactive" visual language
+- **40% opacity dimming** for both OUT injuries and eliminated players
 - **Cache TTL 10/30 min** — fresh enough for game-day updates, prevents API hammering
