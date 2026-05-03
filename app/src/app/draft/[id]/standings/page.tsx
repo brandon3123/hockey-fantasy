@@ -23,6 +23,9 @@ interface RosterPlayer {
   assists: number;
   points: number;
   gamesPlayed: number;
+  injuryStatus: "healthy" | "day-to-day" | "week-to-week" | "out indefinitely" | "out for playoffs";
+  injuryDescription: string | null;
+  isEliminated: boolean;
 }
 
 interface StandingEntry {
@@ -56,19 +59,26 @@ interface StandingsData {
 const RANK_MEDALS = ['🥇', '🥈', '🥉'];
 const RANK_COLORS = ['#ffd700', '#c0c0c0', '#cd7f32'];
 
+interface DraftedPlayerInfo {
+  playerName: string;
+  position: string;
+  team: string;
+  injuryStatus: RosterPlayer["injuryStatus"];
+}
+
 function getDraftedPlayersForGame(
   game: TonightGame,
   standings: StandingEntry[],
   currentUserId: string | null
-): { playerName: string; position: string; team: string }[] {
-  const players: { playerName: string; position: string; team: string }[] = [];
+): DraftedPlayerInfo[] {
+  const players: DraftedPlayerInfo[] = [];
   const myTeam = currentUserId
     ? standings.find((s) => s.userId === currentUserId)
     : null;
   if (!myTeam) return players;
   for (const p of myTeam.roster) {
     if (p.team === game.home || p.team === game.away) {
-      players.push({ playerName: p.playerName, position: p.position, team: p.team });
+      players.push({ playerName: p.playerName, position: p.position, team: p.team, injuryStatus: p.injuryStatus });
     }
   }
   return players;
@@ -224,16 +234,32 @@ export default function StandingsPage() {
                     )}
                     {isExpanded && hasPlayers && (
                       <div className="border-t border-[#141e12] mt-2 pt-2">
-                        {draftedPlayers.map((p, i) => (
-                          <div
-                            key={`${p.playerName}-${p.team}-${i}`}
-                            className="flex items-center gap-1.5 py-0.5"
-                          >
-                            <TeamLogo team={p.team} className="w-3.5 h-3.5" />
-                            <span className="text-[10px] text-[#c8d9c3]">{p.playerName}</span>
-                            <span className="text-[10px] text-[#5a6b57]">{p.position}</span>
-                          </div>
-                        ))}
+                        {draftedPlayers.map((p, i) => {
+                          const injuryLabel =
+                            p.injuryStatus === "day-to-day" ? "DTD" :
+                            p.injuryStatus === "week-to-week" ? "WTW" :
+                            (p.injuryStatus === "out indefinitely" || p.injuryStatus === "out for playoffs") ? "OUT" : null;
+                          const injuryBadgeColor =
+                            p.injuryStatus === "day-to-day" ? "bg-[#854d0e] text-[#fbbf24]" :
+                            p.injuryStatus === "week-to-week" ? "bg-[#9a3412] text-[#fb923c]" :
+                            "bg-[#7f1d1d] text-[#fca5a5]";
+
+                          return (
+                            <div
+                              key={`${p.playerName}-${p.team}-${i}`}
+                              className="flex items-center gap-1.5 py-0.5"
+                            >
+                              <TeamLogo team={p.team} className="w-3.5 h-3.5" />
+                              <span className="text-[10px] text-[#c8d9c3]">{p.playerName}</span>
+                              <span className="text-[10px] text-[#5a6b57]">{p.position}</span>
+                              {injuryLabel && (
+                                <span className={`px-1 py-0.5 rounded text-[8px] font-bold ${injuryBadgeColor}`}>
+                                  {injuryLabel}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
@@ -343,37 +369,57 @@ export default function StandingsPage() {
                             <div className="grid gap-1.5">
                               {s.roster
                                 .sort((a, b) => a.round - b.round)
-                                .map((p) => (
-                                  <div
-                                    key={p.playerId}
-                                    className="flex items-center justify-between text-xs py-1"
-                                  >
-          <div className="flex flex-wrap items-center gap-2">
-                                      <span className="text-[#5a6b57] w-5 text-right">
-                                        {p.round}
-                                      </span>
-                                      <TeamLogo team={p.team} className="w-4 h-4" />
-                                      <span className="text-[#c8d9c3] font-medium">
-                                        {p.playerName}
-                                      </span>
-                                      <span className="text-[#5a6b57]">{p.position}</span>
+                                .map((p) => {
+                                  const isOut = p.injuryStatus === "out indefinitely" || p.injuryStatus === "out for playoffs";
+                                  const isInactive = isOut || p.isEliminated;
+                                  const injuryLabel =
+                                    p.injuryStatus === "day-to-day" ? "DTD" :
+                                    p.injuryStatus === "week-to-week" ? "WTW" :
+                                    (p.injuryStatus === "out indefinitely" || p.injuryStatus === "out for playoffs") ? "OUT" : null;
+                                  const injuryBadgeColor =
+                                    p.injuryStatus === "day-to-day" ? "bg-[#854d0e] text-[#fbbf24]" :
+                                    p.injuryStatus === "week-to-week" ? "bg-[#9a3412] text-[#fb923c]" :
+                                    "bg-[#7f1d1d] text-[#fca5a5]";
+
+                                  return (
+                                    <div
+                                      key={p.playerId}
+                                      className={`flex items-center justify-between text-xs py-1 ${isInactive ? "opacity-40" : ""}`}
+                                    >
+                                      <div className="flex flex-wrap items-center gap-2">
+                                        <span className="text-[#5a6b57] w-5 text-right">
+                                          {p.round}
+                                        </span>
+                                        <TeamLogo team={p.team} className="w-4 h-4" />
+                                        <span
+                                          className={`font-medium ${p.isEliminated ? "text-[#fca5a5] line-through decoration-[#fca5a5] decoration-2" : "text-[#c8d9c3]"}`}
+                                        >
+                                          {p.playerName}
+                                        </span>
+                                        <span className="text-[#5a6b57]">{p.position}</span>
+                                        {injuryLabel && (
+                                          <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${injuryBadgeColor}`}>
+                                            {injuryLabel}
+                                          </span>
+                                        )}
+                                      </div>
+                                      <div className="flex items-center gap-3">
+                                        <span className="text-[#6b9b7a] font-bold">
+                                          {p.points.toFixed(1)}
+                                        </span>
+                                        <span className="text-[#5a6b57] w-6 text-right">
+                                          {p.goals}G
+                                        </span>
+                                        <span className="text-[#5a6b57] w-6 text-right">
+                                          {p.assists}A
+                                        </span>
+                                        <span className="text-[#2d3c28] w-6 text-right">
+                                          {p.gamesPlayed}GP
+                                        </span>
+                                      </div>
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                      <span className="text-[#6b9b7a] font-bold">
-                                        {p.points.toFixed(1)}
-                                      </span>
-                                      <span className="text-[#5a6b57] w-6 text-right">
-                                        {p.goals}G
-                                      </span>
-                                      <span className="text-[#5a6b57] w-6 text-right">
-                                        {p.assists}A
-                                      </span>
-                                      <span className="text-[#2d3c28] w-6 text-right">
-                                        {p.gamesPlayed}GP
-                                      </span>
-                                    </div>
-                                  </div>
-                                ))}
+                                  );
+                                })}
                             </div>
                           </td>
                         </tr>
