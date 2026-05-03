@@ -54,8 +54,30 @@ For authenticated users with at least one **complete** (actively scoring) draft:
 - My Team button filled green (primary), others outlined
 - Each links to the appropriate page
 
-### No Active Draft State
-If user has no complete drafts (only setup/inviting/in_progress), show the existing draft list UI with status badges. The command center only renders for drafts in `complete` status with scoring data.
+### Pre-Draft State (setup / inviting / in_progress)
+
+When no complete draft exists, show contextual draft cards instead of the command center.
+
+**Admin view per draft card:**
+- Draft name + status badge (color-coded: setup=muted, inviting=gold, in_progress=green)
+- Date, time, season type, players per team
+- Stats row: joined count, pending invites, paid ratio, entry fee
+- Participant list with paid/unpaid status per team
+- Action buttons vary by status:
+  - **setup/inviting**: "Manage Draft" (primary green → `/dashboard/drafts/[id]`), "Invite Players" (outlined), "Start Draft" (muted)
+  - **in_progress**: "Live Draft" (primary green → `/draft/[id]/coach`), "My Team" (outlined → `/draft/[id]/team`)
+- Delete draft option (✕ button)
+
+**Non-admin (joined) view per draft card:**
+- Draft name + status badge
+- "Your Team" box: team name + paid status
+- Stats: joined count, players per team, entry fee
+- Location + payment info
+- Action buttons vary by status:
+  - **setup/inviting**: "Waiting for admin to start the draft" message
+  - **in_progress**: "My Team" (primary green → `/draft/[id]/team`)
+
+**No "Prepare for your draft" section** — Rankings, Bracket, and Games are already in the navigation bar.
 
 ### Unauthenticated State
 Unchanged — hero with logo, tagline, sign in/sign up buttons.

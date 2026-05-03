@@ -438,19 +438,44 @@ git commit -m "add /api/games endpoint with rostered player info"
 **Files:**
 - Modify: `app/src/app/page.tsx`
 
-This replaces the current "My Drafts" list with the command center widgets when a complete draft exists. Falls back to the existing draft list when no complete draft.
+This replaces the current "My Drafts" list with the command center widgets when a complete draft exists. Falls back to contextual draft cards when no complete draft.
 
 - [ ] **Step 1: Rewrite `app/src/app/page.tsx`**
 
-Replace the entire file with the command center implementation. The file should:
+Replace the entire file. The file should:
 
-1. Keep the unauthenticated hero view (lines 68-94 of current file) unchanged
-2. Add `useAuth` import, `useState`, `useEffect`, `useCallback`
-3. Add `TeamLogo` import from `@/components/TeamLogo`
-4. Add `Link` import from `next/link`
-5. On mount, fetch `GET /api/dashboard`
-6. If `draft` is null, render the existing draft list UI (admin drafts + joined drafts, fetched from `GET /api/drafts`)
-7. If `draft` exists, render the command center with these sections:
+1. Keep the unauthenticated hero view unchanged
+2. Add imports: `useAuth`, `useState`, `useEffect`, `useCallback`, `Link`, `TeamLogo`
+3. On mount, fetch `GET /api/dashboard`
+4. If `draft` is null or `draft.status !== 'complete'`, fetch `GET /api/drafts` and render **pre-draft cards** (see below)
+5. If `draft.status === 'complete'`, render the **command center** (see below)
+
+**Pre-Draft Cards** (when no complete draft exists):
+
+For each draft (admin or joined), render a contextual card:
+
+*Admin card:*
+- Draft name + status badge (setup=gray, inviting=gold `#9b8f6b`, in_progress=green `#4a7c59`)
+- Date, time, season type, players per team
+- Stats row (4 cells): joined count, pending invites, paid ratio, entry fee
+- Participant list: team names with ✓ paid indicators, "+ N pending" for outstanding invites
+- Action buttons:
+  - `setup`/`inviting`: "Manage Draft" (filled green → `/dashboard/drafts/[id]`), "Invite Players" (outlined), "Start Draft" (muted)
+  - `in_progress`: "Live Draft" (filled green → `/draft/[id]/coach`), "My Team" (outlined → `/draft/[id]/team`)
+- Delete button (✕)
+
+*Joined card:*
+- Draft name + status badge
+- "Your Team" highlight box: team name + paid status
+- Stats row (3 cells): joined count, players per team, entry fee
+- Location + payment info row
+- Status-dependent content:
+  - `setup`/`inviting`: "⏳ Waiting for admin to start the draft" muted message
+  - `in_progress`: "My Team" button (filled green → `/draft/[id]/team`)
+
+No "Prepare for your draft" section — Rankings, Bracket, Games are already in nav.
+
+**Command Center** (when complete draft exists):
 
 **Draft Status Bar** (full width):
 - Draft name (large)
