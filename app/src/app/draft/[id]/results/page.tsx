@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { useDraftState, DraftPickRow, ParticipantData } from '@/hooks/useDraftState';
 import { Player } from '@/types/player';
@@ -187,6 +187,8 @@ export default function ResultsPage() {
   const params = useParams();
   const draftId = params.id as string;
   const [expandedTeam, setExpandedTeam] = useState<string | null>(null);
+  const [liveInjuries, setLiveInjuries] = useState<Map<string, { status: string; description: string | null }>>(new Map());
+  const [eliminatedTeams, setEliminatedTeams] = useState<Set<string>>(new Set());
 
   const {
     draft,
@@ -216,6 +218,42 @@ export default function ResultsPage() {
     () => computePositionBreakdown(standings),
     [standings]
   );
+
+  useEffect(() => {
+    async function fetchLiveData() {
+      try {
+        const [injuriesRes, bracketRes] = await Promise.all([
+          fetch('/api/live-injuries'),
+          fetch('/api/playoff-bracket'),
+        ]);
+        if (injuriesRes.ok) {
+          const injuriesData = await injuriesRes.json();
+          const map = new Map<string, { status: string; description: string | null }>();
+          for (const [name, info] of Object.entries(injuriesData)) {
+            map.set(name, info as { status: string; description: string | null });
+          }
+          setLiveInjuries(map);
+        }
+        if (bracketRes.ok) {
+          const bracketData = await bracketRes.json();
+          const active = new Set<string>();
+          for (const series of bracketData.series || []) {
+            if (series.topSeedTeam?.abbrev && series.topSeedTeam.abbrev !== 'TBD') active.add(series.topSeedTeam.abbrev);
+            if (series.bottomSeedTeam?.abbrev && series.bottomSeedTeam.abbrev !== 'TBD') active.add(series.bottomSeedTeam.abbrev);
+          }
+          if (active.size > 0) {
+            const allTeams = new Set(standings.flatMap(s => s.roster.map(r => r.player.team)));
+            const eliminated = new Set<string>();
+            for (const team of allTeams) {
+              if (team && !active.has(team)) eliminated.add(team);
+            }
+            setEliminatedTeams(eliminated);
+          }
+        }
+      } catch {}
+    }
+    if (draft && isDraftComplete) fetchLiveData();
+  }, [draft, isDraftComplete, standings]);
 
   const totalPicks = picks.length;
 
@@ -324,20 +362,43 @@ export default function ResultsPage() {
                   <div className="px-4 py-2">
                     {s.roster
                       .sort((a, b) => a.round - b.round)
-                      .map((r) => (
+                      .map((r) => {
+                      const liveInjury = liveInjuries.get(r.player.name.toLowerCase());
+                      const injuryStatus = liveInjury?.status ?? r.player.injury.status;
+                      const isEliminated = eliminatedTeams.has(r.player.team);
+                      const isOut = injuryStatus === "out indefinitely" || injuryStatus === "out for playoffs";
+                      const isInactive = isOut || isEliminated;
+                      const injuryLabel =
+                        injuryStatus === "day-to-day" ? "DTD" :
+                        injuryStatus === "week-to-week" ? "WTW" :
+                        (injuryStatus === "out indefinitely" || injuryStatus === "out for playoffs") ? "OUT" : null;
+                      const injuryBadgeColor =
+                        injuryStatus === "day-to-day" ? "bg-[#854d0e] text-[#fbbf24]" :
+                        injuryStatus === "week-to-week" ? "bg-[#9a3412] text-[#fb923c]" :
+                        "bg-[#7f1d1d] text-[#fca5a5]";
+
+                      return (
                         <div
                           key={`${r.player.name}-${r.player.team}-${r.player.position}`}
-                          className="flex justify-between items-center py-2 border-b border-[#141e12] last:border-0"
+                          className={`flex justify-between items-center py-2 border-b border-[#141e12] last:border-0 ${isInactive ? "opacity-40" : ""}`}
                         >
                           <div className="flex items-center gap-2 text-xs">
                             <span className="text-[#5a6b57] w-6">R{r.round}</span>
                             <TeamLogo team={r.player.team} className="w-5 h-5" />
-                            <span className="text-[#c8d9c3] font-semibold">{r.player.name}</span>
+                            <span className={`font-semibold ${isEliminated ? "text-[#fca5a5] line-through decoration-[#fca5a5] decoration-2" : "text-[#c8d9c3]"}`}>
+                              {r.player.name}
+                            </span>
                             <span className="text-[#5a6b57]">{r.player.position} &bull; {r.player.pointsPerGame.toFixed(2)} ppg</span>
+                            {injuryLabel && (
+                              <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${injuryBadgeColor}`}>
+                                {injuryLabel}
+                              </span>
+                            )}
                           </div>
                           <span className="text-[#6b9b7a] font-bold text-xs">{r.player.displayPoints.toFixed(1)}</span>
                         </div>
-                      ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
