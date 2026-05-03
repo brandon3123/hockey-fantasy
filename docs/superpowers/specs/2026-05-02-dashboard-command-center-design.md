@@ -114,24 +114,64 @@ If no complete draft exists, returns `{ draft: null }` and the page falls back t
 
 ## New `/games` Page
 
-A standalone page showing all tonight's NHL games with fantasy relevance.
+Standalone page showing all tonight's NHL games with fantasy relevance. Uses **Option A layout** (game cards with roster section below).
 
-### Layout
-- Header: "Tonight's Games" with date
-- For each game: matchup with team logos, game time/TV
-- Below each game: list of **your rostered players** in that game (with team logo, name, position)
-- If no games tonight: "No games tonight" message
-- If not in a draft or draft not active: show all games without player highlights
-- If not authenticated: show all games with team logos and times, no player highlights. Add a CTA to sign in.
+### Layout (Option A: Game Cards + Roster Section)
+
+Each game is a vertical card:
+
+1. **Matchup section**: Away team logo + abbrev, "@", Home team logo + abbrev, centered. Logos at 48px.
+2. **Game time**: "7:00 PM MT" centered below matchup
+3. **Divider line**
+4. **"Your Players" section**: Lists rostered players for this game with team logo (18px), name, position. One row per player.
+5. **Empty state**: If no rostered players in this game, show "No rostered players in this game" in muted text
+
+### Page Header
+- Label: "Tonight's Games" (uppercase, muted)
+- Date: "May 2, 2026" (large, bold)
+- Subtitle: "3 games · 5 of your players in action"
+- Back link: "← Dashboard"
+
+### States
+- **No games tonight**: "No games scheduled tonight" with empty state graphic
+- **Not in a draft / draft not active**: Show all games without the "Your Players" section
+- **Not authenticated**: Show all games with logos and times. Add CTA: "Sign in to see your players" with link to `/auth/login`
 
 ### Data
-- `fetchTonightGames()` for game schedule
-- User's roster from the dashboard API or `/api/drafts/[id]`
-- Cross-reference: which of user's players are on teams playing tonight
+- `fetchTonightGames()` for game schedule (public NHL data)
+- User's roster: cross-reference `draft_picks` + `players` table, matching player team to game teams
+- `GET /api/games` — new endpoint that returns tonight's games + rostered player info per game for authenticated users
 
-### API
-- Authenticated: `GET /api/dashboard` (reuses the same endpoint, returns `tonightGames` with `activePlayerCount`)
-- Unauthenticated: `GET /api/tonight-games` (new lightweight endpoint, or reuse existing `fetchTonightGames` client-side since it's public NHL data)
+### API: `GET /api/games`
+```typescript
+Response (authenticated):
+{
+  date: string,
+  games: Array<{
+    away: string,       // team abbrev
+    home: string,
+    gameTime: string,   // "7:00 PM MT"
+    yourPlayers: Array<{
+      playerName: string,
+      team: string,     // team abbrev
+      position: string
+    }>
+  }>,
+  totalYourPlayers: number
+}
+
+Response (unauthenticated):
+{
+  date: string,
+  games: Array<{ away, home, gameTime }>,
+  totalYourPlayers: 0
+}
+```
+
+### Mobile
+- Cards stack vertically (same as desktop, just narrower)
+- Logos shrink to 36px
+- Single column always
 
 ## Mobile Considerations
 
@@ -149,6 +189,7 @@ A standalone page showing all tonight's NHL games with fantasy relevance.
 
 ### Create
 - `app/src/app/api/dashboard/route.ts` — new aggregated dashboard API
+- `app/src/app/api/games/route.ts` — new tonight's games API
 - `app/src/app/games/page.tsx` — new tonight's games page
 - `app/src/components/DashboardWidgets.tsx` — extracted widget components (optional, depends on page.tsx size)
 
