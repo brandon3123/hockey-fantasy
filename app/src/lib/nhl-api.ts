@@ -114,6 +114,37 @@ interface RosterApiResponse {
   }[];
 }
 
+interface EspnInjuryAthlete {
+  displayName: string;
+}
+
+interface EspnInjuryEntry {
+  status: string;
+  shortComment: string;
+  date: string;
+  athlete: EspnInjuryAthlete;
+}
+
+interface EspnInjuryTeam {
+  displayName: string;
+  injuries: EspnInjuryEntry[];
+}
+
+interface EspnInjuriesResponse {
+  injuries: EspnInjuryTeam[];
+}
+
+export interface InjuryInfo {
+  status: "healthy" | "day-to-day" | "week-to-week" | "out indefinitely" | "out for playoffs";
+  description: string | null;
+}
+
+let espnInjuriesCache: { data: Map<string, InjuryInfo>; timestamp: number } | null = null;
+const ESPN_INJURIES_TTL = 10 * 60 * 1000;
+
+let playoffTeamsCache: { data: Set<string>; timestamp: number } | null = null;
+const PLAYOFF_TEAMS_TTL = 30 * 60 * 1000;
+
 function mapGame(game: ScheduleGame): TonightGame {
   return {
     gameId: game.id,
@@ -240,4 +271,75 @@ export async function buildNhlIdToNameMap(
     }
   }
   return nameMap;
+}
+
+export async function fetchEspnInjuries(): Promise<Map<string, InjuryInfo>> {
+  if (espnInjuriesCache && Date.now() - espnInjuriesCache.timestamp < ESPN_INJURIES_TTL) {
+    return espnInjuriesCache.data;
+  }
+
+  try {
+    const res = await fetch("https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/injuries");
+    if (!res.ok) throw new Error(`ESPN injuries API error: ${res.status}`);
+    const data: EspnInjuriesResponse = await res.json();
+
+    const injuryMap = new Map<string, InjuryInfo>();
+
+    for (const team of data.injuries || []) {
+      for (const injury of team.injuries || []) {
+        const statusCol = injury.status;
+        const comment = injury.shortComment || null;
+        const playerName = injury.athlete?.displayName;
+        if (!playerName) continue;
+
+        let injuryStatus: InjuryInfo["status"] = "week-to-week";
+        if (statusCol === "Day-To-Day") {
+          injuryStatus = "day-to-day";
+        } else if (statusCol === "Injured Reserve") {
+          injuryStatus = "out indefinitely";
+        } else if (statusCol === "Out") {
+          injuryStatus = "out indefinitely";
+        }
+
+        injuryMap.set(playerName.toLowerCase(), {
+          status: injuryStatus,
+          description: comment,
+        });
+      }
+    }
+
+    espnInjuriesCache = { data: injuryMap, timestamp: Date.now() };
+    return injuryMap;
+  } catch {
+    return espnInjuriesCache?.data ?? new Map();
+  }
+}
+
+export async function fetchActivePlayoffTeams(): Promise<Set<string>> {
+  if (playoffTeamsCache && Date.now() - playoffTeamsCache.timestamp < PLAYOFF_TEAMS_TTL) {
+    return playoffTeamsCache.data;
+  }
+
+  try {
+    const res = await fetch("https://api-web.nhle.com/v1/playoff-bracket/2026");
+    if (!res.ok) throw new Error(`NHL bracket API error: ${res.status}`);
+    const data = await res.json();
+
+    const activeTeams = new Set<string>();
+    for (const series of data.series || []) {
+      const top = series.topSeedTeam;
+      const bottom = series.bottomSeedTeam;
+      if (top && top.abbrev && top.abbrev !== "TBD") {
+        activeTeams.add(top.abbrev);
+      }
+      if (bottom && bottom.abbrev && bottom.abbrev !== "TBD") {
+        activeTeams.add(bottom.abbrev);
+      }
+    }
+
+    playoffTeamsCache = { data: activeTeams, timestamp: Date.now() };
+    return activeTeams;
+  } catch {
+    return playoffTeamsCache?.data ?? new Set();
+  }
 }
