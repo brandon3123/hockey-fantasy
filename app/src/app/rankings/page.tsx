@@ -77,6 +77,7 @@ export default function RankingsPage() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
   const [watchlist, setWatchlist] = useState<Set<string>>(new Set());
+  const [liveInjuries, setLiveInjuries] = useState<Map<string, { status: string; description: string | null }>>(new Map());
 
   useEffect(() => {
     const loadPlayers = async () => {
@@ -107,6 +108,21 @@ export default function RankingsPage() {
     if (saved) {
       setWatchlist(new Set(JSON.parse(saved)));
     }
+
+    async function fetchLiveData() {
+      try {
+        const res = await fetch('/api/live-injuries');
+        if (res.ok) {
+          const data = await res.json();
+          const map = new Map<string, { status: string; description: string | null }>();
+          for (const [name, info] of Object.entries(data)) {
+            map.set(name, info as { status: string; description: string | null });
+          }
+          setLiveInjuries(map);
+        }
+      } catch {}
+    }
+    fetchLiveData();
   }, []);
 
   const handleToggleWatchlist = (playerName: string) => {
@@ -144,7 +160,13 @@ export default function RankingsPage() {
         </div>
 
         <PlayerTable
-          players={players}
+          players={players.map(p => {
+            const live = liveInjuries.get(p.name.toLowerCase());
+            if (live) {
+              return { ...p, injury: { ...p.injury, status: live.status as Player['injury']['status'], description: live.description ?? p.injury.description } };
+            }
+            return p;
+          })}
           watchlist={watchlist}
           onToggleWatchlist={handleToggleWatchlist}
         />
