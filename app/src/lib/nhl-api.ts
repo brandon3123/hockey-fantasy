@@ -325,16 +325,30 @@ export async function fetchActivePlayoffTeams(): Promise<Set<string>> {
     if (!res.ok) throw new Error(`NHL bracket API error: ${res.status}`);
     const data = await res.json();
 
-    const activeTeams = new Set<string>();
+    const allTeams = new Set<string>();
+    const eliminatedTeams = new Set<string>();
     for (const series of data.series || []) {
       const top = series.topSeedTeam;
       const bottom = series.bottomSeedTeam;
-      if (top && top.abbrev && top.abbrev !== "TBD") {
-        activeTeams.add(top.abbrev);
+      const topAbbrev = top?.abbrev;
+      const bottomAbbrev = bottom?.abbrev;
+      const topId = top?.id;
+      const bottomId = bottom?.id;
+      const winner = series.winningTeamId;
+      const loser = series.losingTeamId;
+
+      if (topAbbrev && topAbbrev !== "TBD") allTeams.add(topAbbrev);
+      if (bottomAbbrev && bottomAbbrev !== "TBD") allTeams.add(bottomAbbrev);
+
+      if (winner && loser) {
+        if (topId === loser && topAbbrev) eliminatedTeams.add(topAbbrev);
+        if (bottomId === loser && bottomAbbrev) eliminatedTeams.add(bottomAbbrev);
       }
-      if (bottom && bottom.abbrev && bottom.abbrev !== "TBD") {
-        activeTeams.add(bottom.abbrev);
-      }
+    }
+
+    const activeTeams = new Set<string>();
+    for (const team of allTeams) {
+      if (!eliminatedTeams.has(team)) activeTeams.add(team);
     }
 
     playoffTeamsCache = { data: activeTeams, timestamp: Date.now() };
