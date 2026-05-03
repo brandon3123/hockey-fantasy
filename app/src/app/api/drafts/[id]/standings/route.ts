@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServerClient } from '@supabase/ssr';
-import { fetchTonightGames } from '@/lib/nhl-api';
+import { fetchTonightGames, fetchEspnInjuries, fetchActivePlayoffTeams } from '@/lib/nhl-api';
 
 export async function GET(
   request: Request,
@@ -52,6 +52,11 @@ export async function GET(
   for (const p of players) {
     playerMap.set(p.id, { name: p.name, team: p.team, position: p.position });
   }
+
+  const [espnInjuries, activePlayoffTeams] = await Promise.all([
+    fetchEspnInjuries(),
+    fetchActivePlayoffTeams(),
+  ]);
 
   const scoresByPlayer = new Map<string, Map<string, { goals: number; assists: number; points: number }>>();
   for (const s of scores) {
@@ -104,6 +109,9 @@ export async function GET(
         }
       }
 
+      const injuryInfo = espnInjuries.get(playerInfo.name.toLowerCase());
+      const isEliminated = activePlayoffTeams.size > 0 && playerInfo.team && !activePlayoffTeams.has(playerInfo.team);
+
       return {
         playerId: pick.player_id,
         playerName: playerInfo.name,
@@ -114,6 +122,9 @@ export async function GET(
         assists: totalAssists,
         points: totalPoints,
         gamesPlayed,
+        injuryStatus: injuryInfo?.status ?? "healthy",
+        injuryDescription: injuryInfo?.description ?? null,
+        isEliminated,
       };
     });
 
