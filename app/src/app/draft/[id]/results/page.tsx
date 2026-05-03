@@ -268,148 +268,169 @@ export default function ResultsPage() {
   if (!draft || !isDraftComplete) {
     return (
       <div className="min-h-screen bg-[#050a05] flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-[#5a6b57] text-lg mb-2">Results not available</div>
-          <Link href="/" className="text-sm text-[#6b9b7a] hover:underline">Back to Dashboard</Link>
-        </div>
+        <div className="text-[#5a6b57] text-lg">Results not available</div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-[#050a05]">
-      <div className="max-w-3xl mx-auto px-4 py-8">
-        <Link href="/" className="text-sm text-[#5a6b57] hover:text-[#c8d9c3]">&larr; Back to Dashboard</Link>
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-[#c8d9c3] mb-2">{draft.name}</h1>
+          <div className="flex items-center justify-center gap-3 text-sm text-[#5a6b57]">
+            <span>{draft.season_type === 'playoffs' ? 'Playoffs' : 'Regular Season'}</span>
+            <span className="text-[#1a2f1a]">&bull;</span>
+            <span>{participants.length} Managers</span>
+            <span className="text-[#1a2f1a]">&bull;</span>
+            <span>{draft.players_per_team} Rounds</span>
+          </div>
+          <div className="mt-4 flex items-center justify-center gap-2">
+            <Link
+              href={`/draft/${draftId}/standings`}
+              className="px-4 py-2 text-sm font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
+            >
+              Standings
+            </Link>
+          </div>
+        </div>
 
-        <div className="flex flex-wrap justify-between items-start gap-2 mt-2 mb-8">
-          <div>
-            <div className="text-xs uppercase tracking-wider text-[#5a6b57] mb-1">Draft Complete</div>
-            <h1 className="text-xl md:text-2xl font-bold text-[#c8d9c3]">{draft.name}</h1>
-            <div className="text-sm text-[#5a6b57] mt-1">
-              {draft.season_type === 'playoffs' ? 'Playoffs' : 'Regular Season'} &bull; {participants.length} Managers &bull; {draft.players_per_team} Rounds
+        <div className="mb-8">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="h-px flex-1 bg-[#1a2f1a]" />
+            <h2 className="text-xs font-bold text-[#5a6b57] uppercase tracking-widest">Standings</h2>
+            <div className="h-px flex-1 bg-[#1a2f1a]" />
+          </div>
+          <div className="bg-[#0a0f0a] border border-[#141e12] rounded-xl overflow-hidden">
+            <div className="grid grid-cols-[auto_1fr_auto_auto] text-xs bg-[#0d150d] border-b border-[#1a2f1a]">
+              <div className="px-4 py-3 font-semibold text-[#5a6b57] text-center w-12">#</div>
+              <div className="px-4 py-3 font-semibold text-[#5a6b57]">TEAM</div>
+              <div className="px-4 py-3 font-semibold text-[#5a6b57] text-center w-20">ROSTER</div>
+              <div className="px-4 py-3 font-semibold text-[#5a6b57] text-right w-20">PTS</div>
+            </div>
+            <div>
+              {standings.map((s, i) => {
+                const isFirst = i === 0;
+                return (
+                  <div
+                    key={s.participant.id}
+                    className={`grid grid-cols-[auto_1fr_auto_auto] text-sm ${
+                      isFirst ? 'bg-[#0f1f0f]' : i % 2 === 0 ? 'bg-[#050a05]' : 'bg-[#070c07]'
+                    }`}
+                  >
+                    <div
+                      className="px-4 py-3 font-bold text-center w-12"
+                      style={i < 3 ? { color: ['#ffd700', '#c0c0c0', '#cd7f32'][i] } : undefined}
+                    >
+                      {i < 3 ? RANK_MEDALS[i] : i + 1}
+                    </div>
+                    <div className={`px-4 py-3 font-bold ${isFirst ? 'text-[#6b9b7a]' : 'text-[#c8d9c3]'}`}>
+                      {s.participant.team_name}
+                    </div>
+                    <div className="px-4 py-3 text-center text-[#5a6b57] w-20">{s.roster.length}</div>
+                    <div className={`px-4 py-3 text-right font-bold w-20 ${isFirst ? 'text-[#6b9b7a] text-base' : 'text-[#c8d9c3]'}`}>
+                      {s.totalPts.toFixed(1)}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
-          <div className="bg-[#4a7c59] text-[#c8d9c3] px-4 py-2 rounded-lg font-bold text-sm">
-            🏆 FINAL RESULTS
-          </div>
         </div>
 
         <div className="mb-8">
-          <h2 className="text-sm font-bold text-[#6b9b7a] uppercase tracking-wider mb-3">Standings</h2>
-          <div className="bg-[#0a0f0a] border border-[#141e12] rounded-lg overflow-x-auto">
-            <table className="w-full border-collapse text-xs">
-              <thead>
-                <tr className="bg-[#4a7c59] text-[#c8d9c3]">
-                  <th className="px-3 py-2 text-left font-semibold border-r border-[#3d664a]">RANK</th>
-                  <th className="px-3 py-2 text-left font-semibold border-r border-[#3d664a]">TEAM</th>
-                  <th className="px-3 py-2 text-center font-semibold border-r border-[#3d664a]">ROSTER</th>
-                  <th className="px-3 py-2 text-right font-semibold">TOTAL PTS</th>
-                </tr>
-              </thead>
-              <tbody>
-                {standings.map((s, i) => {
-                  const isFirst = i === 0;
-                  return (
-                    <tr key={s.participant.id} className={`border-b border-[#141e12] ${isFirst ? 'bg-[#1a3d1a]' : 'bg-[#050a05]'}`}>
-                      <td className={`px-3 py-2 font-bold ${i < 3 ? (i === 0 ? 'text-[#ffd700]' : i === 1 ? 'text-[#c0c0c0]' : 'text-[#cd7f32]') : 'text-[#5a6b57]'}`}>
-                        {i < 3 ? RANK_MEDALS[i] : ''} {i + 1}{i === 0 ? 'st' : i === 1 ? 'nd' : i === 2 ? 'rd' : 'th'}
-                      </td>
-                      <td className={`px-3 py-2 font-bold ${isFirst ? 'text-[#6b9b7a]' : 'text-[#c8d9c3]'}`}>
-                        {s.participant.team_name}
-                      </td>
-                      <td className="px-3 py-2 text-center text-[#5a6b57]">
-                        {s.roster.length} players
-                      </td>
-                      <td className={`px-3 py-2 text-right font-bold ${isFirst ? 'text-[#6b9b7a] text-base' : 'text-[#c8d9c3]'}`}>
-                        {s.totalPts.toFixed(1)}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="h-px flex-1 bg-[#1a2f1a]" />
+            <h2 className="text-xs font-bold text-[#5a6b57] uppercase tracking-widest">Team Rosters</h2>
+            <div className="h-px flex-1 bg-[#1a2f1a]" />
           </div>
-        </div>
-
-        <div className="mb-8">
-          <h2 className="text-sm font-bold text-[#6b9b7a] uppercase tracking-wider mb-3">Team Rosters</h2>
-          {standings.map((s, i) => {
-            const isExpanded = expandedTeam === s.participant.id || (expandedTeam === null && i === 0);
-            const isFirst = i === 0;
-            return (
-              <div
-                key={s.participant.id}
-                className={`bg-[#0a0f0a] rounded-lg mb-2 overflow-hidden border ${isFirst ? 'border-[#4a7c59]' : 'border-[#141e12]'}`}
-              >
-                <button
-                  onClick={() => setExpandedTeam(expandedTeam === s.participant.id ? '' : s.participant.id)}
-                  className="w-full px-4 py-3 flex justify-between items-center border-b border-[#141e12] text-left"
+          <div className="space-y-2">
+            {standings.map((s, i) => {
+              const isExpanded = expandedTeam === s.participant.id || (expandedTeam === null && i === 0);
+              const isFirst = i === 0;
+              return (
+                <div
+                  key={s.participant.id}
+                  className={`bg-[#0a0f0a] rounded-lg overflow-hidden border ${isFirst ? 'border-[#4a7c59]' : 'border-[#141e12]'}`}
                 >
-                  <div className="flex items-center gap-2">
-                    {i < 3 && <span>{RANK_MEDALS[i]}</span>}
-                    <span className={`font-bold ${isFirst ? 'text-[#6b9b7a]' : 'text-[#c8d9c3]'}`}>
-                      {s.participant.team_name}
-                    </span>
-                    {!isExpanded && (
-                      <span className="text-[11px] text-[#5a6b57] ml-2">{s.roster.length} players</span>
-                    )}
-                  </div>
-                  <span className={`font-bold ${isFirst ? 'text-[#6b9b7a]' : 'text-[#c8d9c3]'}`}>
-                    {s.totalPts.toFixed(1)} pts
-                  </span>
-                </button>
-                {isExpanded && (
-                  <div className="px-4 py-2">
-                    {s.roster
-                      .sort((a, b) => a.round - b.round)
-                      .map((r) => {
-                      const liveInjury = liveInjuries.get(r.player.name.toLowerCase());
-                      const injuryStatus = liveInjury?.status ?? r.player.injury.status;
-                      const isEliminated = eliminatedTeams.has(r.player.team);
-                      const isOut = injuryStatus === "out indefinitely" || injuryStatus === "out for playoffs";
-                      const isInactive = isOut || isEliminated;
-                      const injuryLabel =
-                        injuryStatus === "day-to-day" ? "DTD" :
-                        injuryStatus === "week-to-week" ? "WTW" :
-                        (injuryStatus === "out indefinitely" || injuryStatus === "out for playoffs") ? "OUT" : null;
-                      const injuryBadgeColor =
-                        injuryStatus === "day-to-day" ? "bg-[#854d0e] text-[#fbbf24]" :
-                        injuryStatus === "week-to-week" ? "bg-[#9a3412] text-[#fb923c]" :
-                        "bg-[#7f1d1d] text-[#fca5a5]";
+                  <button
+                    onClick={() => setExpandedTeam(expandedTeam === s.participant.id ? '' : s.participant.id)}
+                    className="w-full px-4 py-3 flex justify-between items-center text-left hover:bg-[#0d150d] transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      {i < 3 && <span>{RANK_MEDALS[i]}</span>}
+                      <span className={`font-bold ${isFirst ? 'text-[#6b9b7a]' : 'text-[#c8d9c3]'}`}>
+                        {s.participant.team_name}
+                      </span>
+                      {!isExpanded && (
+                        <span className="text-xs text-[#5a6b57] ml-1">{s.roster.length} players</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`font-bold ${isFirst ? 'text-[#6b9b7a]' : 'text-[#c8d9c3]'}`}>
+                        {s.totalPts.toFixed(1)} pts
+                      </span>
+                      <span className={`text-[#5a6b57] text-xs transition-transform ${isExpanded ? 'rotate-180' : ''}`}>&#9660;</span>
+                    </div>
+                  </button>
+                  {isExpanded && (
+                    <div className="border-t border-[#141e12] px-4 py-2">
+                      {s.roster
+                        .sort((a, b) => a.round - b.round)
+                        .map((r) => {
+                        const liveInjury = liveInjuries.get(r.player.name.toLowerCase());
+                        const injuryStatus = liveInjury?.status ?? r.player.injury.status;
+                        const isEliminated = eliminatedTeams.has(r.player.team);
+                        const isOut = injuryStatus === "out indefinitely" || injuryStatus === "out for playoffs";
+                        const isInactive = isOut || isEliminated;
+                        const injuryLabel =
+                          injuryStatus === "day-to-day" ? "DTD" :
+                          injuryStatus === "week-to-week" ? "WTW" :
+                          (injuryStatus === "out indefinitely" || injuryStatus === "out for playoffs") ? "OUT" : null;
+                        const injuryBadgeColor =
+                          injuryStatus === "day-to-day" ? "bg-[#854d0e] text-[#fbbf24]" :
+                          injuryStatus === "week-to-week" ? "bg-[#9a3412] text-[#fb923c]" :
+                          "bg-[#7f1d1d] text-[#fca5a5]";
 
-                      return (
-                        <div
-                          key={`${r.player.name}-${r.player.team}-${r.player.position}`}
-                          className={`flex justify-between items-center py-2 border-b border-[#141e12] last:border-0 ${isInactive ? "opacity-40" : ""}`}
-                        >
-                          <div className="flex items-center gap-2 text-xs">
-                            <span className="text-[#5a6b57] w-6">R{r.round}</span>
-                            <TeamLogo team={r.player.team} className="w-5 h-5" />
-                            <span className={`font-semibold ${isEliminated ? "text-[#fca5a5] line-through decoration-[#fca5a5] decoration-2" : "text-[#c8d9c3]"}`}>
-                              {r.player.name}
-                            </span>
-                            <span className="text-[#5a6b57]">{r.player.position} &bull; {r.player.pointsPerGame.toFixed(2)} ppg</span>
-                            {injuryLabel && (
-                              <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${injuryBadgeColor}`}>
-                                {injuryLabel}
+                        return (
+                          <div
+                            key={`${r.player.name}-${r.player.team}-${r.player.position}`}
+                            className={`flex justify-between items-center py-2 border-b border-[#0d150d] last:border-0 ${isInactive ? "opacity-50" : ""}`}
+                          >
+                            <div className="flex items-center gap-2 text-xs">
+                              <span className="text-[#5a6b57] w-6 font-mono text-[10px]">R{r.round}</span>
+                              <TeamLogo team={r.player.team} className="w-4 h-4" />
+                              <span className={`font-semibold ${isEliminated ? "text-[#fca5a5] line-through decoration-[#fca5a5] decoration-2" : "text-[#c8d9c3]"}`}>
+                                {r.player.name}
                               </span>
-                            )}
+                              <span className="text-[#5a6b57]">{r.player.position}</span>
+                              <span className="text-[#2d3c28]">{r.player.pointsPerGame.toFixed(2)} ppg</span>
+                              {injuryLabel && (
+                                <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${injuryBadgeColor}`}>
+                                  {injuryLabel}
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-[#6b9b7a] font-bold text-xs">{r.player.displayPoints.toFixed(1)}</span>
                           </div>
-                          <span className="text-[#6b9b7a] font-bold text-xs">{r.player.displayPoints.toFixed(1)}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {awards && (
           <div className="mb-8">
-            <h2 className="text-sm font-bold text-[#6b9b7a] uppercase tracking-wider mb-3">Draft Awards</h2>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="h-px flex-1 bg-[#1a2f1a]" />
+              <h2 className="text-xs font-bold text-[#5a6b57] uppercase tracking-widest">Draft Awards</h2>
+              <div className="h-px flex-1 bg-[#1a2f1a]" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {awards.mvp && (
                 <AwardCard
                   icon="⭐"
@@ -458,10 +479,14 @@ export default function ResultsPage() {
 
         {teamDistribution.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-sm font-bold text-[#6b9b7a] uppercase tracking-wider mb-3">Draft Stats</h2>
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="h-px flex-1 bg-[#1a2f1a]" />
+              <h2 className="text-xs font-bold text-[#5a6b57] uppercase tracking-widest">Draft Stats</h2>
+              <div className="h-px flex-1 bg-[#1a2f1a]" />
+            </div>
 
             <div className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-4 mb-3">
-              <div className="text-xs font-bold text-[#c8d9c3] mb-3">Players Drafted by NHL Team</div>
+              <div className="text-xs font-bold text-[#c8d9c3] mb-3 border-b border-[#1a2f1a] pb-2">Players Drafted by NHL Team</div>
               <ResponsiveContainer width="100%" height={teamDistribution.length * 44}>
                 <BarChart data={teamDistribution} layout="vertical" margin={{ left: 60, right: 30, top: 5, bottom: 5 }}>
                   <XAxis type="number" hide />
@@ -508,7 +533,7 @@ export default function ResultsPage() {
 
             {positionBreakdown.length > 0 && (
               <div className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-4">
-                <div className="text-xs font-bold text-[#c8d9c3] mb-3">Position Breakdown</div>
+                <div className="text-xs font-bold text-[#c8d9c3] mb-3 border-b border-[#1a2f1a] pb-2">Position Breakdown</div>
                 <div className="flex flex-col md:flex-row items-center justify-center">
                   <ResponsiveContainer width={200} height={200}>
                     <PieChart>

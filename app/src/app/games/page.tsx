@@ -47,13 +47,6 @@ export default function GamesPage() {
   return (
     <div className="min-h-screen bg-[#050a05]">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <Link
-          href="/"
-          className="text-sm text-[#6b9b7a] hover:underline mb-6 inline-block"
-        >
-          &larr; Dashboard
-        </Link>
-
         <div className="text-center mb-8">
           <div className="text-xs uppercase tracking-widest text-[#5a6b57] mb-2">
             Tonight&apos;s Games

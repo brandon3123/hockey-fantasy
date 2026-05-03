@@ -13,7 +13,7 @@ export async function GET() {
 
   const { data: drafts } = await supabase
     .from('drafts')
-    .select('id, name, status, season_type, scoring_format, created_at')
+    .select('id, name, status, season_type, scoring_format, created_at, admin_user_id')
     .eq('admin_user_id', user.id)
     .eq('status', 'complete')
     .order('created_at', { ascending: false });
@@ -32,7 +32,7 @@ export async function GET() {
   if (!completeDraft) {
     const { data: joinedDrafts } = await supabase
       .from('drafts')
-      .select('id, name, status, season_type, scoring_format, created_at')
+      .select('id, name, status, season_type, scoring_format, created_at, admin_user_id')
       .in('id', [...participatedDraftIds])
       .eq('status', 'complete')
       .order('created_at', { ascending: false });
@@ -45,7 +45,7 @@ export async function GET() {
   const draft = completeDraft || await (async () => {
     const { data } = await supabase
       .from('drafts')
-      .select('id, name, status, season_type, scoring_format, created_at')
+      .select('id, name, status, season_type, scoring_format, created_at, admin_user_id')
       .in('id', [...participatedDraftIds])
       .eq('status', 'complete')
       .order('created_at', { ascending: false })
@@ -197,6 +197,8 @@ export async function GET() {
     }
   } catch {}
 
+  const isAdmin = draft.admin_user_id === user.id;
+
   return NextResponse.json({
     draft: {
       id: draft.id,
@@ -205,6 +207,7 @@ export async function GET() {
       seasonType: draft.season_type,
       scoringFormat: draft.scoring_format,
     },
+    isAdmin,
     rank,
     totalTeams: participants.length,
     totalPoints,

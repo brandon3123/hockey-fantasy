@@ -148,10 +148,7 @@ export default function RankingsPage() {
     <div className="min-h-screen bg-[#050a05]">
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-6">
-          <Link href="/" className="text-sm text-[#5a6b57] hover:text-[#c8d9c3]">
-            &larr; Dashboard
-          </Link>
-          <h2 className="text-2xl font-bold text-[#c8d9c3] mt-2 mb-2">
+          <h2 className="text-2xl font-bold text-[#c8d9c3] mb-2">
             Player Rankings
           </h2>
           <p className="text-[#5a6b57]">
