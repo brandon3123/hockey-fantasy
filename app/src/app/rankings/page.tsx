@@ -161,11 +161,12 @@ export default function RankingsPage() {
 
         <PlayerTable
           players={players.map(p => {
+            if (liveInjuries.size === 0) return p;
             const live = liveInjuries.get(p.name.toLowerCase());
             if (live) {
               return { ...p, injury: { ...p.injury, status: live.status as Player['injury']['status'], description: live.description ?? p.injury.description } };
             }
-            return p;
+            return { ...p, injury: { ...p.injury, status: "healthy" as const } };
           })}
           watchlist={watchlist}
           onToggleWatchlist={handleToggleWatchlist}
