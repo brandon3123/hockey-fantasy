@@ -40,6 +40,16 @@ interface Invite {
   invited_at: string;
 }
 
+function SectionDivider({ label }: { label: string }) {
+  return (
+    <div className="flex items-center justify-center gap-3 mb-4">
+      <div className="h-px flex-1 bg-[#1a2f1a]" />
+      <h2 className="text-xs font-bold text-[#5a6b57] uppercase tracking-widest">{label}</h2>
+      <div className="h-px flex-1 bg-[#1a2f1a]" />
+    </div>
+  );
+}
+
 export default function DraftDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -121,7 +131,7 @@ export default function DraftDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#050a05] flex items-center justify-center">
-        <div className="text-xl text-[#5a6b57]">Loading...</div>
+        <div className="text-[#5a6b57]">Loading...</div>
       </div>
     );
   }
@@ -130,8 +140,8 @@ export default function DraftDetailPage() {
     return (
       <div className="min-h-screen bg-[#050a05] flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-[#c8d9c3] mb-4">Draft Not Found</h1>
-          <Link href="/" className="text-[#6b9b7a] hover:underline">Back to Dashboard</Link>
+          <div className="text-xl font-bold text-[#c8d9c3] mb-2">Draft Not Found</div>
+          <div className="text-sm text-[#5a6b57]">This draft may have been deleted</div>
         </div>
       </div>
     );
@@ -142,15 +152,16 @@ export default function DraftDetailPage() {
       return (
         <div className="min-h-screen bg-[#050a05]">
           <div className="max-w-3xl mx-auto px-4 py-8">
-            <Link href="/" className="text-sm text-[#5a6b57] hover:text-[#c8d9c3]">&larr; Back to Dashboard</Link>
-            <h1 className="text-3xl font-bold text-[#c8d9c3] mt-2">{draft.name}</h1>
-            <div className="text-sm text-[#5a6b57] mt-1">
-              {draft.status === 'in_progress' ? 'Draft In Progress' : 'Draft Complete'} &bull; {draft.season_type === 'playoffs' ? 'Playoffs' : 'Regular Season'}
+            <div className="text-center mb-8">
+              <h1 className="text-2xl md:text-3xl font-bold text-[#c8d9c3] mb-2">{draft.name}</h1>
+              <div className="text-sm text-[#5a6b57]">
+                {draft.status === 'in_progress' ? 'Draft In Progress' : 'Draft Complete'} &bull; {draft.season_type === 'playoffs' ? 'Playoffs' : 'Regular Season'}
+              </div>
             </div>
-            <div className="mt-6 flex gap-3">
+            <div className="flex gap-3 justify-center">
               <Link
                 href={`/draft/${draftId}/team`}
-                className="inline-block px-6 py-3 bg-[#0a0f0a] border border-[#141e12] text-[#c8d9c3] rounded-lg font-semibold hover:border-[#4a7c59] transition-colors"
+                className="px-5 py-2.5 text-sm font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
               >
                 {draft.status === 'in_progress' ? 'View My Team' : 'View Draft Board'}
               </Link>
@@ -158,13 +169,13 @@ export default function DraftDetailPage() {
                 <>
                   <Link
                     href={`/draft/${draftId}/results`}
-                    className="inline-block px-6 py-3 bg-[#4a7c59] text-[#c8d9c3] rounded-lg font-semibold hover:bg-[#3d664a] transition-colors"
+                    className="px-5 py-2.5 text-sm font-medium bg-[#4a7c59] text-[#c8d9c3] rounded-lg hover:bg-[#3d664a] transition-colors"
                   >
                     View Results
                   </Link>
                   <Link
                     href={`/draft/${draftId}/standings`}
-                    className="inline-block px-6 py-3 bg-[#0a0f0a] border border-[#141e12] text-[#c8d9c3] rounded-lg font-semibold hover:border-[#4a7c59] transition-colors"
+                    className="px-5 py-2.5 text-sm font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
                   >
                     Standings
                   </Link>
@@ -178,136 +189,160 @@ export default function DraftDetailPage() {
     return (
       <div className="min-h-screen bg-[#050a05] flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-[#c8d9c3] mb-4">Waiting for Draft</h1>
-          <Link href="/" className="text-[#6b9b7a] hover:underline">Back to Dashboard</Link>
+          <div className="text-xl font-bold text-[#c8d9c3] mb-2">Waiting for Draft</div>
+          <div className="text-sm text-[#5a6b57]">The admin hasn&apos;t started the draft yet</div>
         </div>
       </div>
     );
   }
 
-  const statusLabels: Record<string, string> = {
-    setup: 'Setup',
-    inviting: 'Inviting Participants',
-    in_progress: 'Draft In Progress',
-    complete: 'Draft Complete',
+  const statusBadge: Record<string, { label: string; color: string }> = {
+    setup: { label: 'Setup', color: 'text-[#5a6b57]' },
+    inviting: { label: 'Inviting', color: 'text-[#9b8f6b]' },
+    in_progress: { label: 'In Progress', color: 'text-[#6b9b7a]' },
+    complete: { label: 'Complete', color: 'text-[#5a6b57]' },
   };
+  const badge = statusBadge[draft.status] || { label: draft.status, color: 'text-[#5a6b57]' };
+
+  const isPreDraft = draft.status === 'setup' || draft.status === 'inviting';
 
   return (
     <div className="min-h-screen bg-[#050a05]">
       <div className="max-w-3xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
-          <div>
-            <Link href="/" className="text-sm text-[#5a6b57] hover:text-[#c8d9c3]">&larr; Back to Dashboard</Link>
-            <h1 className="text-2xl md:text-3xl font-bold text-[#c8d9c3] mt-2">{draft.name}</h1>
-            <div className="text-sm text-[#5a6b57] mt-1">
-              {statusLabels[draft.status] || draft.status} &bull; {draft.season_type === 'playoffs' ? 'Playoffs' : 'Regular Season'}
-            </div>
+
+        <div className="text-center mb-8">
+          <div className="text-xs uppercase tracking-widest text-[#5a6b57] mb-1">Draft Configuration</div>
+          <h1 className="text-2xl md:text-3xl font-bold text-[#c8d9c3] mb-2">{draft.name}</h1>
+          <div className="flex items-center justify-center gap-3 text-sm text-[#5a6b57]">
+            <span className={badge.color}>{badge.label}</span>
+            <span className="text-[#1a2f1a]">&bull;</span>
+            <span>{draft.season_type === 'playoffs' ? 'Playoffs' : 'Regular Season'}</span>
+            <span className="text-[#1a2f1a]">&bull;</span>
+            <span>{draft.players_per_team} Rounds</span>
           </div>
-          <div className="flex gap-2">
-            {(draft.status === 'setup' || draft.status === 'inviting') && participants.length > 0 && (
+          {isPreDraft && participants.length > 0 && (
+            <div className="mt-4">
               <button
                 onClick={() => setShowStartModal(true)}
-                className="px-4 py-2 text-sm font-medium text-[#c8d9c3] bg-[#4a7c59] rounded-lg hover:bg-[#3d664a] transition-colors"
+                className="px-5 py-2.5 text-sm font-medium bg-[#4a7c59] text-[#c8d9c3] rounded-lg hover:bg-[#3d664a] transition-colors"
               >
                 Start Draft
               </button>
-            )}
-            {draft.status === 'in_progress' && (
-              <>
-                <Link
-                  href={`/draft/${draftId}/coach`}
-                  className="px-4 py-2 text-sm font-medium text-[#5a6b57] bg-[#0a0f0a] border border-[#141e12] rounded-lg hover:border-[#4a7c59] transition-colors"
-                >
-                  My Team
-                </Link>
-                <Link
-                  href={`/draft/${draftId}/live`}
-                  className="px-4 py-2 text-sm font-medium text-[#c8d9c3] bg-[#4a7c59] rounded-lg hover:bg-[#3d664a] transition-colors"
-                >
-                  Go to Live Draft
-                </Link>
-              </>
-            )}
-            {draft.status === 'complete' && (
-              <>
-                <Link
-                  href={`/draft/${draftId}/results`}
-                  className="px-4 py-2 text-sm font-medium text-[#5a6b57] bg-[#0a0f0a] border border-[#141e12] rounded-lg hover:border-[#4a7c59] transition-colors"
-                >
-                  Draft Recap
-                </Link>
-                <Link
-                  href={`/draft/${draftId}/standings`}
-                  className="px-4 py-2 text-sm font-medium text-[#c8d9c3] bg-[#4a7c59] rounded-lg hover:bg-[#3d664a] transition-colors"
-                >
-                  Standings
-                </Link>
-              </>
-            )}
-          </div>
+            </div>
+          )}
+          {draft.status === 'in_progress' && (
+            <div className="mt-4 flex items-center justify-center gap-3">
+              <Link
+                href={`/draft/${draftId}/coach`}
+                className="px-5 py-2.5 text-sm font-medium bg-[#4a7c59] text-[#c8d9c3] rounded-lg hover:bg-[#3d664a] transition-colors"
+              >
+                Live Draft
+              </Link>
+              <Link
+                href={`/draft/${draftId}/team`}
+                className="px-5 py-2.5 text-sm font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
+              >
+                My Team
+              </Link>
+            </div>
+          )}
+          {draft.status === 'complete' && (
+            <div className="mt-4 flex items-center justify-center gap-3">
+              <Link
+                href={`/draft/${draftId}/standings`}
+                className="px-5 py-2.5 text-sm font-medium bg-[#4a7c59] text-[#c8d9c3] rounded-lg hover:bg-[#3d664a] transition-colors"
+              >
+                Standings
+              </Link>
+              <Link
+                href={`/draft/${draftId}/results`}
+                className="px-5 py-2.5 text-sm font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
+              >
+                Draft Recap
+              </Link>
+            </div>
+          )}
         </div>
 
-        <div className="bg-[#050a05] border border-[#141e12] rounded-lg p-6 mb-6">
-          <h3 className="text-sm font-semibold text-[#6b9b7a] mb-3">Event Details</h3>
-          <div className="grid grid-cols-2 gap-y-2 text-sm">
-            {draft.draft_date && (
-              <>
-                <span className="text-[#5a6b57]">Date</span>
-                <span className="text-[#c8d9c3]">{new Date(draft.draft_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-              </>
-            )}
-            {draft.draft_time && (
-              <>
-                <span className="text-[#5a6b57]">Time</span>
-                <span className="text-[#c8d9c3]">{draft.draft_time}</span>
-              </>
-            )}
-            {draft.location && (
-              <>
-                <span className="text-[#5a6b57]">Location</span>
-                <span className="text-[#c8d9c3]">{draft.location}</span>
-              </>
-            )}
-            <span className="text-[#5a6b57]">Players Per Team</span>
-            <span className="text-[#c8d9c3]">{draft.players_per_team}</span>
-            {draft.entry_fee > 0 && (
-              <>
-                <span className="text-[#5a6b57]">Entry Fee</span>
-                <span className="text-[#c8d9c3]">${draft.entry_fee} {draft.currency}</span>
-              </>
+        <div className="mb-6">
+          <SectionDivider label="Event Details" />
+          <div className="bg-[#0a0f0a] border border-[#141e12] rounded-xl p-5">
+            <div className="grid grid-cols-2 gap-y-3 text-sm">
+              {draft.draft_date && (
+                <>
+                  <span className="text-[#5a6b57]">Date</span>
+                  <span className="text-[#c8d9c3]">{new Date(draft.draft_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                </>
+              )}
+              {draft.draft_time && (
+                <>
+                  <span className="text-[#5a6b57]">Time</span>
+                  <span className="text-[#c8d9c3]">{draft.draft_time}</span>
+                </>
+              )}
+              {draft.location && (
+                <>
+                  <span className="text-[#5a6b57]">Location</span>
+                  <span className="text-[#c8d9c3]">{draft.location}</span>
+                </>
+              )}
+              <span className="text-[#5a6b57]">Players Per Team</span>
+              <span className="text-[#c8d9c3]">{draft.players_per_team}</span>
+              <span className="text-[#5a6b57]">Scoring</span>
+              <span className="text-[#c8d9c3]">{draft.scoring_format === '2pt_goals_1pt_assists' ? '2pt Goals / 1pt Assists' : '1pt per Goal & Assist'}</span>
+              {draft.entry_fee > 0 && (
+                <>
+                  <span className="text-[#5a6b57]">Entry Fee</span>
+                  <span className="text-[#c8d9c3]">{draft.currency}${draft.entry_fee}</span>
+                </>
+              )}
+              {draft.payment_info && (
+                <>
+                  <span className="text-[#5a6b57]">Payment</span>
+                  <span className="text-[#c8d9c3]">{draft.payment_method} &middot; {draft.payment_info}</span>
+                </>
+              )}
+            </div>
+            {draft.notes && (
+              <p className="text-sm text-[#5a6b57] italic mt-4 pt-4 border-t border-[#1a2f1a]">{draft.notes}</p>
             )}
           </div>
-          {draft.notes && (
-            <p className="text-sm text-[#5a6b57] italic mt-3 pt-3 border-t border-[#141e12]">{draft.notes}</p>
-          )}
         </div>
 
         <div className="space-y-6">
-          {(draft.status === 'setup' || draft.status === 'inviting') && (
-            <div className="bg-[#050a05] border border-[#141e12] rounded-lg p-6">
-              <h3 className="text-sm font-semibold text-[#6b9b7a] mb-3">Your Team Name</h3>
-              <input
-                type="text"
-                placeholder="Enter your team name..."
-                value={adminTeamName}
-                onChange={(e) => setAdminTeamName(e.target.value)}
-                className="w-full px-4 py-2 border border-[#141e12] rounded-lg bg-[#0a0f0a] text-[#c8d9c3] placeholder-[#2d3c28] focus:outline-none focus:ring-2 focus:ring-[#4a7c59] text-sm"
-              />
+          {isPreDraft && (
+            <div>
+              <SectionDivider label="Your Team Name" />
+              <div className="bg-[#0a0f0a] border border-[#141e12] rounded-xl p-5">
+                <input
+                  type="text"
+                  placeholder="Enter your team name..."
+                  value={adminTeamName}
+                  onChange={(e) => setAdminTeamName(e.target.value)}
+                  className="w-full px-4 py-2.5 border border-[#1a2f1a] rounded-lg bg-[#050a05] text-[#c8d9c3] placeholder-[#2d3c28] focus:outline-none focus:ring-2 focus:ring-[#4a7c59] text-sm"
+                />
+              </div>
             </div>
           )}
 
-          {(draft.status === 'setup' || draft.status === 'inviting') && (
-            <InviteForm draftId={draftId} onInviteSent={fetchDraft} />
+          {isPreDraft && (
+            <div>
+              <SectionDivider label="Invite Participants" />
+              <InviteForm draftId={draftId} onInviteSent={fetchDraft} />
+            </div>
           )}
 
-          <ParticipantList
-            participants={draft.status === 'setup' || draft.status === 'inviting' ? participantsWithAdmin : participants}
-            invites={invites}
-            onRemoveParticipant={handleRemoveParticipant}
-            onRemoveInvite={handleRemoveInvite}
-            onResendInvite={handleResendInvite}
-            onTogglePaid={handleTogglePaid}
-          />
+          <div>
+            <SectionDivider label="Participants" />
+            <ParticipantList
+              participants={isPreDraft ? participantsWithAdmin : participants}
+              invites={invites}
+              onRemoveParticipant={handleRemoveParticipant}
+              onRemoveInvite={handleRemoveInvite}
+              onResendInvite={handleResendInvite}
+              onTogglePaid={handleTogglePaid}
+            />
+          </div>
         </div>
 
         {showStartModal && (

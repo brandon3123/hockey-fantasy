@@ -75,7 +75,13 @@ export function generateInviteEmailHtml(draftName: string, joinUrl: string, logo
     : '';
   return `<!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<style>:root { color-scheme: light dark; supported-color-schemes: light dark; }</style>
+</head>
 <body style="margin: 0; padding: 0; background: #050a05; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
   <div style="max-width: 480px; margin: 0 auto; background: #050a05; border: 1px solid #141e12; border-radius: 8px; overflow: hidden;">
     <div style="background: linear-gradient(135deg, #1a3d1a, #0a0f0a); padding: 24px 20px; text-align: center; border-radius: 8px 8px 0 0;">
@@ -160,31 +166,37 @@ export function generateDailyEmailHtml(params: EmailParams): string {
       <div style="color: #5a6b57; font-size: 13px; margin-top: 4px;">${escapeHtml(seasonType === 'playoffs' ? 'Playoffs' : 'Regular Season')} &middot; ${escapeHtml(date)}</div>
     </div>`;
 
+  const cardStyle = 'background: #0a0f0a; border: 1px solid #141e12; border-radius: 8px; padding: 14px 8px; text-align: center;';
+  const labelStyle = 'font-size: 10px; color: #5a6b57; text-transform: uppercase; letter-spacing: 1px;';
+  const valueStyle = 'font-size: 20px; font-weight: bold; color: #c8d9c3; margin-top: 6px;';
+
   const statsCards = `
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding: 16px 16px 8px;">
       <tr>
-        <td width="25%" style="padding: 0 4px;">
-          <div style="background: #0a0f0a; border: 1px solid #141e12; border-radius: 8px; padding: 12px 4px; text-align: center;">
-            <div style="font-size: 10px; color: #5a6b57; text-transform: uppercase; letter-spacing: 1px;">Position</div>
-            <div style="font-size: 18px; font-weight: bold; color: #c8d9c3; margin-top: 4px;">${getMedal(myRank)} ${myRank}${ordinal(myRank)}</div>
+        <td width="50%" style="padding: 0 4px 8px;">
+          <div style="${cardStyle}">
+            <div style="${labelStyle}">Position</div>
+            <div style="${valueStyle}">${myRank}${ordinal(myRank)}</div>
           </div>
         </td>
-        <td width="25%" style="padding: 0 4px;">
-          <div style="background: #0a0f0a; border: 1px solid #141e12; border-radius: 8px; padding: 12px 4px; text-align: center;">
-            <div style="font-size: 10px; color: #5a6b57; text-transform: uppercase; letter-spacing: 1px;">Total Pts</div>
-            <div style="font-size: 18px; font-weight: bold; color: #c8d9c3; margin-top: 4px;">${myStanding.totalPoints}</div>
+        <td width="50%" style="padding: 0 4px 8px;">
+          <div style="${cardStyle}">
+            <div style="${labelStyle}">Total Pts</div>
+            <div style="${valueStyle}">${myStanding.totalPoints}</div>
           </div>
         </td>
-        <td width="25%" style="padding: 0 4px;">
-          <div style="background: #0a0f0a; border: 1px solid #141e12; border-radius: 8px; padding: 12px 4px; text-align: center;">
-            <div style="font-size: 10px; color: #5a6b57; text-transform: uppercase; letter-spacing: 1px;">Yesterday</div>
-            <div style="font-size: 18px; font-weight: bold; color: #6b9b7a; margin-top: 4px;">+${myStanding.yesterdayPoints}</div>
+      </tr>
+      <tr>
+        <td width="50%" style="padding: 0 4px;">
+          <div style="${cardStyle}">
+            <div style="${labelStyle}">Yesterday</div>
+            <div style="${valueStyle} color: #6b9b7a;">+${myStanding.yesterdayPoints}</div>
           </div>
         </td>
-        <td width="25%" style="padding: 0 4px;">
-          <div style="background: #0a0f0a; border: 1px solid #141e12; border-radius: 8px; padding: 12px 4px; text-align: center;">
-            <div style="font-size: 10px; color: #5a6b57; text-transform: uppercase; letter-spacing: 1px;">Games Back</div>
-            <div style="font-size: 18px; font-weight: bold; color: #c8d9c3; margin-top: 4px;">${gamesBack}</div>
+        <td width="50%" style="padding: 0 4px;">
+          <div style="${cardStyle}">
+            <div style="${labelStyle}">Games Back</div>
+            <div style="${valueStyle}">${gamesBack}</div>
           </div>
         </td>
       </tr>
@@ -209,7 +221,7 @@ export function generateDailyEmailHtml(params: EmailParams): string {
       return `
         <tr>
           <td style="padding: 8px 0; vertical-align: middle;">
-            <img src="${getLogoUrl(p.team)}" width="20" height="20" style="display: inline-block; vertical-align: middle; margin-right: 8px;" alt="${escapeHtml(p.team)}" />
+            <img src="${getLogoUrl(p.team)}" width="20" height="20" style="display: inline-block; vertical-align: middle; margin-right: 8px; background-color: #0a0f0a; border-radius: 3px;" alt="${escapeHtml(p.team)}" />
             <span style="font-weight: 500; color: #c8d9c3;">${escapeHtml(p.playerName)}</span>
           </td>
           <td style="padding: 8px 4px; text-align: center; color: #5a6b57; font-size: 13px;">${escapeHtml(p.opponent ? `vs ${p.opponent}` : '')}</td>
@@ -260,7 +272,7 @@ export function generateDailyEmailHtml(params: EmailParams): string {
           <table width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr>
               <td style="vertical-align: middle;">
-                <img src="${getLogoUrl(game.away)}" width="22" height="22" style="display: inline-block; vertical-align: middle; margin-right: 6px;" alt="${escapeHtml(game.away)}" />
+                <img src="${getLogoUrl(game.away)}" width="22" height="22" style="display: inline-block; vertical-align: middle; margin-right: 6px; background-color: #0a0f0a; border-radius: 3px;" alt="${escapeHtml(game.away)}" />
                 <span style="font-weight: 600; color: #c8d9c3; font-size: 14px;">${escapeHtml(game.away)}</span>
               </td>
               <td style="text-align: center; vertical-align: middle; width: 40px;">
@@ -268,7 +280,7 @@ export function generateDailyEmailHtml(params: EmailParams): string {
               </td>
               <td style="vertical-align: middle; text-align: right;">
                 <span style="font-weight: 600; color: #c8d9c3; font-size: 14px;">${escapeHtml(game.home)}</span>
-                <img src="${getLogoUrl(game.home)}" width="22" height="22" style="display: inline-block; vertical-align: middle; margin-left: 6px;" alt="${escapeHtml(game.home)}" />
+                <img src="${getLogoUrl(game.home)}" width="22" height="22" style="display: inline-block; vertical-align: middle; margin-left: 6px; background-color: #0a0f0a; border-radius: 3px;" alt="${escapeHtml(game.home)}" />
               </td>
             </tr>
           </table>
@@ -329,9 +341,18 @@ export function generateDailyEmailHtml(params: EmailParams): string {
 
   return `<!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head>
-<body style="margin: 0; padding: 0; background: #050a05; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-  <div style="max-width: 480px; margin: 0 auto; background: #050a05; border: 1px solid #141e12; border-radius: 8px; overflow: hidden;">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<style>
+  :root { color-scheme: light dark; supported-color-schemes: light dark; }
+  body, .email-wrapper { background-color: #050a05 !important; }
+</style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #050a05 !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-text-size-adjust: 100%;">
+  <div class="email-wrapper" style="max-width: 480px; margin: 0 auto; background-color: #050a05 !important; border: 1px solid #141e12; border-radius: 8px; overflow: hidden;">
     ${headerSection}
     ${statsCards}
     <div style="height: 1px; background: #141e12; margin: 0 16px;"></div>

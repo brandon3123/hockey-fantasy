@@ -142,130 +142,141 @@ export default function CoachPage() {
   const overallPick = (currentRound - 1) * managers + currentPick;
 
   return (
-    <div className="min-h-screen bg-[#050a05] flex flex-col">
-      <div className="border-b border-[#141e12] bg-[#0a0f0a] px-4 py-3">
-        <div className="text-base md:text-lg font-bold text-[#c8d9c3]">{draft.name}</div>
-        {draft.status === 'in_progress' && !isDraftComplete && (
-          <div className="text-sm text-[#6b9b7a] mt-1">
-            Round {currentRound}, Pick {currentPick}
+    <div className="min-h-screen bg-[#050a05]">
+      <div className="max-w-5xl mx-auto px-4 py-8">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-[#c8d9c3] mb-2">{draft.name}</h1>
+          <div className="flex items-center justify-center gap-3 text-sm text-[#5a6b57]">
+            <span>Admin View</span>
+            <span className="text-[#1a2f1a]">&bull;</span>
+            {draft.status === 'in_progress' && !isDraftComplete ? (
+              <span className="text-[#6b9b7a]">Round {currentRound}, Pick {currentPick}</span>
+            ) : isDraftComplete ? (
+              <span className="text-[#6b9b7a]">Draft Complete</span>
+            ) : (
+              <span>{draft.season_type === 'playoffs' ? 'Playoffs' : 'Regular Season'}</span>
+            )}
           </div>
-        )}
-        {isDraftComplete && (
-          <div className="flex items-center gap-2 mt-1">
-            <div className="text-sm text-[#6b9b7a]">Draft Complete</div>
-            <Link
-              href={`/draft/${draftId}/results`}
-              className="text-xs font-medium text-[#c8d9c3] bg-[#4a7c59] px-4 py-2 rounded hover:bg-[#3d664a] transition-colors"
-            >
-              View Results
-            </Link>
-            <Link
-              href={`/draft/${draftId}/standings`}
-              className="text-xs font-medium text-[#050a05] bg-[#6b9b7a] px-4 py-2 rounded hover:bg-[#8ab89a] transition-colors"
-            >
-              Standings
-            </Link>
+          {isDraftComplete && (
+            <div className="mt-4 flex items-center justify-center gap-2">
+              <Link
+                href={`/draft/${draftId}/results`}
+                className="px-4 py-2 text-sm font-medium bg-[#4a7c59] text-[#c8d9c3] rounded-lg hover:bg-[#3d664a] transition-colors"
+              >
+                View Results
+              </Link>
+              <Link
+                href={`/draft/${draftId}/standings`}
+                className="px-4 py-2 text-sm font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
+              >
+                Standings
+              </Link>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <div className="h-px flex-1 bg-[#1a2f1a]" />
+          <div className="flex gap-1 overflow-x-auto">
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`px-3 py-2 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
+                  activeTab === tab.key
+                    ? 'bg-[#4a7c59] text-[#c8d9c3]'
+                    : 'bg-[#0a0f0a] text-[#5a6b57] hover:bg-[#141e12]'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
-        )}
-      </div>
+          <div className="h-px flex-1 bg-[#1a2f1a]" />
+        </div>
 
-      <div className="flex gap-1 px-2 py-2 border-b border-[#141e12] overflow-x-auto">
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            className={`px-3 py-2.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
-              activeTab === tab.key
-                ? 'bg-[#4a7c59] text-[#c8d9c3]'
-                : 'bg-[#0a0f0a] text-[#5a6b57] hover:bg-[#141e12]'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+        <div>
+          {activeTab === 'myteam' && (
+            <MyTeamTab
+              picks={picks}
+              participants={participants}
+              players={players}
+              currentUserId={currentUserId}
+              draft={draft}
+              currentRound={currentRound}
+              currentPick={currentPick}
+              managers={managers}
+            />
+          )}
 
-      <div className="flex-1 overflow-y-auto p-4">
-        {activeTab === 'myteam' && (
-          <MyTeamTab
-            picks={picks}
-            participants={participants}
-            players={players}
-            currentUserId={currentUserId}
-            draft={draft}
-            currentRound={currentRound}
-            currentPick={currentPick}
-            managers={managers}
-          />
-        )}
+          {activeTab === 'coach' && legacyState && (
+            <DraftCoach
+              draftState={legacyState}
+              availablePlayers={availablePlayers}
+              allPlayers={players}
+              onDraftPlayer={handleDraftPlayer}
+              draftComplete={isDraftComplete}
+            />
+          )}
 
-        {activeTab === 'coach' && legacyState && (
-          <DraftCoach
-            draftState={legacyState}
-            availablePlayers={availablePlayers}
-            allPlayers={players}
-            onDraftPlayer={handleDraftPlayer}
-            draftComplete={isDraftComplete}
-          />
-        )}
+          {activeTab === 'best' && (
+            <BestAvailable
+              availablePlayers={availablePlayers}
+              currentPick={overallPick}
+              onDraftPlayer={handleDraftPlayer}
+              draftComplete={isDraftComplete}
+            />
+          )}
 
-        {activeTab === 'best' && (
-          <BestAvailable
-            availablePlayers={availablePlayers}
-            currentPick={overallPick}
-            onDraftPlayer={handleDraftPlayer}
-            draftComplete={isDraftComplete}
-          />
-        )}
+          {activeTab === 'all' && (
+            <PlayerList
+              availablePlayers={availablePlayers}
+              onPickPlayer={handleDraftPlayer}
+              isDraftComplete={isDraftComplete}
+              showSearch={true}
+            />
+          )}
 
-        {activeTab === 'all' && (
-          <PlayerList
-            availablePlayers={availablePlayers}
-            onPickPlayer={handleDraftPlayer}
-            isDraftComplete={isDraftComplete}
-            showSearch={true}
-          />
-        )}
-
-        {activeTab === 'stack' && (
-          <TeamStackPanel
-            yourPicks={adminPicks.map((p) => ({
-              playerId: p.player_id,
-              playerName: p.player_name,
-              round: p.round,
+          {activeTab === 'stack' && (
+            <TeamStackPanel
+              yourPicks={adminPicks.map((p) => ({
+                playerId: p.player_id,
+                playerName: p.player_name,
+                round: p.round,
     managerIndex: p.manager_index - 1,
-            }))}
-            availablePlayers={availablePlayers}
-            allPlayers={players}
-            onDraftPlayer={handleDraftPlayer}
-            draftComplete={isDraftComplete}
-          />
-        )}
+              }))}
+              availablePlayers={availablePlayers}
+              allPlayers={players}
+              onDraftPlayer={handleDraftPlayer}
+              draftComplete={isDraftComplete}
+            />
+          )}
 
-        {activeTab === 'teams' && (
-          <TeamBrowserTab
-            players={players}
-            picks={picks}
-            participants={participants}
-            onDraftPlayer={handleDraftPlayer}
-            isDraftComplete={isDraftComplete}
-            seasonType={draft?.season_type ?? 'playoffs'}
-            playoffTeams={playoffTeams}
-          />
-        )}
+          {activeTab === 'teams' && (
+            <TeamBrowserTab
+              players={players}
+              picks={picks}
+              participants={participants}
+              onDraftPlayer={handleDraftPlayer}
+              isDraftComplete={isDraftComplete}
+              seasonType={draft?.season_type ?? 'playoffs'}
+              playoffTeams={playoffTeams}
+            />
+          )}
 
-        {activeTab === 'board' && (
-          <DraftBoard
-            draftId={draftId}
-            participants={participants}
-            picks={picks}
-            players={players}
-            playersPerTeam={draft.players_per_team}
-            currentRound={currentRound}
-            currentParticipant={currentParticipant}
-            isDraftComplete={isDraftComplete}
-          />
-        )}
+          {activeTab === 'board' && (
+            <DraftBoard
+              draftId={draftId}
+              participants={participants}
+              picks={picks}
+              players={players}
+              playersPerTeam={draft.players_per_team}
+              currentRound={currentRound}
+              currentParticipant={currentParticipant}
+              isDraftComplete={isDraftComplete}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

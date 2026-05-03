@@ -87,8 +87,12 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
         </div>
       )}
 
-      <div className="bg-[#050a05] border border-[#141e12] rounded-lg p-6">
-        <h3 className="text-lg font-bold text-[#6b9b7a] mb-4">Draft Details</h3>
+      <div className="bg-[#0a0f0a] border border-[#141e12] rounded-xl p-5">
+        <div className="flex items-center justify-center gap-3 mb-5">
+          <div className="h-px flex-1 bg-[#1a2f1a]" />
+          <h3 className="text-xs font-bold text-[#5a6b57] uppercase tracking-widest">Draft Details</h3>
+          <div className="h-px flex-1 bg-[#1a2f1a]" />
+        </div>
         <div className="space-y-4">
           <div>
             <label className={labelClass}>Draft Name</label>
@@ -131,8 +135,12 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
         </div>
       </div>
 
-      <div className="bg-[#050a05] border border-[#141e12] rounded-lg p-6">
-        <h3 className="text-lg font-bold text-[#6b9b7a] mb-4">Payment Details</h3>
+      <div className="bg-[#0a0f0a] border border-[#141e12] rounded-xl p-5">
+        <div className="flex items-center justify-center gap-3 mb-5">
+          <div className="h-px flex-1 bg-[#1a2f1a]" />
+          <h3 className="text-xs font-bold text-[#5a6b57] uppercase tracking-widest">Payment Details</h3>
+          <div className="h-px flex-1 bg-[#1a2f1a]" />
+        </div>
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>

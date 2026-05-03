@@ -58,14 +58,11 @@ export default function ParticipantList({ participants, invites, totalSlots, onR
   };
 
   return (
-    <div className="bg-[#050a05] border border-[#141e12] rounded-lg p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-bold text-[#c8d9c3]">Participants</h3>
-        <div className="flex items-center gap-3">
-          <div className="text-sm">
-            <span className="text-[#6b9b7a] font-bold">{registeredCount}</span>
-            <span className="text-[#5a6b57]"> / {totalSlotsDisplay} registered</span>
-          </div>
+    <div className="bg-[#0a0f0a] border border-[#141e12] rounded-xl p-5">
+      <div className="flex items-center justify-end mb-4">
+        <div className="text-sm">
+          <span className="text-[#6b9b7a] font-bold">{registeredCount}</span>
+          <span className="text-[#5a6b57]"> / {totalSlotsDisplay} registered</span>
         </div>
       </div>
 

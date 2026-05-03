@@ -434,6 +434,8 @@ export default function LiveDraftPage() {
   const [replacePick, setReplacePick] = useState<DraftPickRow | null>(null);
   const [replacing, setReplacing] = useState(false);
   const [mobileBoardTab, setMobileBoardTab] = useState<'board' | 'players'>('board');
+  const [undoing, setUndoing] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   const {
     draft,
@@ -480,8 +482,8 @@ export default function LiveDraftPage() {
   };
 
   const handleUndo = async () => {
-    if (picks.length === 0) return;
-
+    if (picks.length === 0 || undoing) return;
+    setUndoing(true);
     try {
       const res = await fetch(`/api/drafts/${draftId}/picks/last`, {
         method: 'DELETE',
@@ -493,10 +495,15 @@ export default function LiveDraftPage() {
       refresh();
     } catch (err) {
       alert('Failed to undo pick');
+    } finally {
+      setUndoing(false);
     }
   };
 
   const handleReset = async () => {
+    if (resetting) return;
+    if (!confirm('Reset the entire draft? All picks will be removed.')) return;
+    setResetting(true);
     try {
       const res = await fetch(`/api/drafts/${draftId}/reset`, {
         method: 'POST',
@@ -509,6 +516,8 @@ export default function LiveDraftPage() {
       }
     } catch {
       alert('Failed to reset draft');
+    } finally {
+      setResetting(false);
     }
   };
 
@@ -579,59 +588,61 @@ export default function LiveDraftPage() {
 
   return (
     <div className="h-screen bg-[#050a05] flex flex-col">
-      <div className="shrink-0 border-b border-[#141e12] bg-[#0a0f0a] px-4 py-3">
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <div className="flex items-center gap-2 md:gap-4">
-            <h1 className="text-base md:text-lg font-bold text-[#c8d9c3]">{draft.name}</h1>
-            <div className="text-xs md:text-sm text-[#5a6b57]">
-              Round {currentRound} &bull; Pick {currentPick}
-            </div>
-          </div>
-          <div className="flex items-center gap-2 md:gap-3 flex-wrap">
+      <div className="shrink-0 bg-[#0a0f0a] border-b border-[#141e12]">
+        <div className="px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-3">
+            <h1 className="text-lg font-bold text-[#c8d9c3]">{draft.name}</h1>
             {isDraftComplete ? (
-              <div className="flex items-center gap-2">
-                <div className="px-3 py-1.5 bg-[#4a7c59] rounded-lg text-xs md:text-sm font-bold text-[#c8d9c3]">
-                  DRAFT COMPLETE
-                </div>
+              <span className="px-3 py-1 bg-[#4a7c59] rounded text-xs font-bold text-[#c8d9c3]">COMPLETE</span>
+            ) : (
+              <span className="text-sm text-[#5a6b57]">Round {currentRound} &bull; Pick {currentPick}</span>
+            )}
+            <span className="text-xs text-[#5a6b57]">{totalPicks}/{totalSlots} picks</span>
+          </div>
+          <div className="flex items-center gap-2">
+            {isDraftComplete ? (
+              <>
                 <Link
                   href={`/draft/${draftId}/results`}
-                  className="px-3 py-1.5 text-xs md:text-sm font-bold text-[#050a05] bg-[#6b9b7a] rounded-lg hover:bg-[#8ab89a] transition-colors"
+                  className="px-3 py-1.5 text-xs font-bold text-[#c8d9c3] bg-[#4a7c59] rounded-lg hover:bg-[#3d664a] transition-colors"
                 >
                   View Results
                 </Link>
-              </div>
+                <Link
+                  href={`/draft/${draftId}/standings`}
+                  className="px-3 py-1.5 text-xs font-bold text-[#6b9b7a] border border-[#4a7c59] rounded-lg hover:bg-[#0a0f0a] transition-colors"
+                >
+                  Standings
+                </Link>
+              </>
             ) : (
-              <div className="px-3 py-1.5 bg-[#4a7c59] rounded-lg text-xs md:text-sm font-bold text-white animate-pulse">
+              <span className="px-3 py-1.5 bg-[#4a7c59] rounded-lg text-xs font-bold text-white animate-pulse">
                 ON THE CLOCK: {currentParticipant?.team_name || '...'}
-              </div>
+              </span>
             )}
-            <div className="text-xs md:text-sm text-[#5a6b57]">
-              {totalPicks}/{totalSlots}
-            </div>
             {isAdmin && (
               <>
                 {!isDraftComplete && (
                   <button
                     onClick={handleUndo}
-                    disabled={totalPicks === 0}
-                    className="px-3 py-2 text-xs font-medium text-[#c8d9c3] bg-[#050a05] border border-[#141e12] rounded-lg hover:bg-[#141e12] hover:border-[#4a7c59] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                    disabled={totalPicks === 0 || undoing}
+                    className="px-3 py-1.5 text-xs font-medium text-[#c8d9c3] bg-[#050a05] border border-[#141e12] rounded-lg hover:bg-[#141e12] hover:border-[#4a7c59] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                   >
-                    Undo
+                    {undoing ? '...' : 'Undo'}
                   </button>
                 )}
                 <button
                   onClick={handleReset}
-                  className="px-3 py-2 text-xs font-medium text-red-400 bg-[#050a05] border border-[#3d1a1a] rounded-lg hover:bg-[#3d1a1a] transition-colors"
+                  disabled={resetting}
+                  className="px-3 py-1.5 text-xs font-medium text-red-400 bg-[#050a05] border border-[#3d1a1a] rounded-lg hover:bg-[#3d1a1a] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 >
-                  Reset
+                  {resetting ? '...' : 'Reset'}
                 </button>
               </>
             )}
           </div>
         </div>
-      </div>
-
-      <div className="lg:hidden flex border-b border-[#141e12]">
+        <div className="lg:hidden flex border-t border-[#141e12]">
         <button
           onClick={() => setMobileBoardTab('board')}
           className={`flex-1 py-3 text-center text-sm font-semibold transition-colors ${
@@ -648,6 +659,7 @@ export default function LiveDraftPage() {
         >
           Players
         </button>
+      </div>
       </div>
 
       <div className="flex-1 flex min-h-0">

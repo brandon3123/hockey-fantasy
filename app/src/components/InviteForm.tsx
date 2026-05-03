@@ -54,8 +54,7 @@ export default function InviteForm({ draftId, onInviteSent }: InviteFormProps) {
   };
 
   return (
-    <div className="bg-[#050a05] border border-[#141e12] rounded-lg p-6">
-      <h3 className="text-lg font-bold text-[#c8d9c3] mb-4">Invite Participants</h3>
+    <div className="bg-[#0a0f0a] border border-[#141e12] rounded-xl p-5">
       <form onSubmit={handleInvite}>
         <div className="mb-3">
           <label className="block text-sm font-medium mb-1 text-[#c8d9c3]">

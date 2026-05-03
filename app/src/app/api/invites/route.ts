@@ -63,6 +63,8 @@ export async function POST(request: Request) {
     const { data: userList } = await adminClient.auth.admin.listUsers();
     const existingUser = userList?.users?.find(u => u.email === trimmed);
 
+    console.log('[POST] email:', trimmed, 'existingUser:', !!existingUser);
+
     if (existingUser) {
       const joinUrl = `${appUrl}/join/${draft_id}`;
       const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@contact.brandon-nolan.ca';

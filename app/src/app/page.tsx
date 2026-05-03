@@ -30,6 +30,7 @@ interface Draft {
   location?: string; entry_fee?: number; currency?: string;
   payment_method?: string; payment_info?: string; notes?: string;
   players_per_team?: number; scoring_format?: string;
+  joined_count?: number; pending_count?: number; paid_count?: number;
 }
 
 interface JoinedDraft extends Draft { team_name: string; has_paid: boolean; }
@@ -77,10 +78,7 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
+    if (!user) return;
     fetchDashboard();
   }, [user, fetchDashboard]);
 
@@ -95,7 +93,7 @@ export default function HomePage() {
       body: JSON.stringify({ draft_id: draftId }),
     });
     if (res.ok) {
-      setDrafts(prev => prev.filter(d => d.id !== draftId));
+      fetchDashboard();
     }
     setDeleting(null);
   };
@@ -182,10 +180,10 @@ export default function HomePage() {
                 <button
                   onClick={(e) => handleDeleteDraft(e, draft.id, draft.name)}
                   disabled={deleting === draft.id}
-                  className="px-3 py-2 text-sm text-[#5a6b57] border border-[#1a2f1a] rounded-lg hover:text-red-400 hover:border-red-400 transition-colors disabled:opacity-50"
+                  className="text-[#5a6b57] hover:text-red-400 transition-colors text-sm disabled:opacity-50 p-2"
                   title="Delete draft"
                 >
-                  {deleting === draft.id ? 'Deleting...' : 'Delete Draft'}
+                  {deleting === draft.id ? '...' : '\u2715'}
                 </button>
               )}
             </div>
@@ -377,94 +375,98 @@ export default function HomePage() {
               <div>
                 <h2 className="text-lg font-semibold text-[#6b9b7a] mb-3">Admin</h2>
                 <div className="grid gap-4">
-                  {drafts.map((draft) => (
-                    <div
-                      key={draft.id}
-                      className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-6 hover:border-[#4a7c59] transition-colors"
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-1">
-                            <Link href={`/dashboard/drafts/${draft.id}`}>
-                              <h3 className="text-lg font-bold text-[#c8d9c3] hover:underline">{draft.name}</h3>
-                            </Link>
-                            <StatusBadge status={draft.status} />
-                          </div>
-                          <div className="text-sm text-[#5a6b57] mt-1">
-                            {formatDate(draft)}
-                            {draft.players_per_team && ` \u2022 ${draft.players_per_team} players/team`}
-                          </div>
-                          {(draft.status === 'setup' || draft.status === 'inviting') && (
-                            <div className="mt-3">
-                              <div className="grid grid-cols-4 gap-2 text-center">
-                                <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
-                                  <div className="text-[10px] text-[#5a6b57] uppercase">Joined</div>
-                                  <div className="text-sm font-semibold text-[#c8d9c3]">0</div>
-                                </div>
-                                <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
-                                  <div className="text-[10px] text-[#5a6b57] uppercase">Pending</div>
-                                  <div className="text-sm font-semibold text-[#c8d9c3]">0</div>
-                                </div>
-                                <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
-                                  <div className="text-[10px] text-[#5a6b57] uppercase">Paid</div>
-                                  <div className="text-sm font-semibold text-[#c8d9c3]">0/0</div>
-                                </div>
-                                <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
-                                  <div className="text-[10px] text-[#5a6b57] uppercase">Fee</div>
-                                  <div className="text-sm font-semibold text-[#c8d9c3]">{draft.entry_fee ? `${draft.currency || '$'}${draft.entry_fee}` : 'Free'}</div>
+                  {drafts.map((draft) => {
+                    const isInProgress = draft.status === 'in_progress';
+                    const btnLabel = isInProgress ? 'My Team' : 'Configure';
+                    const btnLink = isInProgress ? `/draft/${draft.id}/coach` : `/dashboard/drafts/${draft.id}`;
+                    return (
+                      <div
+                        key={draft.id}
+                        className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-6"
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-1">
+                              <h3 className="text-lg font-bold text-[#c8d9c3]">{draft.name}</h3>
+                              <StatusBadge status={draft.status} />
+                            </div>
+                            <div className="text-sm text-[#5a6b57] mt-1">
+                              {formatDate(draft)}
+                              {draft.players_per_team && ` \u2022 ${draft.players_per_team} players/team`}
+                            </div>
+                            {(draft.status === 'setup' || draft.status === 'inviting') && (
+                              <div className="mt-3">
+                                <div className="grid grid-cols-4 gap-2 text-center">
+                                  <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
+                                    <div className="text-[10px] text-[#5a6b57] uppercase">Joined</div>
+                                    <div className="text-sm font-semibold text-[#c8d9c3]">{draft.joined_count ?? 0}</div>
+                                  </div>
+                                  <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
+                                    <div className="text-[10px] text-[#5a6b57] uppercase">Pending</div>
+                                    <div className="text-sm font-semibold text-[#c8d9c3]">{draft.pending_count ?? 0}</div>
+                                  </div>
+                                  <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
+                                    <div className="text-[10px] text-[#5a6b57] uppercase">Paid</div>
+                                    <div className="text-sm font-semibold text-[#c8d9c3]">{draft.paid_count ?? 0}/{draft.joined_count ?? 0}</div>
+                                  </div>
+                                  <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
+                                    <div className="text-[10px] text-[#5a6b57] uppercase">Fee</div>
+                                    <div className="text-sm font-semibold text-[#c8d9c3]">{draft.entry_fee ? `${draft.currency || '$'}${draft.entry_fee}` : 'Free'}</div>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
+                            )}
+                            {isInProgress && (
+                              <div className="mt-3">
+                                <div className="grid grid-cols-4 gap-2 text-center">
+                                  <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
+                                    <div className="text-[10px] text-[#5a6b57] uppercase">Teams</div>
+                                    <div className="text-sm font-semibold text-[#c8d9c3]">{draft.joined_count ?? 0}</div>
+                                  </div>
+                                  <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
+                                    <div className="text-[10px] text-[#5a6b57] uppercase">Rounds</div>
+                                    <div className="text-sm font-semibold text-[#c8d9c3]">{draft.players_per_team || '?'}</div>
+                                  </div>
+                                  <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
+                                    <div className="text-[10px] text-[#5a6b57] uppercase">Paid</div>
+                                    <div className="text-sm font-semibold text-[#c8d9c3]">{draft.paid_count ?? 0}/{draft.joined_count ?? 0}</div>
+                                  </div>
+                                  <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
+                                    <div className="text-[10px] text-[#5a6b57] uppercase">Fee</div>
+                                    <div className="text-sm font-semibold text-[#c8d9c3]">{draft.entry_fee ? `${draft.currency || '$'}${draft.entry_fee}` : 'Free'}</div>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            onClick={(e) => { e.preventDefault(); handleDeleteDraft(e, draft.id, draft.name); }}
+                            disabled={deleting === draft.id}
+                            className="text-[#5a6b57] hover:text-red-400 transition-colors text-sm disabled:opacity-50 p-2"
+                            title="Delete draft"
+                          >
+                            {deleting === draft.id ? '...' : '\u2715'}
+                          </button>
+                        </div>
+                        <div className="mt-4 flex items-center gap-3">
+                          <Link
+                            href={btnLink}
+                            className="px-4 py-2 text-sm font-medium bg-[#4a7c59] text-[#c8d9c3] rounded-lg hover:bg-[#3d664a] transition-colors"
+                          >
+                            {btnLabel}
+                          </Link>
+                          {isInProgress && (
+                            <Link
+                              href={`/draft/${draft.id}/live`}
+                              className="px-4 py-2 text-sm font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
+                            >
+                              Draft Board
+                            </Link>
                           )}
                         </div>
-                        <button
-                          onClick={(e) => handleDeleteDraft(e, draft.id, draft.name)}
-                          disabled={deleting === draft.id}
-                          className="text-[#5a6b57] hover:text-red-400 transition-colors text-sm disabled:opacity-50 p-2"
-                          title="Delete draft"
-                        >
-                          {deleting === draft.id ? '...' : '\u2715'}
-                        </button>
                       </div>
-                      <div className="flex items-center gap-2 mt-4">
-                        {(draft.status === 'setup' || draft.status === 'inviting') && (
-                          <>
-                            <Link
-                              href={`/dashboard/drafts/${draft.id}`}
-                              className="px-3 py-2 text-xs font-medium bg-[#4a7c59] text-[#c8d9c3] rounded-lg hover:bg-[#3d664a] transition-colors"
-                            >
-                              Manage Draft
-                            </Link>
-                            <Link
-                              href={`/dashboard/drafts/${draft.id}`}
-                              className="px-3 py-2 text-xs font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
-                            >
-                              Invite Players
-                            </Link>
-                            <button className="px-3 py-2 text-xs font-medium border border-[#5a6b57] text-[#5a6b57] rounded-lg hover:border-[#4a7c59] hover:text-[#6b9b7a] transition-colors">
-                              Start Draft
-                            </button>
-                          </>
-                        )}
-                        {draft.status === 'in_progress' && (
-                          <>
-                            <Link
-                              href={`/draft/${draft.id}/coach`}
-                              className="px-3 py-2 text-xs font-medium bg-[#4a7c59] text-[#c8d9c3] rounded-lg hover:bg-[#3d664a] transition-colors"
-                            >
-                              Live Draft
-                            </Link>
-                            <Link
-                              href={`/draft/${draft.id}/team`}
-                              className="px-3 py-2 text-xs font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
-                            >
-                              My Team
-                            </Link>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -473,68 +475,79 @@ export default function HomePage() {
               <div>
                 <h2 className="text-lg font-semibold text-[#9b8f6b] mb-3">Joined</h2>
                 <div className="grid gap-4">
-                  {joined.map((draft) => (
-                    <div
-                      key={draft.id}
-                      className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-6 hover:border-[#9b8f6b] transition-colors"
-                    >
-                      <div className="flex items-center gap-3 mb-1">
-                        <h3 className="text-lg font-bold text-[#c8d9c3]">{draft.name}</h3>
-                        <StatusBadge status={draft.status} />
-                      </div>
-                      <div className="text-sm text-[#5a6b57] mt-1">
-                        {formatDate(draft)}
-                      </div>
-                      {draft.team_name && (
-                        <div className="mt-3 bg-[#0d150d] border border-[#4a7c59] rounded-lg p-3">
-                          <div className="text-sm font-medium text-[#c8d9c3]">{draft.team_name}</div>
-                          {draft.has_paid ? (
-                            <span className="text-xs text-[#6b9b7a]">&#10003; Paid</span>
-                          ) : (
-                            <span className="text-xs text-[#9b8f6b]">Not paid</span>
+                  {joined.map((draft) => {
+                    const isInProgress = draft.status === 'in_progress';
+                    return (
+                      <div
+                        key={draft.id}
+                        className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-6"
+                      >
+                        <div className="flex items-center gap-3 mb-1">
+                          <h3 className="text-lg font-bold text-[#c8d9c3]">{draft.name}</h3>
+                          <StatusBadge status={draft.status} />
+                        </div>
+                        <div className="text-sm text-[#5a6b57] mt-1">
+                          {formatDate(draft)}
+                        </div>
+                        {draft.team_name && (
+                          <div className="mt-3 bg-[#0d150d] border border-[#4a7c59] rounded-lg p-3">
+                            <div className="text-sm font-medium text-[#c8d9c3]">{draft.team_name}</div>
+                            {draft.has_paid ? (
+                              <span className="text-xs text-[#6b9b7a]">&#10003; Paid</span>
+                            ) : (
+                              <span className="text-xs text-[#9b8f6b]">Not paid</span>
+                            )}
+                          </div>
+                        )}
+                        <div className="mt-3">
+                          <div className="grid grid-cols-3 gap-2 text-center">
+                             <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
+                               <div className="text-[10px] text-[#5a6b57] uppercase">Joined</div>
+                               <div className="text-sm font-semibold text-[#c8d9c3]">{draft.joined_count ?? 0}</div>
+                             </div>
+                             <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
+                               <div className="text-[10px] text-[#5a6b57] uppercase">Players</div>
+                               <div className="text-sm font-semibold text-[#c8d9c3]">{draft.players_per_team || 'N/A'}</div>
+                             </div>
+                             <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
+                               <div className="text-[10px] text-[#5a6b57] uppercase">Fee</div>
+                               <div className="text-sm font-semibold text-[#c8d9c3]">{draft.entry_fee ? `${draft.currency || '$'}${draft.entry_fee}` : 'Free'}</div>
+                             </div>
+                          </div>
+                        </div>
+                        {(draft.location || draft.payment_info) && (
+                          <div className="mt-2 text-xs text-[#5a6b57]">
+                            {draft.location && <span>{draft.location}</span>}
+                            {draft.location && draft.payment_info && <span> &middot; </span>}
+                            {draft.payment_info && <span>{draft.payment_info}</span>}
+                          </div>
+                        )}
+                        <div className="mt-4 flex items-center gap-3">
+                          {(draft.status === 'setup' || draft.status === 'inviting') && (
+                            <div className="text-sm text-[#5a6b57]">
+                              &#9203; Waiting for admin to start the draft
+                            </div>
+                          )}
+                          {isInProgress && (
+                            <>
+                              <Link
+                                href={`/draft/${draft.id}/team`}
+                                className="px-4 py-2 text-sm font-medium bg-[#4a7c59] text-[#c8d9c3] rounded-lg hover:bg-[#3d664a] transition-colors"
+                              >
+                                My Team
+                              </Link>
+                              <Link
+                                href={`/draft/${draft.id}/live`}
+                                className="px-4 py-2 text-sm font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
+                              >
+                                Draft Board
+                              </Link>
+                            </>
                           )}
                         </div>
-                      )}
-                      <div className="mt-3">
-                        <div className="grid grid-cols-3 gap-2 text-center">
-                          <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
-                            <div className="text-[10px] text-[#5a6b57] uppercase">Joined</div>
-                            <div className="text-sm font-semibold text-[#c8d9c3]">0</div>
-                          </div>
-                          <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
-                            <div className="text-[10px] text-[#5a6b57] uppercase">Players</div>
-                            <div className="text-sm font-semibold text-[#c8d9c3]">{draft.players_per_team || 'N/A'}</div>
-                          </div>
-                          <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
-                            <div className="text-[10px] text-[#5a6b57] uppercase">Fee</div>
-                            <div className="text-sm font-semibold text-[#c8d9c3]">{draft.entry_fee ? `${draft.currency || '$'}${draft.entry_fee}` : 'Free'}</div>
-                          </div>
-                        </div>
                       </div>
-                      {(draft.location || draft.payment_info) && (
-                        <div className="mt-2 text-xs text-[#5a6b57]">
-                          {draft.location && <span>{draft.location}</span>}
-                          {draft.location && draft.payment_info && <span> &middot; </span>}
-                          {draft.payment_info && <span>{draft.payment_info}</span>}
-                        </div>
-                      )}
-                      <div className="mt-4">
-                        {(draft.status === 'setup' || draft.status === 'inviting') && (
-                          <div className="text-center text-sm text-[#5a6b57] py-2">
-                            &#9203; Waiting for admin to start the draft
-                          </div>
-                        )}
-                        {draft.status === 'in_progress' && (
-                          <Link
-                            href={`/draft/${draft.id}/team`}
-                            className="inline-block px-4 py-2 text-xs font-medium bg-[#4a7c59] text-[#c8d9c3] rounded-lg hover:bg-[#3d664a] transition-colors"
-                          >
-                            My Team
-                          </Link>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}

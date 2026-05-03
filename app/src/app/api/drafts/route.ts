@@ -38,12 +38,43 @@ export async function GET() {
 
   const participationMap = new Map((participations || []).map(p => [p.draft_id, p]));
 
+  const { data: allParticipants } = await supabase
+    .from('draft_participants')
+    .select('draft_id, has_paid');
+
+  const { data: allInvites } = await supabase
+    .from('draft_invites')
+    .select('draft_id, accepted');
+
+  const participantCounts = new Map<string, { joined: number; paid: number }>();
+  for (const p of allParticipants || []) {
+    const entry = participantCounts.get(p.draft_id) || { joined: 0, paid: 0 };
+    entry.joined++;
+    if (p.has_paid) entry.paid++;
+    participantCounts.set(p.draft_id, entry);
+  }
+
+  const inviteCounts = new Map<string, number>();
+  for (const inv of allInvites || []) {
+    if (!inv.accepted) {
+      inviteCounts.set(inv.draft_id, (inviteCounts.get(inv.draft_id) || 0) + 1);
+    }
+  }
+
   return NextResponse.json({
-    drafts: data,
+    drafts: (data || []).map(d => ({
+      ...d,
+      joined_count: participantCounts.get(d.id)?.joined || 0,
+      pending_count: inviteCounts.get(d.id) || 0,
+      paid_count: participantCounts.get(d.id)?.paid || 0,
+    })),
     joined: joinedDrafts.map(d => ({
       ...d,
       team_name: participationMap.get(d.id)?.team_name,
       has_paid: participationMap.get(d.id)?.has_paid,
+      joined_count: participantCounts.get(d.id)?.joined || 0,
+      pending_count: inviteCounts.get(d.id) || 0,
+      paid_count: participantCounts.get(d.id)?.paid || 0,
     })),
   });
 }
