@@ -64,6 +64,7 @@ export default function Navigation() {
             {navLink('/', 'Dashboard')}
             {navLink('/rankings', 'Rankings')}
             {navLink('/bracket', 'Bracket')}
+            {navLink('/games', 'Games')}
             {user && isAdmin && (
               <>
                 <span className="w-px h-5 bg-[#141e12] mx-2" />
@@ -143,6 +144,7 @@ export default function Navigation() {
             <Link href="/" onClick={() => setMobileOpen(false)} className={`block px-4 py-3 text-sm hover:bg-[#141e12] ${isActive('/') ? 'text-[#c8d9c3]' : 'text-[#5a6b57]'}`}>Dashboard</Link>
             <Link href="/rankings" onClick={() => setMobileOpen(false)} className={`block px-4 py-3 text-sm hover:bg-[#141e12] ${isActive('/rankings') ? 'text-[#c8d9c3]' : 'text-[#5a6b57]'}`}>Rankings</Link>
             <Link href="/bracket" onClick={() => setMobileOpen(false)} className={`block px-4 py-3 text-sm hover:bg-[#141e12] ${isActive('/bracket') ? 'text-[#c8d9c3]' : 'text-[#5a6b57]'}`}>Bracket</Link>
+            <Link href="/games" onClick={() => setMobileOpen(false)} className={`block px-4 py-3 text-sm hover:bg-[#141e12] ${isActive('/games') ? 'text-[#c8d9c3]' : 'text-[#5a6b57]'}`}>Games</Link>
             {user && isAdmin && (
               <>
                 <div className="h-px bg-[#141e12] my-1 mx-4" />
