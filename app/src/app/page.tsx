@@ -3,43 +3,85 @@
 import { useAuth } from '@/context/auth-context';
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import TeamLogo from '@/components/TeamLogo';
 
-interface Draft {
-  id: string;
-  name: string;
-  season_type: string;
-  status: string;
-  draft_date: string | null;
-  draft_time: string | null;
-  created_at: string;
+interface DashboardData {
+  draft: { id: string; name: string; status: string; seasonType: string; scoringFormat: string } | null;
+  rank: number | null;
+  totalTeams: number | null;
+  totalPoints: number | null;
+  yesterdayPoints: number | null;
+  roster: Array<{
+    playerId: string; playerName: string; team: string; position: string;
+    totalPoints: number; yesterdayPoints: number;
+    injuryStatus: string; injuryDescription: string | null; isEliminated: boolean;
+  }>;
+  standings: Array<{ participantId: string; teamName: string; totalPoints: number; isYou: boolean }>;
+  tonightGames: Array<{ away: string; home: string; awayLogo: string; homeLogo: string; time: string }>;
+  activePlayerCount: number;
+  eliminatedTeams: string[];
+  totalPlayoffTeams: number;
 }
 
-interface JoinedDraft extends Draft {
-  team_name: string;
-  has_paid: boolean;
+interface Draft {
+  id: string; name: string; season_type: string; status: string;
+  draft_date: string | null; draft_time: string | null; created_at: string;
+  location?: string; entry_fee?: number; currency?: string;
+  payment_method?: string; payment_info?: string; notes?: string;
+  players_per_team?: number; scoring_format?: string;
+}
+
+interface JoinedDraft extends Draft { team_name: string; has_paid: boolean; }
+
+function getOrdinal(n: number): string {
+  if (n === 1) return '1st';
+  if (n === 2) return '2nd';
+  if (n === 3) return '3rd';
+  return `${n}th`;
+}
+
+function StatusBadge({ status }: { status: string }) {
+  if (status === 'setup') return <span className="text-sm font-semibold text-[#5a6b57]">Setup</span>;
+  if (status === 'inviting') return <span className="text-sm font-semibold bg-[#9b8f6b] text-[#0a0f0a] px-2 py-0.5 rounded">Inviting</span>;
+  if (status === 'in_progress') return <span className="text-sm font-semibold bg-[#4a7c59] text-[#c8d9c3] px-2 py-0.5 rounded">In Progress</span>;
+  if (status === 'complete') return <span className="text-sm font-semibold text-[#5a6b57]">Complete</span>;
+  return <span className="text-sm font-semibold text-[#5a6b57]">{status}</span>;
 }
 
 export default function HomePage() {
   const { user, loading: authLoading } = useAuth();
+  const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [drafts, setDrafts] = useState<Draft[]>([]);
   const [joined, setJoined] = useState<JoinedDraft[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
 
-  const fetchDrafts = useCallback(async () => {
-    const res = await fetch('/api/drafts');
-    if (res.ok) {
-      const data = await res.json();
-      setDrafts(data.drafts || []);
-      setJoined(data.joined || []);
-    }
+  const fetchDashboard = useCallback(async () => {
+    try {
+      const res = await fetch('/api/dashboard');
+      if (res.ok) {
+        const data = await res.json();
+        setDashboard(data);
+        if (!data.draft || data.draft.status !== 'complete') {
+          const draftRes = await fetch('/api/drafts');
+          if (draftRes.ok) {
+            const draftData = await draftRes.json();
+            setDrafts(draftData.drafts || []);
+            setJoined(draftData.joined || []);
+          }
+        }
+      }
+    } catch {}
     setLoading(false);
   }, []);
 
   useEffect(() => {
-    if (!user) return;
-    fetchDrafts();
-  }, [user, fetchDrafts]);
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+    fetchDashboard();
+  }, [user, fetchDashboard]);
 
   const handleDeleteDraft = async (e: React.MouseEvent, draftId: string, draftName: string) => {
     e.preventDefault();
@@ -55,6 +97,15 @@ export default function HomePage() {
       setDrafts(prev => prev.filter(d => d.id !== draftId));
     }
     setDeleting(null);
+  };
+
+  const formatDate = (d: Draft) => {
+    const parts = [];
+    if (d.draft_date) parts.push(new Date(d.draft_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }));
+    if (d.draft_time) parts.push(`at ${d.draft_time}`);
+    if (d.draft_date) parts.push('\u2022');
+    parts.push(d.season_type === 'playoffs' ? 'Playoffs' : 'Regular Season');
+    return parts.join(' ');
   };
 
   if (authLoading) {
@@ -94,28 +145,200 @@ export default function HomePage() {
     );
   }
 
-  const statusColors: Record<string, string> = {
-    setup: 'text-[#5a6b57]',
-    inviting: 'text-[#9b8f6b]',
-    in_progress: 'text-[#6b9b7a]',
-    complete: 'text-[#5a6b57]',
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#050a05] flex items-center justify-center">
+        <div className="text-xl text-[#5a6b57]">Loading...</div>
+      </div>
+    );
+  }
 
-  const statusLabels: Record<string, string> = {
-    setup: 'Setup',
-    inviting: 'Inviting',
-    in_progress: 'In Progress',
-    complete: 'Complete',
-  };
+  if (dashboard?.draft && dashboard.draft.status === 'complete') {
+    const { draft, rank, totalTeams, totalPoints, yesterdayPoints, roster, standings, tonightGames, activePlayerCount, eliminatedTeams, totalPlayoffTeams } = dashboard;
 
-  const formatDate = (d: Draft) => {
-    const parts = [];
-    if (d.draft_date) parts.push(new Date(d.draft_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }));
-    if (d.draft_time) parts.push(`at ${d.draft_time}`);
-    if (d.draft_date) parts.push('\u2022');
-    parts.push(d.season_type === 'playoffs' ? 'Playoffs' : 'Regular Season');
-    return parts.join(' ');
-  };
+    const hasRosterAlerts = roster.some(p => p.injuryStatus !== 'healthy' || p.isEliminated);
+    const injuredPlayers = roster.filter(p => p.injuryStatus !== 'healthy' || p.isEliminated);
+
+    return (
+      <div className="min-h-screen bg-[#050a05]">
+        <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
+          <div className="bg-[#0a0f0a] border border-[#4a7c59] rounded-lg p-4 md:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <div className="text-xs uppercase tracking-wider text-[#6b9b7a] mb-1">Active Draft</div>
+              <h1 className="text-2xl md:text-3xl font-bold text-[#c8d9c3]">{draft.name}</h1>
+              <div className="text-sm text-[#5a6b57] mt-1">
+                {draft.seasonType === 'playoffs' ? 'Playoffs' : 'Regular Season'} &middot; {draft.scoringFormat || 'Standard'}
+              </div>
+            </div>
+            {rank !== null && totalTeams !== null && (
+              <div className="text-right">
+                <div className="text-3xl md:text-4xl font-bold text-[#6b9b7a]">{getOrdinal(rank)}</div>
+                <div className="text-sm text-[#5a6b57]">of {totalTeams} teams</div>
+              </div>
+            )}
+          </div>
+
+          <div className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-4 md:p-6">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs uppercase tracking-wider text-[#5a6b57]">My Team</span>
+              <div className="text-sm text-[#5a6b57]">
+                {totalPoints !== null && <span className="text-[#c8d9c3]">{totalPoints} pts total</span>}
+                {yesterdayPoints !== null && yesterdayPoints > 0 && (
+                  <span className="ml-2 text-[#6b9b7a]">+{yesterdayPoints} yesterday</span>
+                )}
+                <Link href={`/draft/${draft.id}/team`} className="ml-2 text-[#6b9b7a] hover:underline">View team &rarr;</Link>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+              {roster.map(player => {
+                const isOut = player.injuryStatus.toLowerCase().includes('out') && player.injuryStatus !== 'day-to-day';
+                const isDTD = player.injuryStatus === 'day-to-day';
+                return (
+                  <div
+                    key={player.playerId}
+                    className={`bg-[#0d150d] border border-[#1a2f1a] rounded-lg p-2 text-center ${isOut ? 'opacity-60' : ''} ${player.isEliminated ? 'opacity-35' : ''}`}
+                  >
+                    <div className="flex justify-center mb-1">
+                      <TeamLogo team={player.team} className="w-6 h-6" />
+                    </div>
+                    <div className={`text-sm font-medium text-[#c8d9c3] ${player.isEliminated ? 'line-through' : ''}`}>{player.playerName}</div>
+                    <div className="text-xs text-[#5a6b57]">{player.position} &middot; {player.team}</div>
+                    <div className="text-xs mt-1">
+                      {player.yesterdayPoints > 0 ? (
+                        <span className="text-[#6b9b7a]">+{player.yesterdayPoints} pts</span>
+                      ) : (
+                        <span className="text-[#5a6b57]">&mdash;</span>
+                      )}
+                    </div>
+                    {isDTD && <div className="text-[10px] font-bold text-[#ff9f0a] mt-1">DAY-TO-DAY</div>}
+                    {isOut && <div className="text-[10px] font-bold text-[#ff3b30] mt-1">OUT</div>}
+                    {player.isEliminated && <div className="text-[10px] font-bold text-[#ff3b30] mt-1">ELIMINATED</div>}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-4 md:p-6">
+              <div className="text-xs uppercase tracking-wider text-[#5a6b57] mb-4">Standings</div>
+              <div className="space-y-1">
+                {standings.map((team, i) => (
+                  <div
+                    key={team.participantId}
+                    className={`flex items-center justify-between py-1.5 px-2 rounded ${team.isYou ? 'bg-[rgba(74,124,89,0.15)]' : ''}`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className={`text-sm w-6 ${team.isYou ? 'text-[#6b9b7a] font-bold' : 'text-[#5a6b57]'}`}>{i + 1}.</span>
+                      <span className={`text-sm ${team.isYou ? 'text-[#6b9b7a] font-bold' : 'text-[#c8d9c3]'}`}>{team.teamName}</span>
+                    </div>
+                    <span className={`text-sm ${team.isYou ? 'text-[#6b9b7a] font-bold' : 'text-[#5a6b57]'}`}>{team.totalPoints} pts</span>
+                  </div>
+                ))}
+              </div>
+              <Link href={`/draft/${draft.id}/standings`} className="block mt-3 text-sm text-[#6b9b7a] hover:underline">View full standings &rarr;</Link>
+            </div>
+
+            <div className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-4 md:p-6">
+              <div className="text-xs uppercase tracking-wider text-[#5a6b57] mb-4">Tonight&apos;s Games</div>
+              {tonightGames.length === 0 ? (
+                <div className="text-sm text-[#5a6b57]">No games scheduled</div>
+              ) : (
+                <div className="space-y-2">
+                  {tonightGames.map((game, i) => (
+                    <div key={i} className="flex items-center justify-between py-1.5 px-2">
+                      <div className="flex items-center gap-2">
+                        <TeamLogo team={game.away} className="w-6 h-6" />
+                        <span className="text-sm text-[#c8d9c3]">{game.away}</span>
+                      </div>
+                      <span className="text-xs text-[#5a6b57]">@</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-[#c8d9c3]">{game.home}</span>
+                        <TeamLogo team={game.home} className="w-6 h-6" />
+                      </div>
+                      <span className="text-xs text-[#5a6b57] ml-2">{game.time}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {activePlayerCount > 0 && (
+                <div className="text-xs text-[#5a6b57] mt-3">{activePlayerCount} of your players in action</div>
+              )}
+              <Link href="/games" className="block mt-3 text-sm text-[#6b9b7a] hover:underline">View all games &rarr;</Link>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {hasRosterAlerts && (
+              <div className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-4 md:p-6">
+                <div className="text-xs uppercase tracking-wider text-[#5a6b57] mb-4">Roster Alerts</div>
+                <div className="space-y-2">
+                  {injuredPlayers.map(player => {
+                    const isOut = player.injuryStatus.toLowerCase().includes('out') && player.injuryStatus !== 'day-to-day';
+                    const isDTD = player.injuryStatus === 'day-to-day';
+                    return (
+                      <div key={player.playerId} className={`flex items-center gap-3 py-1.5 ${player.isEliminated ? 'opacity-40' : ''}`}>
+                        {isOut && <span className="text-[10px] font-bold text-[#c8d9c3] bg-[#ff3b30] px-1.5 py-0.5 rounded">OUT</span>}
+                        {isDTD && <span className="text-[10px] font-bold text-[#0a0f0a] bg-[#ff9f0a] px-1.5 py-0.5 rounded">DTD</span>}
+                        {player.isEliminated && <span className="text-[10px] font-bold text-[#c8d9c3] bg-[#ff3b30] px-1.5 py-0.5 rounded line-through">ELIM</span>}
+                        <TeamLogo team={player.team} className="w-5 h-5" />
+                        <span className={`text-sm text-[#c8d9c3] flex-1 ${player.isEliminated ? 'line-through' : ''}`}>{player.playerName}</span>
+                        <span className="text-xs text-[#5a6b57]">
+                          {player.isEliminated ? 'TEAM eliminated' : player.injuryDescription || ''}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {eliminatedTeams.length > 0 && (
+              <div className={`bg-[#0a0f0a] border border-[#141e12] rounded-lg p-4 md:p-6 ${hasRosterAlerts ? '' : 'md:col-span-2'}`}>
+                <div className="text-xs uppercase tracking-wider text-[#5a6b57] mb-4">Teams Eliminated</div>
+                <div className="flex flex-wrap gap-4">
+                  {eliminatedTeams.map(abbrev => (
+                    <div key={abbrev} className="flex flex-col items-center opacity-40">
+                      <TeamLogo team={abbrev} className="w-8 h-8" />
+                      <span className="text-xs text-[#ff3b30] line-through mt-1">{abbrev}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="text-xs text-[#5a6b57] mt-3">{eliminatedTeams.length} of {totalPlayoffTeams} playoff teams eliminated</div>
+              </div>
+            )}
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <Link
+              href={`/draft/${draft.id}/team`}
+              className="px-4 py-3 bg-[#4a7c59] text-[#c8d9c3] rounded-lg font-semibold text-center hover:bg-[#3d664a] transition-colors"
+            >
+              My Team
+            </Link>
+            <Link
+              href={`/draft/${draft.id}/standings`}
+              className="px-4 py-3 border border-[#4a7c59] text-[#6b9b7a] rounded-lg font-semibold text-center hover:bg-[#0a0f0a] transition-colors"
+            >
+              Standings
+            </Link>
+            <Link
+              href="/rankings"
+              className="px-4 py-3 border border-[#4a7c59] text-[#6b9b7a] rounded-lg font-semibold text-center hover:bg-[#0a0f0a] transition-colors"
+            >
+              Rankings
+            </Link>
+            <Link
+              href="/bracket"
+              className="px-4 py-3 border border-[#4a7c59] text-[#6b9b7a] rounded-lg font-semibold text-center hover:bg-[#0a0f0a] transition-colors"
+            >
+              Bracket
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const allEmpty = drafts.length === 0 && joined.length === 0;
 
@@ -132,9 +355,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {loading ? (
-          <div className="text-[#5a6b57]">Loading drafts...</div>
-        ) : allEmpty ? (
+        {allEmpty ? (
           <div className="text-center py-16">
             <div className="flex justify-center mb-4">
               <img src="/logo/logo-hero.svg" alt="Top Shelf Draft" className="w-48" />
@@ -159,26 +380,86 @@ export default function HomePage() {
                       key={draft.id}
                       className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-6 hover:border-[#4a7c59] transition-colors"
                     >
-                      <div className="flex items-center justify-between">
-                        <Link href={`/dashboard/drafts/${draft.id}`} className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <h3 className="text-lg font-bold text-[#c8d9c3]">{draft.name}</h3>
-                              <div className="text-sm text-[#5a6b57] mt-1">{formatDate(draft)}</div>
-                            </div>
-                            <span className={`text-sm font-semibold ${statusColors[draft.status] || 'text-[#5a6b57]'}`}>
-                              {statusLabels[draft.status] || draft.status}
-                            </span>
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-1">
+                            <Link href={`/dashboard/drafts/${draft.id}`}>
+                              <h3 className="text-lg font-bold text-[#c8d9c3] hover:underline">{draft.name}</h3>
+                            </Link>
+                            <StatusBadge status={draft.status} />
                           </div>
-                        </Link>
+                          <div className="text-sm text-[#5a6b57] mt-1">
+                            {formatDate(draft)}
+                            {draft.players_per_team && ` \u2022 ${draft.players_per_team} players/team`}
+                          </div>
+                          {(draft.status === 'setup' || draft.status === 'inviting') && (
+                            <div className="mt-3">
+                              <div className="grid grid-cols-4 gap-2 text-center">
+                                <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
+                                  <div className="text-[10px] text-[#5a6b57] uppercase">Joined</div>
+                                  <div className="text-sm font-semibold text-[#c8d9c3]">0</div>
+                                </div>
+                                <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
+                                  <div className="text-[10px] text-[#5a6b57] uppercase">Pending</div>
+                                  <div className="text-sm font-semibold text-[#c8d9c3]">0</div>
+                                </div>
+                                <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
+                                  <div className="text-[10px] text-[#5a6b57] uppercase">Paid</div>
+                                  <div className="text-sm font-semibold text-[#c8d9c3]">0/0</div>
+                                </div>
+                                <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
+                                  <div className="text-[10px] text-[#5a6b57] uppercase">Fee</div>
+                                  <div className="text-sm font-semibold text-[#c8d9c3]">{draft.entry_fee ? `${draft.currency || '$'}${draft.entry_fee}` : 'Free'}</div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                         <button
                           onClick={(e) => handleDeleteDraft(e, draft.id, draft.name)}
                           disabled={deleting === draft.id}
-                          className="ml-4 text-[#5a6b57] hover:text-red-400 transition-colors text-sm disabled:opacity-50 p-2"
+                          className="text-[#5a6b57] hover:text-red-400 transition-colors text-sm disabled:opacity-50 p-2"
                           title="Delete draft"
                         >
                           {deleting === draft.id ? '...' : '\u2715'}
                         </button>
+                      </div>
+                      <div className="flex items-center gap-2 mt-4">
+                        {(draft.status === 'setup' || draft.status === 'inviting') && (
+                          <>
+                            <Link
+                              href={`/dashboard/drafts/${draft.id}`}
+                              className="px-3 py-2 text-xs font-medium bg-[#4a7c59] text-[#c8d9c3] rounded-lg hover:bg-[#3d664a] transition-colors"
+                            >
+                              Manage Draft
+                            </Link>
+                            <Link
+                              href={`/dashboard/drafts/${draft.id}`}
+                              className="px-3 py-2 text-xs font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
+                            >
+                              Invite Players
+                            </Link>
+                            <button className="px-3 py-2 text-xs font-medium border border-[#5a6b57] text-[#5a6b57] rounded-lg hover:border-[#4a7c59] hover:text-[#6b9b7a] transition-colors">
+                              Start Draft
+                            </button>
+                          </>
+                        )}
+                        {draft.status === 'in_progress' && (
+                          <>
+                            <Link
+                              href={`/draft/${draft.id}/coach`}
+                              className="px-3 py-2 text-xs font-medium bg-[#4a7c59] text-[#c8d9c3] rounded-lg hover:bg-[#3d664a] transition-colors"
+                            >
+                              Live Draft
+                            </Link>
+                            <Link
+                              href={`/draft/${draft.id}/team`}
+                              className="px-3 py-2 text-xs font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
+                            >
+                              My Team
+                            </Link>
+                          </>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -195,34 +476,60 @@ export default function HomePage() {
                       key={draft.id}
                       className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-6 hover:border-[#9b8f6b] transition-colors"
                     >
-                      <div className="flex items-center justify-between flex-wrap gap-2">
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between flex-wrap gap-2">
-                            <div>
-                              <h3 className="text-lg font-bold text-[#c8d9c3]">{draft.name}</h3>
-                              <div className="text-sm text-[#5a6b57] mt-1">
-                                {formatDate(draft)}
-                                {draft.team_name && ` \u2022 Team: ${draft.team_name}`}
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <span className={`text-sm font-semibold ${statusColors[draft.status] || 'text-[#5a6b57]'}`}>
-                                {statusLabels[draft.status] || draft.status}
-                              </span>
-                              {(draft.status === 'in_progress' || draft.status === 'complete') && (
-                                <Link
-                                  href={`/draft/${draft.id}/team`}
-                                  className="px-3 py-2.5 text-xs font-medium text-[#c8d9c3] bg-[#4a7c59] rounded-lg hover:bg-[#3d664a] transition-colors"
-                                >
-                                  {draft.status === 'in_progress' ? 'My Team' : 'View Board'}
-                                </Link>
-                              )}
-                            </div>
-                          </div>
-                          {draft.has_paid && (
-                            <div className="text-xs text-[#6b9b7a] mt-2">Paid</div>
+                      <div className="flex items-center gap-3 mb-1">
+                        <h3 className="text-lg font-bold text-[#c8d9c3]">{draft.name}</h3>
+                        <StatusBadge status={draft.status} />
+                      </div>
+                      <div className="text-sm text-[#5a6b57] mt-1">
+                        {formatDate(draft)}
+                      </div>
+                      {draft.team_name && (
+                        <div className="mt-3 bg-[#0d150d] border border-[#4a7c59] rounded-lg p-3">
+                          <div className="text-sm font-medium text-[#c8d9c3]">{draft.team_name}</div>
+                          {draft.has_paid ? (
+                            <span className="text-xs text-[#6b9b7a]">&#10003; Paid</span>
+                          ) : (
+                            <span className="text-xs text-[#9b8f6b]">Not paid</span>
                           )}
                         </div>
+                      )}
+                      <div className="mt-3">
+                        <div className="grid grid-cols-3 gap-2 text-center">
+                          <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
+                            <div className="text-[10px] text-[#5a6b57] uppercase">Joined</div>
+                            <div className="text-sm font-semibold text-[#c8d9c3]">0</div>
+                          </div>
+                          <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
+                            <div className="text-[10px] text-[#5a6b57] uppercase">Players</div>
+                            <div className="text-sm font-semibold text-[#c8d9c3]">{draft.players_per_team || 'N/A'}</div>
+                          </div>
+                          <div className="bg-[#0d150d] border border-[#1a2f1a] rounded px-2 py-1.5">
+                            <div className="text-[10px] text-[#5a6b57] uppercase">Fee</div>
+                            <div className="text-sm font-semibold text-[#c8d9c3]">{draft.entry_fee ? `${draft.currency || '$'}${draft.entry_fee}` : 'Free'}</div>
+                          </div>
+                        </div>
+                      </div>
+                      {(draft.location || draft.payment_info) && (
+                        <div className="mt-2 text-xs text-[#5a6b57]">
+                          {draft.location && <span>{draft.location}</span>}
+                          {draft.location && draft.payment_info && <span> &middot; </span>}
+                          {draft.payment_info && <span>{draft.payment_info}</span>}
+                        </div>
+                      )}
+                      <div className="mt-4">
+                        {(draft.status === 'setup' || draft.status === 'inviting') && (
+                          <div className="text-center text-sm text-[#5a6b57] py-2">
+                            &#9203; Waiting for admin to start the draft
+                          </div>
+                        )}
+                        {draft.status === 'in_progress' && (
+                          <Link
+                            href={`/draft/${draft.id}/team`}
+                            className="inline-block px-4 py-2 text-xs font-medium bg-[#4a7c59] text-[#c8d9c3] rounded-lg hover:bg-[#3d664a] transition-colors"
+                          >
+                            My Team
+                          </Link>
+                        )}
                       </div>
                     </div>
                   ))}
