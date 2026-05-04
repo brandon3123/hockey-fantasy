@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { createServerClient } from '@supabase/ssr';
 import { Resend } from 'resend';
 import { generateInviteEmailHtml } from '@/lib/email-templates';
 
@@ -30,19 +29,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Not your draft' }, { status: 403 });
   }
 
-  const adminClient = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      cookies: {
-        getAll() { return []; },
-        setAll() {},
-      },
-    }
-  );
-
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   const logoUrl = `${appUrl}/logo/logo-email.svg`;
+  const joinUrl = `${appUrl}/join/${draft_id}`;
+  const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@contact.brandon-nolan.ca';
   const results = [];
 
   for (const email of emails) {
@@ -60,39 +50,17 @@ export async function POST(request: Request) {
       continue;
     }
 
-    const { data: userList } = await adminClient.auth.admin.listUsers();
-    const existingUser = userList?.users?.find(u => u.email === trimmed);
-
-    console.log('[POST] email:', trimmed, 'existingUser:', !!existingUser);
-
-    if (existingUser) {
-      const joinUrl = `${appUrl}/join/${draft_id}`;
-      const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@contact.brandon-nolan.ca';
-
-      try {
-        await resend.emails.send({
-          from: `Top Shelf Draft <${fromEmail}>`,
-          to: trimmed,
-          subject: `You're Invited to a Hockey Draft!`,
-          html: generateInviteEmailHtml(draft.name || '', joinUrl, logoUrl),
-        });
-        results.push({ email: trimmed, status: 'invited', invite_id: invite.id });
-      } catch (emailErr: any) {
-        console.error('Resend error for existing user:', emailErr.message);
-        results.push({ email: trimmed, status: 'invited_no_email', invite_id: invite.id, error: emailErr.message, note: 'Email failed. Share the join link manually.' });
-      }
-    } else {
-      const { error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(
-        trimmed,
-        { redirectTo: `${appUrl}/auth/verify` }
-      );
-
-      if (inviteError) {
-        console.error('inviteUserByEmail error:', inviteError.message, inviteError.status);
-        results.push({ email: trimmed, status: 'invited_no_email', invite_id: invite.id, error: inviteError.message, code: inviteError.status, note: 'Supabase invite failed. Share the join link manually.' });
-      } else {
-        results.push({ email: trimmed, status: 'invited', invite_id: invite.id });
-      }
+    try {
+      await resend.emails.send({
+        from: `Top Shelf Draft <${fromEmail}>`,
+        to: trimmed,
+        subject: `You're Invited to a Hockey Draft!`,
+        html: generateInviteEmailHtml(draft.name || '', joinUrl, logoUrl),
+      });
+      results.push({ email: trimmed, status: 'invited', invite_id: invite.id });
+    } catch (emailErr: any) {
+      console.error('Resend error:', emailErr.message);
+      results.push({ email: trimmed, status: 'invited_no_email', invite_id: invite.id, error: emailErr.message, note: 'Email failed. Share the join link manually.' });
     }
   }
 
@@ -133,50 +101,22 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: 'Not your draft' }, { status: 403 });
   }
 
-  const adminClient = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      cookies: {
-        getAll() { return []; },
-        setAll() {},
-      },
-    }
-  );
-
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   const joinUrl = `${appUrl}/join/${invite.draft_id}`;
   const logoUrl = `${appUrl}/logo/logo-email.svg`;
   const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@contact.brandon-nolan.ca';
 
-  const { data: userList } = await adminClient.auth.admin.listUsers();
-  const existingUser = userList?.users?.find(u => u.email === invite.email);
-
-  if (existingUser) {
-    try {
-      await resend.emails.send({
-        from: `Top Shelf Draft <${fromEmail}>`,
-        to: invite.email,
-        subject: `You're Invited to a Hockey Draft!`,
-        html: generateInviteEmailHtml(draft.name || '', joinUrl, logoUrl),
-      });
-      return NextResponse.json({ success: true });
-    } catch (emailErr: any) {
-      console.error('Resend error:', emailErr.message);
-      return NextResponse.json({ error: emailErr.message }, { status: 500 });
-    }
-  } else {
-    const { error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(
-      invite.email,
-      { redirectTo: `${appUrl}/auth/verify` }
-    );
-
-    if (inviteError) {
-      console.error('inviteUserByEmail error:', inviteError.message);
-      return NextResponse.json({ error: inviteError.message }, { status: 500 });
-    }
-
+  try {
+    await resend.emails.send({
+      from: `Top Shelf Draft <${fromEmail}>`,
+      to: invite.email,
+      subject: `You're Invited to a Hockey Draft!`,
+      html: generateInviteEmailHtml(draft.name || '', joinUrl, logoUrl),
+    });
     return NextResponse.json({ success: true });
+  } catch (emailErr: any) {
+    console.error('Resend error:', emailErr.message);
+    return NextResponse.json({ error: emailErr.message }, { status: 500 });
   }
 }
 

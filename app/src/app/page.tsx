@@ -2,8 +2,10 @@
 
 import { useAuth } from '@/context/auth-context';
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import TeamLogo from '@/components/TeamLogo';
+import DraftStartModal from '@/components/DraftStartModal';
 
 interface DashboardData {
   draft: { id: string; name: string; status: string; seasonType: string; scoringFormat: string } | null;
@@ -52,11 +54,14 @@ function StatusBadge({ status }: { status: string }) {
 
 export default function HomePage() {
   const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [drafts, setDrafts] = useState<Draft[]>([]);
   const [joined, setJoined] = useState<JoinedDraft[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [startingDraftId, setStartingDraftId] = useState<string | null>(null);
+  const [startParticipants, setStartParticipants] = useState<Array<{ id: string; team_name: string; draft_position: number | null }>>([]);
 
   const fetchDashboard = useCallback(async () => {
     try {
@@ -96,6 +101,24 @@ export default function HomePage() {
       fetchDashboard();
     }
     setDeleting(null);
+  };
+
+  const handleStartDraft = async (draftId: string) => {
+    const res = await fetch(`/api/drafts/${draftId}`);
+    if (res.ok) {
+      const data = await res.json();
+      const parts = (data.participants || []).map((p: any) => ({
+        id: p.id,
+        team_name: p.team_name,
+        draft_position: p.draft_position,
+      }));
+      if (parts.length === 0) {
+        alert('No participants yet. Invite people first.');
+        return;
+      }
+      setStartParticipants(parts);
+      setStartingDraftId(draftId);
+    }
   };
 
   const formatDate = (d: Draft) => {
@@ -377,8 +400,6 @@ export default function HomePage() {
                 <div className="grid gap-4">
                   {drafts.map((draft) => {
                     const isInProgress = draft.status === 'in_progress';
-                    const btnLabel = isInProgress ? 'My Team' : 'Configure';
-                    const btnLink = isInProgress ? `/draft/${draft.id}/coach` : `/dashboard/drafts/${draft.id}`;
                     return (
                       <div
                         key={draft.id}
@@ -449,19 +470,35 @@ export default function HomePage() {
                           </button>
                         </div>
                         <div className="mt-4 flex items-center gap-3">
+                          {!isInProgress && (
+                            <button
+                              onClick={() => handleStartDraft(draft.id)}
+                              className="px-4 py-2 text-sm font-medium bg-[#4a7c59] text-[#c8d9c3] rounded-lg hover:bg-[#3d664a] transition-colors"
+                            >
+                              Start Draft
+                            </button>
+                          )}
                           <Link
-                            href={btnLink}
-                            className="px-4 py-2 text-sm font-medium bg-[#4a7c59] text-[#c8d9c3] rounded-lg hover:bg-[#3d664a] transition-colors"
+                            href={`/dashboard/drafts/${draft.id}`}
+                            className="px-4 py-2 text-sm font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
                           >
-                            {btnLabel}
+                            Configure
                           </Link>
                           {isInProgress && (
-                            <Link
-                              href={`/draft/${draft.id}/live`}
-                              className="px-4 py-2 text-sm font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
-                            >
-                              Draft Board
-                            </Link>
+                            <>
+                              <Link
+                                href={`/draft/${draft.id}/coach`}
+                                className="px-4 py-2 text-sm font-medium bg-[#4a7c59] text-[#c8d9c3] rounded-lg hover:bg-[#3d664a] transition-colors"
+                              >
+                                My Team
+                              </Link>
+                              <Link
+                                href={`/draft/${draft.id}/live`}
+                                className="px-4 py-2 text-sm font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
+                              >
+                                Draft Board
+                              </Link>
+                            </>
                           )}
                         </div>
                       </div>
@@ -554,6 +591,19 @@ export default function HomePage() {
           </div>
         )}
       </div>
+
+      {startingDraftId && (
+        <DraftStartModal
+          draftId={startingDraftId}
+          participants={startParticipants}
+          adminTeamName="Commissioner"
+          onStart={() => {
+            setStartingDraftId(null);
+            router.push(`/draft/${startingDraftId}/live`);
+          }}
+          onClose={() => setStartingDraftId(null)}
+        />
+      )}
     </div>
   );
 }
