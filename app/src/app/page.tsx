@@ -391,8 +391,9 @@ export default function HomePage() {
               Create New Draft
             </ActionLink>
           )}
+        </div>
 
-        {allEmpty ? (
+        {drafts.length === 0 && joined.length === 0 ? (
           <div className="text-center py-16">
             <div className="flex justify-center mb-4">
               <img src="/logo/logo-hero.svg" alt="Top Shelf Draft" className="w-48" />
