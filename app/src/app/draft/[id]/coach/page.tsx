@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { ActionLink } from '@/components/ActionButton';
 import { useDraftState, DraftPickRow, DraftData, ParticipantData } from '@/hooks/useDraftState';
 import { Player, DraftState, DraftPick } from '@/types/player';
 import MyTeamTab from '@/components/MyTeamTab';
@@ -159,18 +160,20 @@ export default function CoachPage() {
           </div>
           {isDraftComplete && (
             <div className="mt-4 flex items-center justify-center gap-2">
-              <Link
+              <ActionLink
                 href={`/draft/${draftId}/results`}
-                className="px-4 py-2 text-sm font-medium bg-[#4a7c59] text-[#c8d9c3] rounded-lg hover:bg-[#3d664a] transition-colors"
+                variant="primary"
+                className="px-4 py-2 text-sm"
               >
                 View Results
-              </Link>
-              <Link
+              </ActionLink>
+              <ActionLink
                 href={`/draft/${draftId}/standings`}
-                className="px-4 py-2 text-sm font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
+                variant="secondary"
+                className="px-4 py-2 text-sm"
               >
                 Standings
-              </Link>
+              </ActionLink>
             </div>
           )}
         </div>

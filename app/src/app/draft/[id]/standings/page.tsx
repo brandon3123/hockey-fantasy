@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import TeamLogo from '@/components/TeamLogo';
+import { ActionLink } from '@/components/ActionButton';
 
 interface DraftInfo {
   id: string;
@@ -149,12 +150,13 @@ export default function StandingsPage() {
             <span>{draft.players_per_team} Rounds</span>
           </div>
           <div className="mt-4 flex items-center justify-center gap-2">
-            <Link
+            <ActionLink
               href={`/draft/${draftId}/results`}
-              className="px-4 py-2 text-sm font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
+              variant="secondary"
+              className="px-4 py-2 text-sm"
             >
               Draft Recap
-            </Link>
+            </ActionLink>
           </div>
         </div>
 

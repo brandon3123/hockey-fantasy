@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import TeamLogo from '@/components/TeamLogo';
 import DraftStartModal from '@/components/DraftStartModal';
+import { ActionLink, ActionButton } from '@/components/ActionButton';
 
 interface DashboardData {
   draft: { id: string; name: string; status: string; seasonType: string; scoringFormat: string } | null;
@@ -201,12 +202,13 @@ export default function HomePage() {
               )}
               {isAdmin && (
                 <>
-                  <Link
+                  <ActionLink
                     href={`/dashboard/drafts/${draft.id}/admin/internal/scores`}
-                    className="px-3 py-1.5 text-xs font-medium border border-[#9b8f6b] text-[#9b8f6b] rounded-lg hover:bg-[#0a0f0a] transition-colors"
+                    variant="amber"
+                    className="px-3 py-1.5 text-xs"
                   >
                     Manage Scores
-                  </Link>
+                  </ActionLink>
                   <button
                     onClick={(e) => handleDeleteDraft(e, draft.id, draft.name)}
                     disabled={deleting === draft.id}
@@ -263,12 +265,13 @@ export default function HomePage() {
             <div className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-4 md:p-6">
               <div className="flex items-center justify-between mb-4 border-b border-[#1a2f1a] pb-3">
                 <span className="text-sm font-bold text-[#c8d9c3]">Standings</span>
-                <Link
+                <ActionLink
                   href={`/draft/${draft.id}/standings`}
-                  className="px-3 py-1.5 text-xs font-medium bg-[#4a7c59] text-[#c8d9c3] rounded hover:bg-[#3d664a] transition-colors"
+                  variant="primary"
+                  className="px-3 py-1.5 text-xs"
                 >
                   View Full Standings
-                </Link>
+                </ActionLink>
               </div>
               <div className="space-y-1">
                 {standings.map((team, i) => (
@@ -289,12 +292,13 @@ export default function HomePage() {
             <div className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-4 md:p-6">
               <div className="flex items-center justify-between mb-4 border-b border-[#1a2f1a] pb-3">
                 <span className="text-sm font-bold text-[#c8d9c3]">Tonight&apos;s Games</span>
-                <Link
+                <ActionLink
                   href="/games"
-                  className="px-3 py-1.5 text-xs font-medium bg-[#4a7c59] text-[#c8d9c3] rounded hover:bg-[#3d664a] transition-colors"
+                  variant="primary"
+                  className="px-3 py-1.5 text-xs"
                 >
                   View All Games
-                </Link>
+                </ActionLink>
               </div>
               {tonightGames.length === 0 ? (
                 <div className="text-sm text-[#5a6b57]">No games scheduled</div>
@@ -371,20 +375,22 @@ export default function HomePage() {
     );
   }
 
-  const allEmpty = drafts.length === 0 && joined.length === 0;
+  const canCreateDraft = drafts.length > 0 || joined.length === 0;
 
   return (
     <div className="min-h-screen bg-[#050a05]">
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8 flex-wrap gap-2">
           <h1 className="text-2xl md:text-3xl font-bold text-[#c8d9c3]">My Drafts</h1>
-          <Link
-            href="/dashboard/drafts/new"
-            className="px-4 py-2.5 md:px-6 md:py-3 bg-[#4a7c59] text-[#c8d9c3] rounded-lg font-semibold hover:bg-[#3d664a] transition-colors"
-          >
-            Create New Draft
-          </Link>
-        </div>
+          {canCreateDraft && (
+            <ActionLink
+              href="/dashboard/drafts/new"
+              variant="primary"
+              className="px-4 py-2.5 md:px-6 md:py-3 text-sm font-semibold"
+            >
+              Create New Draft
+            </ActionLink>
+          )}
 
         {allEmpty ? (
           <div className="text-center py-16">
@@ -393,12 +399,13 @@ export default function HomePage() {
             </div>
             <h2 className="text-xl font-bold text-[#c8d9c3] mb-2">No drafts yet</h2>
             <p className="text-[#5a6b57] mb-6">Create your first draft or join one with an invite link</p>
-            <Link
+            <ActionLink
               href="/dashboard/drafts/new"
-              className="inline-block px-6 py-3 bg-[#4a7c59] text-[#c8d9c3] rounded-lg font-semibold hover:bg-[#3d664a] transition-colors"
+              variant="primary"
+              className="px-6 py-3 font-semibold"
             >
               Create New Draft
-            </Link>
+            </ActionLink>
           </div>
         ) : (
           <div className="space-y-8">
@@ -479,33 +486,37 @@ export default function HomePage() {
                         </div>
                         <div className="mt-4 flex items-center gap-3">
                           {!isInProgress && (
-                            <button
+                            <ActionButton
                               onClick={() => handleStartDraft(draft.id)}
-                              className="px-4 py-2 text-sm font-medium bg-[#4a7c59] text-[#c8d9c3] rounded-lg hover:bg-[#3d664a] transition-colors"
+                              variant="primary"
+                              className="px-4 py-2 text-sm"
                             >
                               Start Draft
-                            </button>
+                            </ActionButton>
                           )}
-                          <Link
+                          <ActionLink
                             href={`/dashboard/drafts/${draft.id}`}
-                            className="px-4 py-2 text-sm font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
+                            variant="secondary"
+                            className="px-4 py-2 text-sm"
                           >
                             Configure
-                          </Link>
+                          </ActionLink>
                           {isInProgress && (
                             <>
-                              <Link
+                              <ActionLink
                                 href={`/draft/${draft.id}/coach`}
-                                className="px-4 py-2 text-sm font-medium bg-[#4a7c59] text-[#c8d9c3] rounded-lg hover:bg-[#3d664a] transition-colors"
+                                variant="primary"
+                                className="px-4 py-2 text-sm"
                               >
                                 My Team
-                              </Link>
-                              <Link
+                              </ActionLink>
+                              <ActionLink
                                 href={`/draft/${draft.id}/live`}
-                                className="px-4 py-2 text-sm font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
+                                variant="secondary"
+                                className="px-4 py-2 text-sm"
                               >
                                 Draft Board
-                              </Link>
+                              </ActionLink>
                             </>
                           )}
                         </div>
@@ -575,18 +586,20 @@ export default function HomePage() {
                           )}
                           {isInProgress && (
                             <>
-                              <Link
+                              <ActionLink
                                 href={`/draft/${draft.id}/team`}
-                                className="px-4 py-2 text-sm font-medium bg-[#4a7c59] text-[#c8d9c3] rounded-lg hover:bg-[#3d664a] transition-colors"
+                                variant="primary"
+                                className="px-4 py-2 text-sm"
                               >
                                 My Team
-                              </Link>
-                              <Link
+                              </ActionLink>
+                              <ActionLink
                                 href={`/draft/${draft.id}/live`}
-                                className="px-4 py-2 text-sm font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
+                                variant="secondary"
+                                className="px-4 py-2 text-sm"
                               >
                                 Draft Board
-                              </Link>
+                              </ActionLink>
                             </>
                           )}
                         </div>

@@ -6,6 +6,7 @@ import { useDraftState, DraftPickRow, ParticipantData } from '@/hooks/useDraftSt
 import { Player } from '@/types/player';
 import TeamLogo from '@/components/TeamLogo';
 import Link from 'next/link';
+import { ActionLink } from '@/components/ActionButton';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
   PieChart, Pie, LabelList,
@@ -286,12 +287,13 @@ export default function ResultsPage() {
             <span>{draft.players_per_team} Rounds</span>
           </div>
           <div className="mt-4 flex items-center justify-center gap-2">
-            <Link
+            <ActionLink
               href={`/draft/${draftId}/standings`}
-              className="px-4 py-2 text-sm font-medium border border-[#4a7c59] text-[#6b9b7a] rounded-lg hover:bg-[#0a0f0a] transition-colors"
+              variant="secondary"
+              className="px-4 py-2 text-sm"
             >
               Standings
-            </Link>
+            </ActionLink>
           </div>
         </div>
 

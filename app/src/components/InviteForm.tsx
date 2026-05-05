@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { ActionButton } from '@/components/ActionButton';
 
 interface InviteFormProps {
   draftId: string;
@@ -68,13 +69,15 @@ export default function InviteForm({ draftId, onInviteSent }: InviteFormProps) {
             className="w-full px-3 py-2 border border-[#141e12] rounded-md bg-[#050a05] text-[#c8d9c3] focus:outline-none focus:ring-2 focus:ring-[#4a7c59] text-sm"
           />
         </div>
-        <button
+        <ActionButton
           type="submit"
-          disabled={loading}
-          className="px-4 py-2 bg-[#4a7c59] text-[#c8d9c3] rounded-lg font-semibold hover:bg-[#3d664a] transition-colors disabled:opacity-50 text-sm"
+          onClick={() => {}}
+          variant="primary"
+          loading={loading}
+          className="px-4 py-2 text-sm font-semibold"
         >
-          {loading ? 'Sending...' : 'Send Invites'}
-        </button>
+          Send Invites
+        </ActionButton>
       </form>
 
       {results && results.length > 0 && (

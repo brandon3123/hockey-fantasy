@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { ActionLink } from '@/components/ActionButton';
 import { useDraftState, DraftPickRow, ParticipantData } from '@/hooks/useDraftState';
 import PlayerList from '@/components/PlayerList';
 import TeamBrowserTab from '@/components/TeamBrowserTab';
@@ -602,18 +603,20 @@ export default function LiveDraftPage() {
           <div className="flex items-center gap-2">
             {isDraftComplete ? (
               <>
-                <Link
-                  href={`/draft/${draftId}/results`}
-                  className="px-3 py-1.5 text-xs font-bold text-[#c8d9c3] bg-[#4a7c59] rounded-lg hover:bg-[#3d664a] transition-colors"
-                >
-                  View Results
-                </Link>
-                <Link
-                  href={`/draft/${draftId}/standings`}
-                  className="px-3 py-1.5 text-xs font-bold text-[#6b9b7a] border border-[#4a7c59] rounded-lg hover:bg-[#0a0f0a] transition-colors"
-                >
-                  Standings
-                </Link>
+                 <ActionLink
+                   href={`/draft/${draftId}/results`}
+                   variant="primary"
+                   className="px-3 py-1.5 text-xs font-bold"
+                 >
+                   View Results
+                 </ActionLink>
+                 <ActionLink
+                   href={`/draft/${draftId}/standings`}
+                   variant="secondary"
+                   className="px-3 py-1.5 text-xs font-bold"
+                 >
+                   Standings
+                 </ActionLink>
               </>
             ) : (
               <span className="px-3 py-1.5 bg-[#4a7c59] rounded-lg text-xs font-bold text-white animate-pulse">
