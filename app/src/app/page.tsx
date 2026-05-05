@@ -200,14 +200,22 @@ export default function HomePage() {
                 </div>
               )}
               {isAdmin && (
-                <button
-                  onClick={(e) => handleDeleteDraft(e, draft.id, draft.name)}
-                  disabled={deleting === draft.id}
-                  className="text-[#5a6b57] hover:text-red-400 transition-colors text-sm disabled:opacity-50 p-2"
-                  title="Delete draft"
-                >
-                  {deleting === draft.id ? '...' : '\u2715'}
-                </button>
+                <>
+                  <Link
+                    href={`/dashboard/drafts/${draft.id}/admin/internal/scores`}
+                    className="px-3 py-1.5 text-xs font-medium border border-[#9b8f6b] text-[#9b8f6b] rounded-lg hover:bg-[#0a0f0a] transition-colors"
+                  >
+                    Manage Scores
+                  </Link>
+                  <button
+                    onClick={(e) => handleDeleteDraft(e, draft.id, draft.name)}
+                    disabled={deleting === draft.id}
+                    className="text-[#5a6b57] hover:text-red-400 transition-colors text-sm disabled:opacity-50 p-2"
+                    title="Delete draft"
+                  >
+                    {deleting === draft.id ? '...' : '\u2715'}
+                  </button>
+                </>
               )}
             </div>
           </div>

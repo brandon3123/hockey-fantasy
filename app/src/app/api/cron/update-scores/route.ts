@@ -32,34 +32,22 @@ export async function GET(request: Request) {
   const adminClient = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return [];
-        },
-        setAll() {},
-      },
-    }
+    { cookies: { getAll() { return []; }, setAll() {} } }
   );
 
   const { data: drafts, error: draftsError } = await adminClient
     .from('drafts')
-    .select('id, scoring_format, season_type')
-    .eq('status', 'complete');
+    .select('id, scoring_format, season_type, status')
+    .in('status', ['complete', 'in_progress']);
 
   if (draftsError || !drafts || drafts.length === 0) {
     return NextResponse.json({
-      date: dateStr,
-      games: 0,
-      results: 0,
-      upserted: 0,
-      dryRun,
-      error: 'No completed drafts found',
+      date: dateStr, games: 0, results: 0, upserted: 0, dryRun,
+      error: 'No active or completed drafts found',
     });
   }
 
   const completedGames = await fetchCompletedGames(dateStr);
-
   const teamAbbrevs = [...new Set(completedGames.flatMap((g) => [g.away, g.home]))];
   const nhlIdToName = await buildNhlIdToNameMap(teamAbbrevs);
 
@@ -71,208 +59,167 @@ export async function GET(request: Request) {
 
   if (dryRun) {
     return NextResponse.json({
-      date: dateStr,
-      games: completedGames.length,
-      results: allResults.length,
-      upserted: 0,
-      emailsSent: 0,
-      emailErrors: [] as string[],
-      dryRun: true,
+      date: dateStr, games: completedGames.length, results: allResults.length,
+      upserted: 0, emailsSent: 0, emailErrors: [] as string[], dryRun: true,
     });
   }
 
-  let upserted = 0;
+  let totalUpserted = 0;
+  const allErrors: string[] = [];
 
   for (const draft of drafts) {
     const { data: picks } = await adminClient
       .from('draft_picks')
-      .select('player_id, player_name')
+      .select('player_id, player_name, participant_id')
       .eq('draft_id', draft.id);
 
-    if (!picks || picks.length === 0) continue;
+    if (!picks || picks.length === 0) {
+      await adminClient.from('cron_runs').insert({
+        draft_id: draft.id, run_date: dateStr,
+        games_found: completedGames.length, results_found: allResults.length,
+        scores_upserted: 0, emails_sent: 0, errors: ['No picks found'],
+      });
+      continue;
+    }
 
     const pickMap = new Map<string, string>();
     for (const pick of picks) {
-      if (pick.player_name) {
-        pickMap.set(pick.player_name.toLowerCase(), pick.player_id);
+      if (pick.player_name) pickMap.set(pick.player_name.toLowerCase(), pick.player_id);
+    }
+
+    const { data: participants } = await adminClient
+      .from('draft_participants').select('id, team_name').eq('draft_id', draft.id);
+    const participantMap = new Map((participants ?? []).map((p) => [p.id, p.team_name]));
+    const playerToTeam = new Map<string, string>();
+    for (const pick of picks) {
+      if (pick.participant_id) {
+        const teamName = participantMap.get(pick.participant_id);
+        if (teamName) playerToTeam.set(pick.player_id, teamName);
       }
     }
 
-    const rowsToUpsert: {
-      player_id: string;
-      draft_id: string;
-      season_type: string;
-      score_date: string;
-      goals: number;
-      assists: number;
-      points: number;
-    }[] = [];
+    const rowsToUpsert: { player_id: string; draft_id: string; season_type: string; score_date: string; goals: number; assists: number; points: number }[] = [];
+    const unmatchedNames: string[] = [];
+    const scorers: { playerName: string; nhlTeam: string; goals: number; assists: number; points: number; fantasyTeam: string }[] = [];
 
     for (const result of allResults) {
       const fullName = nhlIdToName.get(result.nhlId);
       if (!fullName) continue;
       const playerId = pickMap.get(fullName.toLowerCase());
-      if (!playerId) continue;
+      if (!playerId) { unmatchedNames.push(fullName); continue; }
 
-      let points: number;
-      if (draft.scoring_format === '2pt_goals_1pt_assists') {
-        points = result.goals * 2 + result.assists;
-      } else {
-        points = result.goals + result.assists;
-      }
+      const points = draft.scoring_format === '2pt_goals_1pt_assists'
+        ? result.goals * 2 + result.assists
+        : result.goals + result.assists;
 
       rowsToUpsert.push({
-        player_id: playerId,
-        draft_id: draft.id,
+        player_id: playerId, draft_id: draft.id,
         season_type: draft.season_type ?? 'regular_season',
-        score_date: dateStr,
-        goals: result.goals,
-        assists: result.assists,
-        points,
+        score_date: dateStr, goals: result.goals, assists: result.assists, points,
+      });
+
+      scorers.push({
+        playerName: fullName, nhlTeam: result.team,
+        goals: result.goals, assists: result.assists, points,
+        fantasyTeam: playerToTeam.get(playerId) ?? 'Unknown',
       });
     }
 
-    if (rowsToUpsert.length === 0) continue;
+    const errors: string[] = [];
+    let upserted = 0;
 
-    const { error: upsertError } = await adminClient
-      .from('player_scores')
-      .upsert(rowsToUpsert, {
-        onConflict: 'player_id,draft_id,score_date',
-      });
-
-    if (upsertError) {
-      console.error(`Upsert error for draft ${draft.id}:`, upsertError);
-    } else {
-      upserted += rowsToUpsert.length;
-    }
-  }
-
-  let emailsSent = 0;
-  let emailErrors: string[] = [];
-
-  for (const draft of drafts) {
-    const { data: draftDetails } = await adminClient
-      .from('drafts')
-      .select('id, name, scoring_format, season_type')
-      .eq('id', draft.id)
-      .single();
-
-    if (!draftDetails) continue;
-
-    const { data: participants } = await adminClient
-      .from('draft_participants')
-      .select('id, team_name, user_id')
-      .eq('draft_id', draft.id);
-
-    if (!participants || participants.length === 0) continue;
-
-    const userIds = participants.map((p) => p.user_id);
-    const { data: { users: authUsers } } = await adminClient.auth.admin.listUsers();
-    const emailMap = new Map<string, string>();
-    for (const u of authUsers ?? []) {
-      if (u.email) emailMap.set(u.id, u.email);
+    if (rowsToUpsert.length > 0) {
+      const { error: upsertError } = await adminClient
+        .from('player_scores')
+        .upsert(rowsToUpsert, { onConflict: 'player_id,draft_id,score_date' });
+      if (upsertError) errors.push(`Upsert error: ${upsertError.message}`);
+      else upserted = rowsToUpsert.length;
     }
 
-    const participantsWithEmail = participants
-      .map((p) => ({
-        email: emailMap.get(p.user_id) ?? '',
-        participantId: p.id,
-        teamName: p.team_name,
-      }))
-      .filter((p) => p.email.length > 0);
+    if (unmatchedNames.length > 0) errors.push(`Unmatched: ${unmatchedNames.join(', ')}`);
+    totalUpserted += upserted;
+    allErrors.push(...errors);
 
-    if (participantsWithEmail.length === 0) continue;
-
-    const { data: draftPicks } = await adminClient
-      .from('draft_picks')
-      .select('player_id, player_name, participant_id, round')
-      .eq('draft_id', draft.id);
-
-    const { data: draftScores } = await adminClient
-      .from('player_scores')
-      .select('player_id, score_date, goals, assists, points')
-      .eq('draft_id', draft.id);
-
-    const { data: draftPlayers } = await adminClient
-      .from('players')
-      .select('id, name, team, position');
-
-    const playerMap = new Map((draftPlayers ?? []).map((p) => [p.id, p]));
-    const scoresByPlayer = new Map<string, Map<string, { goals: number; assists: number; points: number }>>();
-    for (const s of draftScores ?? []) {
-      if (!scoresByPlayer.has(s.player_id)) scoresByPlayer.set(s.player_id, new Map());
-      scoresByPlayer.get(s.player_id)!.set(s.score_date, { goals: s.goals, assists: s.assists, points: s.points });
+    const teamPoints = new Map<string, number>();
+    for (const s of scorers) {
+      teamPoints.set(s.fantasyTeam, (teamPoints.get(s.fantasyTeam) ?? 0) + s.points);
     }
+    const teamPointsArray = Array.from(teamPoints.entries())
+      .map(([teamName, pts]) => ({ teamName, points: pts }))
+      .sort((a, b) => b.points - a.points);
 
-    const standings = participants.map((p) => {
-      const myPicks = (draftPicks ?? []).filter((pick) => pick.participant_id === p.id);
-      const roster = myPicks.map((pick) => {
-        const player = playerMap.get(pick.player_id);
-        const playerScores = scoresByPlayer.get(pick.player_id);
-        let goals = 0, assists = 0, points = 0, gamesPlayed = 0;
-        if (playerScores) {
-          for (const [, ds] of playerScores) {
-            goals += ds.goals;
-            assists += ds.assists;
-            points += ds.points;
-            gamesPlayed++;
+    const scoreDetails = { scorers, teamPoints: teamPointsArray };
+
+    let emailsSent = 0;
+    const emailErrors: string[] = [];
+
+    if (draft.status === 'complete') {
+      const { data: draftDetails } = await adminClient
+        .from('drafts').select('id, name, scoring_format, season_type').eq('id', draft.id).single();
+      const { data: participants } = await adminClient
+        .from('draft_participants').select('id, team_name, user_id').eq('draft_id', draft.id);
+
+      if (draftDetails && participants && participants.length > 0) {
+        const { data: { users: authUsers } } = await adminClient.auth.admin.listUsers();
+        const emailMap = new Map<string, string>();
+        for (const u of authUsers ?? []) { if (u.email) emailMap.set(u.id, u.email); }
+
+        const participantsWithEmail = participants
+          .map((p) => ({ email: emailMap.get(p.user_id) ?? '', participantId: p.id, teamName: p.team_name }))
+          .filter((p) => p.email.length > 0);
+
+        if (participantsWithEmail.length > 0) {
+          const { data: draftPicks } = await adminClient.from('draft_picks').select('player_id, player_name, participant_id, round').eq('draft_id', draft.id);
+          const { data: draftScores } = await adminClient.from('player_scores').select('player_id, score_date, goals, assists, points').eq('draft_id', draft.id);
+          const { data: draftPlayers } = await adminClient.from('players').select('id, name, team, position');
+
+          const playerMap = new Map((draftPlayers ?? []).map((p) => [p.id, p]));
+          const scoresByPlayer = new Map<string, Map<string, { goals: number; assists: number; points: number }>>();
+          for (const s of draftScores ?? []) {
+            if (!scoresByPlayer.has(s.player_id)) scoresByPlayer.set(s.player_id, new Map());
+            scoresByPlayer.get(s.player_id)!.set(s.score_date, { goals: s.goals, assists: s.assists, points: s.points });
           }
+
+          const standings = participants.map((p) => {
+            const myPicks = (draftPicks ?? []).filter((pick) => pick.participant_id === p.id);
+            const roster = myPicks.map((pick) => {
+              const player = playerMap.get(pick.player_id);
+              const playerScores = scoresByPlayer.get(pick.player_id);
+              let goals = 0, assists = 0, points = 0, gamesPlayed = 0;
+              if (playerScores) { for (const [, ds] of playerScores) { goals += ds.goals; assists += ds.assists; points += ds.points; gamesPlayed++; } }
+              const yesterdayScore = scoresByPlayer.get(pick.player_id)?.get(dateStr);
+              return { playerId: pick.player_id, playerName: pick.player_name, team: player?.team ?? '', position: player?.position ?? '', round: pick.round, goals, assists, points, gamesPlayed, yesterdayGoals: yesterdayScore?.goals ?? 0, yesterdayAssists: yesterdayScore?.assists ?? 0, yesterdayPoints: yesterdayScore?.points ?? 0 };
+            });
+            const totalPoints = roster.reduce((sum, r) => sum + r.points, 0);
+            let yesterdayPoints = 0;
+            for (const r of roster) { const ds = scoresByPlayer.get(r.playerId)?.get(dateStr); if (ds) yesterdayPoints += ds.points; }
+            return { participantId: p.id, teamName: p.team_name, totalPoints, yesterdayPoints, roster };
+          }).sort((a, b) => b.totalPoints - a.totalPoints);
+
+          const tonightGames = await fetchTonightGames().catch(() => []);
+          const result = await sendDailyEmails({
+            draftId: draft.id, draftName: draftDetails.name ?? 'Draft',
+            seasonType: draftDetails.season_type ?? 'regular_season',
+            date: dateStr, standings, tonightGames, participantsWithEmail,
+            baseUrl: process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000',
+          });
+          emailsSent = result.sent;
+          emailErrors.push(...result.errors);
         }
-        const yesterdayScore = scoresByPlayer.get(pick.player_id)?.get(dateStr);
-        return {
-          playerId: pick.player_id,
-          playerName: pick.player_name,
-          team: player?.team ?? '',
-          position: player?.position ?? '',
-          round: pick.round,
-          goals,
-          assists,
-          points,
-          gamesPlayed,
-          yesterdayGoals: yesterdayScore?.goals ?? 0,
-          yesterdayAssists: yesterdayScore?.assists ?? 0,
-          yesterdayPoints: yesterdayScore?.points ?? 0,
-        };
-      });
-      const totalPoints = roster.reduce((sum, r) => sum + r.points, 0);
-      let yesterdayPoints = 0;
-      for (const r of roster) {
-        const ds = scoresByPlayer.get(r.playerId)?.get(dateStr);
-        if (ds) yesterdayPoints += ds.points;
       }
-      return {
-        participantId: p.id,
-        teamName: p.team_name,
-        totalPoints,
-        yesterdayPoints,
-        roster,
-      };
-    }).sort((a, b) => b.totalPoints - a.totalPoints);
+    }
 
-    const tonightGames = await fetchTonightGames().catch(() => []);
-
-    const result = await sendDailyEmails({
-      draftId: draft.id,
-      draftName: draftDetails.name ?? 'Draft',
-      seasonType: draftDetails.season_type ?? 'regular_season',
-      date: dateStr,
-      standings,
-      tonightGames,
-      participantsWithEmail,
-      baseUrl: process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000',
+    await adminClient.from('cron_runs').insert({
+      draft_id: draft.id, run_date: dateStr,
+      games_found: completedGames.length, results_found: allResults.length,
+      scores_upserted: upserted, emails_sent: emailsSent,
+      errors: [...errors, ...emailErrors],
+      score_details: scoreDetails,
     });
-
-    emailsSent += result.sent;
-    emailErrors = emailErrors.concat(result.errors);
   }
 
   return NextResponse.json({
-    date: dateStr,
-    games: completedGames.length,
-    results: allResults.length,
-    upserted,
-    emailsSent,
-    emailErrors,
-    dryRun: false,
+    date: dateStr, games: completedGames.length, results: allResults.length,
+    upserted: totalUpserted, errors: allErrors, dryRun: false,
   });
 }
