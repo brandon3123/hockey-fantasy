@@ -14,6 +14,7 @@ interface DraftCoachProps {
   allPlayers: Player[];
   onDraftPlayer: (player: Player) => void;
   draftComplete?: boolean;
+  participantNames?: Record<string, string>;
 }
 
 export default function DraftCoach({
@@ -21,7 +22,8 @@ export default function DraftCoach({
   availablePlayers,
   allPlayers,
   onDraftPlayer,
-  draftComplete = false
+  draftComplete = false,
+  participantNames = {}
 }: DraftCoachProps) {
   // Load strategy from localStorage on mount
   const [strategy, setStrategy] = useState<DraftStrategy>(() => {
@@ -88,7 +90,7 @@ export default function DraftCoach({
       };
 
       const yourTeam = analyzeYourTeam(draftState, lines, availablePlayers, allPlayers);
-      const opponents = analyzeOpponents(draftState, lines, availablePlayers, allPlayers);
+      const opponents = analyzeOpponents(draftState, lines, availablePlayers, allPlayers, participantNames);
 
       const recommendations = generateRecommendations(availablePlayers, draftState, adjustedStrategy, lines, allPlayers);
 

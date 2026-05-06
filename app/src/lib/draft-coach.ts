@@ -42,6 +42,7 @@ interface YourTeamState {
 
 interface OpponentState {
   participantId: string;
+  teamName: string;
   needs: string[];
   positionNeeds: string[];
   likelyTargets: string[];
@@ -91,7 +92,7 @@ export function analyzeYourTeam(draftState: DraftState, lines: LineCombination[]
   return { composition, teams, lines: yourLines, needs };
 }
 
-export function analyzeOpponents(draftState: DraftState, lines: LineCombination[], availablePlayers: Player[] = [], allPlayers: Player[] = []): OpponentState[] {
+export function analyzeOpponents(draftState: DraftState, lines: LineCombination[], availablePlayers: Player[] = [], allPlayers: Player[] = [], participantNames: Record<string, string> = {}): OpponentState[] {
   const opponents: OpponentState[] = [];
   const targetCounts = { C: 4, LW: 4, RW: 4, D: 6 };
 
@@ -158,6 +159,7 @@ export function analyzeOpponents(draftState: DraftState, lines: LineCombination[
 
     opponents.push({
       participantId,
+      teamName: participantNames[participantId] || participantId,
       needs,
       positionNeeds,
       likelyTargets,
@@ -349,9 +351,9 @@ function generateReasoning(
   const blockingReasons: string[] = [];
   opponents.forEach(opp => {
     if (opp.likelyTargets.includes(player.name)) {
-      blockingReasons.push(`Blocks ${opp.participantId} from targeting ${player.name}`);
+      blockingReasons.push(`Blocks ${opp.teamName} from targeting ${player.name}`);
     } else if (opp.positionNeeds.includes(player.position)) {
-      blockingReasons.push(`Blocks ${opp.participantId} from getting ${player.position}`);
+      blockingReasons.push(`Blocks ${opp.teamName} from getting ${player.position}`);
     }
   });
   // Add at most 2 blocking reasons to avoid clutter

@@ -221,6 +221,7 @@ export default function CoachPage() {
               allPlayers={players}
               onDraftPlayer={handleDraftPlayer}
               draftComplete={isDraftComplete}
+              participantNames={Object.fromEntries(participants.map(p => [p.id, p.team_name]))}
             />
           )}
 

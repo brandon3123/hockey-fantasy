@@ -615,6 +615,7 @@ export default function DraftPage() {
                   allPlayers={players}
                   onDraftPlayer={handleDraftForCurrentManager}
                   draftComplete={draftState.picks.length >= draftState.managers * draftState.playersPerTeam}
+                  participantNames={Object.fromEntries(managerNames.map((name, i) => [`manager-${i}`, name]))}
                 />
               </div>
             )}
