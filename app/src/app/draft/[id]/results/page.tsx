@@ -62,16 +62,16 @@ function computeAwards(
 
   const bestPick = withAdp.length > 0
     ? withAdp.reduce((best, cur) => {
-        const curDiff = (cur.player.adp ?? 0) - cur.round;
-        const bestDiff = (best.player.adp ?? 0) - best.round;
+        const curDiff = cur.round - (cur.player.adp ?? 0);
+        const bestDiff = best.round - (best.player.adp ?? 0);
         return curDiff > bestDiff ? cur : best;
       }, withAdp[0])
     : null;
 
   const worstPick = withAdp.length > 0
     ? withAdp.reduce((worst, cur) => {
-        const curDiff = cur.round - (cur.player.adp ?? 0);
-        const worstDiff = worst.round - (worst.player.adp ?? 0);
+        const curDiff = (cur.player.adp ?? 0) - cur.round;
+        const worstDiff = (worst.player.adp ?? 0) - worst.round;
         return curDiff > worstDiff ? cur : worst;
       }, withAdp[0])
     : null;
@@ -153,6 +153,7 @@ function AwardCard({
   round,
   participant,
   subtitle,
+  tooltip,
 }: {
   icon: string;
   label: string;
@@ -161,10 +162,16 @@ function AwardCard({
   round: number;
   participant?: ParticipantData | null;
   subtitle?: string;
+  tooltip?: string;
 }) {
   return (
-    <div style={{ borderColor: color }} className="bg-[#0a0f0a] border rounded-lg p-4">
-      <div className="text-[10px] uppercase tracking-wider mb-2" style={{ color }}>{icon} {label}</div>
+    <div style={{ borderColor: color }} className="bg-[#0a0f0a] border rounded-lg p-4 group relative">
+      <div className="text-[10px] uppercase tracking-wider mb-2 flex items-center gap-1" style={{ color }}>
+        <span>{icon} {label}</span>
+        {tooltip && (
+          <span className="cursor-help text-[#3d4a3d] hover:text-[#5a6b57] transition-colors" title={tooltip}>ⓘ</span>
+        )}
+      </div>
       <div className="flex items-center gap-2">
         <TeamLogo team={player.team} className="w-6 h-6" />
         <div>
@@ -441,6 +448,7 @@ export default function ResultsPage() {
                   player={awards.mvp.player}
                   round={awards.mvp.round}
                   participant={awards.mvp.participant}
+                  tooltip="Highest projected points across all teams"
                 />
               )}
               {awards.bestPick && (
@@ -452,6 +460,7 @@ export default function ResultsPage() {
                   round={awards.bestPick.round}
                   participant={awards.bestPick.participant}
                   subtitle={`ADP ${awards.bestPick.player.adp?.toFixed(1)}`}
+                  tooltip="Biggest draft steal — picked the latest relative to their average draft position"
                 />
               )}
               {awards.worstPick && (
@@ -463,6 +472,7 @@ export default function ResultsPage() {
                   round={awards.worstPick.round}
                   participant={awards.worstPick.participant}
                   subtitle={`ADP ${awards.worstPick.player.adp?.toFixed(1)}`}
+                  tooltip="Biggest draft reach — picked the earliest relative to their average draft position"
                 />
               )}
               {awards.mrIrrelevant && (
@@ -473,6 +483,7 @@ export default function ResultsPage() {
                   player={awards.mrIrrelevant.player}
                   round={awards.mrIrrelevant.pickEntry.round}
                   participant={awards.mrIrrelevant.participant}
+                  tooltip="The very last pick of the draft"
                 />
               )}
             </div>
