@@ -125,7 +125,6 @@ export async function POST(
       draft_id: id,
       round,
       pick_number: pickNumber,
-      manager_index: participant.draft_position,
       participant_id,
       player_id,
       player_name: player_name || null,

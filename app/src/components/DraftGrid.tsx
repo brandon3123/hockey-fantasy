@@ -14,7 +14,7 @@ interface DraftGridProps {
 }
 
 export default function DraftGrid({ draftState, managerNames, availablePlayers, onReplacePick }: DraftGridProps) {
-  const { managers, yourPosition, currentRound, currentPick, picks } = draftState;
+  const { managers, yourPosition, yourParticipantId, currentRound, currentPick, picks } = draftState;
   const [selectedPick, setSelectedPick] = useState<DraftPick | null>(null);
   const [showReplaceModal, setShowReplaceModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -39,7 +39,7 @@ export default function DraftGrid({ draftState, managerNames, availablePlayers, 
     const row: (DraftPick | null)[] = [];
     for (let r = 1; r <= draftState.playersPerTeam; r++) {
       const pick = picks.find(
-        p => p.managerIndex === m && p.round === r
+        p => p.participantId === `manager-${m}` && p.round === r
       );
       row.push(pick || null);
     }
@@ -69,7 +69,7 @@ export default function DraftGrid({ draftState, managerNames, availablePlayers, 
     // This prevents replacing the wrong player when duplicates exist
     const pickIndex = picks.findIndex(p =>
       p.playerName === selectedPick.playerName &&
-      p.managerIndex === selectedPick.managerIndex &&
+      p.participantId === selectedPick.participantId &&
       p.round === selectedPick.round
     );
 
@@ -110,9 +110,9 @@ export default function DraftGrid({ draftState, managerNames, availablePlayers, 
             </thead>
             <tbody>
               {grid.map((row, managerIndex) => {
-                const isYourRow = managerIndex === yourPosition - 1;
+                const isYourRow = `manager-${managerIndex}` === yourParticipantId;
                 const isCurrentRow = managerIndex === currentManager;
-                const managerPicks = picks.filter(p => p.managerIndex === managerIndex);
+                const managerPicks = picks.filter(p => p.participantId === `manager-${managerIndex}`);
 
                 const projectedPts = managerPicks.reduce((total, pick) => {
                   const player = availablePlayers.find(p => p.name === pick.playerName);
@@ -209,7 +209,10 @@ export default function DraftGrid({ draftState, managerNames, availablePlayers, 
                   <div>
                     <div className="text-lg font-semibold">{selectedPick.playerName}</div>
                     <div className="text-sm opacity-70">
-                      {managerNames[selectedPick.managerIndex] || `Manager ${selectedPick.managerIndex + 1}`} | Round {selectedPick.round}
+                      {(() => {
+                        const rowIdx = parseInt(selectedPick.participantId.replace('manager-', ''), 10);
+                        return managerNames[rowIdx] || `Manager ${rowIdx + 1}`;
+                      })()} | Round {selectedPick.round}
                     </div>
                   </div>
                   {(() => {

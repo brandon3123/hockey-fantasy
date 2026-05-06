@@ -63,7 +63,7 @@ export function assignPlayerToManager(
     playerId,
     playerName,
     round: state.currentRound,
-    managerIndex: currentManager - 1,
+    participantId: `manager-${currentManager - 1}`,
   };
 
   const newState = advanceDraft(state);
@@ -77,16 +77,19 @@ export function assignPlayerToManager(
   };
 }
 
-export function getManagerPicks(state: DraftState, managerIndex: number): DraftPick[] {
-  return state.picks.filter(p => p.managerIndex === managerIndex);
+export function getParticipantPicks(state: DraftState, participantId: string): DraftPick[] {
+  return state.picks.filter(p => p.participantId === participantId);
+}
+
+export function getManagerPicks(state: DraftState, managerPosition: number): DraftPick[] {
+  return state.picks.filter(p => p.participantId === `manager-${managerPosition}`);
 }
 
 export function getTeamStackScore(state: DraftState, team: string): number {
-  const yourPicks = getManagerPicks(state, state.yourPosition - 1);
+  const yourPicks = getParticipantPicks(state, state.yourParticipantId);
   return yourPicks.filter(p => {
     const player = state.availablePlayers.find(ap => ap.name === p.playerName);
-    // TeamStackPanel uses getAvailableTeammates from utils.ts instead
-    return 0; // placeholder — not currently used
+    return 0;
   }).length;
 }
 
@@ -98,6 +101,7 @@ export function initializeDraft(config: DraftConfig, players: Player[]): DraftSt
   return {
     managers: config.managers,
     yourPosition: config.yourPosition,
+    yourParticipantId: `manager-${config.yourPosition - 1}`,
     playersPerTeam: config.playersPerTeam,
     currentRound: 1,
     currentPick: 1,

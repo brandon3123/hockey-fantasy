@@ -21,18 +21,20 @@ function mapToLegacyDraftState(
   participants: ParticipantData[],
   picks: DraftPickRow[],
   availablePlayers: Player[],
-  adminPosition: number
+  adminPosition: number,
+  adminParticipantId: string
 ): DraftState {
   const legacyPicks: DraftPick[] = picks.map((p) => ({
     playerId: p.player_id,
     playerName: p.player_name,
     round: p.round,
-    managerIndex: p.manager_index,
+    participantId: p.participant_id,
   }));
 
   return {
     managers: participants.length,
     yourPosition: adminPosition,
+    yourParticipantId: adminParticipantId,
     playersPerTeam: draft.players_per_team,
     currentRound: draft.current_round,
     currentPick: draft.current_pick,
@@ -75,7 +77,7 @@ export default function CoachPage() {
   const legacyState = useMemo(
     () =>
       draft
-        ? mapToLegacyDraftState(draft, participants, picks, availablePlayers, adminPosition)
+        ? mapToLegacyDraftState(draft, participants, picks, availablePlayers, adminPosition, adminParticipant?.id ?? '')
         : null,
     [draft, participants, picks, availablePlayers, adminPosition]
   );
@@ -246,7 +248,7 @@ export default function CoachPage() {
                 playerId: p.player_id,
                 playerName: p.player_name,
                 round: p.round,
-    managerIndex: p.manager_index - 1,
+                participantId: p.participant_id,
               }))}
               availablePlayers={availablePlayers}
               allPlayers={players}

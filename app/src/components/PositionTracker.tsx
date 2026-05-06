@@ -8,7 +8,7 @@ interface PositionTrackerProps {
 }
 
 export default function PositionTracker({ draftState, allPlayers }: PositionTrackerProps) {
-  const yourPicks = draftState.picks.filter(p => p.managerIndex === draftState.yourPosition - 1);
+  const yourPicks = draftState.picks.filter(p => p.participantId === draftState.yourParticipantId);
 
   // Count positions
   const positionCounts: Record<string, number> = {

@@ -26,6 +26,11 @@ interface ManagerRoster {
   injuryCount: number;
 }
 
+const getManagerIndex = (participantId: string) => {
+  const match = participantId.match(/^manager-(\d+)$/);
+  return match ? parseInt(match[1]) : 0;
+};
+
 export default function RostersPage() {
   const [rosters, setRosters] = useState<ManagerRoster[]>([]);
   const [allPlayers, setAllPlayers] = useState<Player[]>([]);
@@ -70,7 +75,7 @@ export default function RostersPage() {
           const managerRosters: ManagerRoster[] = Array.from(
             { length: draftState.managers },
             (_, i) => {
-              const picks = draftState.picks.filter((p: { managerIndex: number }) => p.managerIndex === i);
+              const picks = draftState.picks.filter((p: { participantId: string }) => getManagerIndex(p.participantId) === i);
               const rosterPlayers: RosterPlayer[] = picks.map((p: { playerName: string }) => {
                 const playerData = playerMap.get(p.playerName);
                 return {
@@ -131,9 +136,10 @@ export default function RostersPage() {
     if (!savedDraft) return;
 
     const draftState = JSON.parse(savedDraft);
+    const participantId = 'manager-' + managerIndex;
     const pickIndex = draftState.picks.findIndex(
-      (p: { playerName: string; managerIndex: number }) =>
-        p.playerName === playerName && p.managerIndex === managerIndex
+      (p: { playerName: string; participantId: string }) =>
+        p.playerName === playerName && p.participantId === participantId
     );
 
     if (pickIndex !== -1) {
@@ -141,8 +147,8 @@ export default function RostersPage() {
 
       // Recalculate playersPerTeam after removal
       const maxPicksPerTeam = Math.max(
-        ...newState.picks.map((p: { managerIndex: number }) =>
-          newState.picks.filter((pick: { managerIndex: number }) => pick.managerIndex === p.managerIndex).length
+        ...newState.picks.map((p: { participantId: string }) =>
+          newState.picks.filter((pick: { participantId: string }) => pick.participantId === p.participantId).length
         ),
         1 // minimum of 1 if no picks exist
       );
@@ -160,7 +166,7 @@ export default function RostersPage() {
       const managerRosters = Array.from(
         { length: newState.managers },
         (_, i) => {
-          const picks = newState.picks.filter((p: { managerIndex: number }) => p.managerIndex === i);
+          const picks = newState.picks.filter((p: { participantId: string }) => getManagerIndex(p.participantId) === i);
           const rosterPlayers: RosterPlayer[] = picks.map((p: { playerName: string }) => {
             const playerData = playerMap.get(p.playerName);
             return {
@@ -200,6 +206,7 @@ export default function RostersPage() {
     if (!savedDraft) return;
 
     const draftState = JSON.parse(savedDraft);
+    const participantId = 'manager-' + managerIndex;
 
     // Check if player is already drafted by any team
     const alreadyDrafted = draftState.picks.some(
@@ -213,7 +220,7 @@ export default function RostersPage() {
 
     // Check if this manager already has this player
     const managerAlreadyHasPlayer = draftState.picks.some(
-      (pick: { playerName: string; managerIndex: number }) => pick.playerName === player.name && pick.managerIndex === managerIndex
+      (pick: { playerName: string; participantId: string }) => pick.playerName === player.name && pick.participantId === participantId
     );
 
     if (managerAlreadyHasPlayer) {
@@ -221,7 +228,7 @@ export default function RostersPage() {
       return;
     }
 
-    const managerPicks = draftState.picks.filter((p: { managerIndex: number }) => p.managerIndex === managerIndex);
+    const managerPicks = draftState.picks.filter((p: { participantId: string }) => p.participantId === participantId);
     const round = managerPicks.length + 1;
 
     // Add the new player
@@ -229,14 +236,14 @@ export default function RostersPage() {
       playerId: player.name,
       playerName: player.name,
       round: round,
-      managerIndex: managerIndex,
+      participantId: participantId,
     };
 
     // Calculate the new playersPerTeam based on the team with the most players
     const updatedPicks = [...draftState.picks, newPick];
     const maxPicksPerTeam = Math.max(
       ...updatedPicks.map(p =>
-        updatedPicks.filter(pick => pick.managerIndex === p.managerIndex).length
+        updatedPicks.filter(pick => pick.participantId === p.participantId).length
       )
     );
 
@@ -258,7 +265,7 @@ export default function RostersPage() {
     const managerRosters = Array.from(
       { length: updatedState.managers },
       (_, i) => {
-        const picks = updatedState.picks.filter((p: { managerIndex: number }) => p.managerIndex === i);
+        const picks = updatedState.picks.filter((p: { participantId: string }) => getManagerIndex(p.participantId) === i);
         const rosterPlayers: RosterPlayer[] = picks.map((p: { playerName: string }) => {
           const playerData = playerMap.get(p.playerName);
           return {

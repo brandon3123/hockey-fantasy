@@ -43,12 +43,13 @@ export interface DraftPick {
   playerId: string;
   playerName: string;
   round: number;
-  managerIndex: number;
+  participantId: string;
 }
 
 export interface DraftState {
   managers: number;
   yourPosition: number;
+  yourParticipantId: string;
   playersPerTeam: number;
   currentRound: number;
   currentPick: number;

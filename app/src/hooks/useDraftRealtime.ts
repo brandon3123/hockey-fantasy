@@ -8,7 +8,6 @@ export interface DraftPickRow {
   draft_id: string
   round: number
   pick_number: number
-  manager_index: number
   participant_id: string
   player_id: string
   player_name: string

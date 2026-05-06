@@ -191,13 +191,11 @@ export default function DraftCoach({
       {/* Top 3 Recommendations */}
       <div className="space-y-4">
         <h4 className="text-sm font-semibold text-[#c8d9c3]">Recommended Picks</h4>
-        {analysis.recommendations.map((rec, index) => {
+          {analysis.recommendations.map((rec, index) => {
           const player = rec.player;
 
-          // Get team advancement odds from player data (not rankings)
           const round2Chance = player.teamAdvancementOdds?.round2 ? player.teamAdvancementOdds.round2 * 100 : null;
 
-          // Get line info
           const lineInfo = lines.length > 0 ? getPlayerLine(player.name, lines) : null;
 
           return (
@@ -225,12 +223,15 @@ export default function DraftCoach({
                     </div>
                   </div>
                 </div>
-                <div className={`text-xs px-2 py-1 rounded ${
-                  rec.fit === 'excellent' ? 'bg-[#4a7c59] text-[#c8d9c3]' :
-                  rec.fit === 'good' ? 'bg-[#1a2f1a] text-[#5a6b57]' :
-                  'bg-[#141e12] text-[#5a6b57]'
-                }`}>
-                  {rec.fit} fit
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-[#5a6b57]">{rec.score.toFixed(1)}</span>
+                  <div className={`text-xs px-2 py-1 rounded ${
+                    rec.fit === 'excellent' ? 'bg-[#4a7c59] text-[#c8d9c3]' :
+                    rec.fit === 'good' ? 'bg-[#1a2f1a] text-[#5a6b57]' :
+                    'bg-[#141e12] text-[#5a6b57]'
+                  }`}>
+                    {rec.fit} fit
+                  </div>
                 </div>
               </div>
               <div className="text-sm text-[#c8d9c3] mb-2 font-medium">{rec.reasoning.primary}</div>

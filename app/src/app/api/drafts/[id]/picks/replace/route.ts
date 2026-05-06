@@ -37,7 +37,7 @@ export async function POST(
 
   const { data: existingPick, error: pickError } = await supabase
     .from('draft_picks')
-    .select('id, draft_id, round, pick_number, manager_index, participant_id')
+    .select('id, draft_id, round, pick_number, participant_id')
     .eq('id', pick_id)
     .eq('draft_id', id)
     .single();
@@ -83,7 +83,6 @@ export async function POST(
       draft_id: id,
       round: existingPick.round,
       pick_number: existingPick.pick_number,
-      manager_index: existingPick.manager_index,
       participant_id: existingPick.participant_id,
       player_id: new_player_id,
       player_name: new_player_name || null,

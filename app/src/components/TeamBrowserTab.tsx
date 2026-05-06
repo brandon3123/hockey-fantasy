@@ -14,6 +14,7 @@ interface TeamBrowserTabProps {
   isDraftComplete: boolean;
   seasonType?: string;
   playoffTeams?: string[];
+  loading?: boolean;
 }
 
 export default function TeamBrowserTab({
@@ -24,8 +25,10 @@ export default function TeamBrowserTab({
   isDraftComplete,
   seasonType = 'playoffs',
   playoffTeams = [],
+  loading = false,
 }: TeamBrowserTabProps) {
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
+  const [pickingPlayer, setPickingPlayer] = useState<string | null>(null);
 
   const filteredPlayers = useMemo(() => {
     if (seasonType !== 'playoffs' || playoffTeams.length === 0) return players;
@@ -140,7 +143,8 @@ export default function TeamBrowserTab({
                 <div
                   key={`${player.name}-${player.team}-${player.position}`}
                   onClick={() => {
-                    if (!isDrafted && onDraftPlayer && !isDraftComplete && isPlayerPickable(player)) {
+                    if (!isDrafted && onDraftPlayer && !isDraftComplete && isPlayerPickable(player) && !loading) {
+                      setPickingPlayer(player.name);
                       onDraftPlayer(player);
                     }
                   }}
@@ -172,7 +176,9 @@ export default function TeamBrowserTab({
                     </div>
                   </div>
                   <div className="text-right">
-                    {isDrafted && owner ? (
+                    {loading && pickingPlayer === player.name ? (
+                      <span className="text-xs text-[#6b9b7a] animate-pulse">Drafting...</span>
+                    ) : isDrafted && owner ? (
                       <span className="text-xs px-2 py-0.5 bg-[#141e12] text-[#5a6b57] rounded">
                         {owner}
                       </span>

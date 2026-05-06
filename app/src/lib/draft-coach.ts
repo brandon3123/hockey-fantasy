@@ -1,7 +1,7 @@
 import { Player } from '@/types/player';
 import { DraftState } from '@/types/player';
 import { DraftStrategy, DraftRecommendation, LineCombination, TeamQuality } from '@/types/draft-coach';
-import { getManagerPicks, getCurrentPickNumber } from './draft-logic';
+import { getParticipantPicks, getCurrentPickNumber } from './draft-logic';
 import { getPlayerLine, getTeammates, getLinesByTeam } from './moneypuck-parser';
 
 // Strategy definitions
@@ -41,7 +41,7 @@ interface YourTeamState {
 }
 
 interface OpponentState {
-  managerIndex: number;
+  participantId: string;
   needs: string[];
   positionNeeds: string[];
   likelyTargets: string[];
@@ -49,7 +49,7 @@ interface OpponentState {
 }
 
 export function analyzeYourTeam(draftState: DraftState, lines: LineCombination[], availablePlayers: Player[] = [], allPlayers: Player[] = []): YourTeamState {
-  const yourPicks = getManagerPicks(draftState, draftState.yourPosition - 1);
+  const yourPicks = getParticipantPicks(draftState, draftState.yourParticipantId);
 
   // Count positions and teams from actual picks
   const composition: Record<string, number> = { C: 0, LW: 0, RW: 0, D: 0 };
@@ -95,15 +95,14 @@ export function analyzeOpponents(draftState: DraftState, lines: LineCombination[
   const opponents: OpponentState[] = [];
   const targetCounts = { C: 4, LW: 4, RW: 4, D: 6 };
 
-  // Use allPlayers to find drafted player data (not availablePlayers)
   const playerPool = allPlayers.length > 0 ? allPlayers : availablePlayers;
 
-  for (let i = 0; i < draftState.managers; i++) {
-    if (i === draftState.yourPosition - 1) continue;
+  const participantIds = [...new Set(draftState.picks.map(p => p.participantId))]
+    .filter(id => id !== draftState.yourParticipantId);
 
-    const picks = getManagerPicks(draftState, i);
+  for (const participantId of participantIds) {
+    const picks = getParticipantPicks(draftState, participantId);
 
-    // Count positions
     const composition: Record<string, number> = { C: 0, LW: 0, RW: 0, D: 0 };
     const teams: Record<string, number> = {};
     const partialLines: LineCombination[] = [];
@@ -114,7 +113,6 @@ export function analyzeOpponents(draftState: DraftState, lines: LineCombination[
         composition[player.position] = (composition[player.position] || 0) + 1;
         teams[player.team] = (teams[player.team] || 0) + 1;
 
-        // Find partial lines
         const playerLine = getPlayerLine(player.name, lines);
         if (playerLine) {
           const existingLine = partialLines.find(l => l.lineId === playerLine.lineId);
@@ -125,7 +123,6 @@ export function analyzeOpponents(draftState: DraftState, lines: LineCombination[
       }
     });
 
-    // Calculate needs
     const needs: string[] = [];
     const positionNeeds: string[] = [];
     Object.entries(targetCounts).forEach(([pos, target]) => {
@@ -136,7 +133,6 @@ export function analyzeOpponents(draftState: DraftState, lines: LineCombination[
       }
     });
 
-    // Identify likely targets (players who complete their partial lines)
     const likelyTargets: string[] = [];
     partialLines.forEach(line => {
       const playersOnLine = picks.filter(pick =>
@@ -144,7 +140,6 @@ export function analyzeOpponents(draftState: DraftState, lines: LineCombination[
       ).length;
 
       if (playersOnLine >= 2) {
-        // Find the missing player(s) to complete this line
         line.players.forEach(playerName => {
           if (!picks.some(pick => pick.playerName === playerName)) {
             const player = playerPool.find(p => p.name === playerName);
@@ -156,14 +151,13 @@ export function analyzeOpponents(draftState: DraftState, lines: LineCombination[
       }
     });
 
-    // Assess stack concern
     const maxTeamCount = Math.max(...Object.values(teams), 0);
     let stackConcern: 'high' | 'medium' | 'low' = 'low';
     if (maxTeamCount >= 3) stackConcern = 'high';
     else if (maxTeamCount >= 2) stackConcern = 'medium';
 
     opponents.push({
-      managerIndex: i,
+      participantId,
       needs,
       positionNeeds,
       likelyTargets,
@@ -182,22 +176,19 @@ export function scorePlayer(
 ): number {
   let score = 0;
 
-  // Base talent
-  score += player.displayPoints * strategy.weights.talent;
+  const normalizedTalent = player.displayPoints / 10;
 
-  // Team stacking
+  score += normalizedTalent * strategy.weights.talent;
+
   const stackBonus = calculateStackBonus(player, context.yourTeam, lineCache);
   score += stackBonus * strategy.weights.teamStack;
 
-  // Positional need
   const positionBonus = calculatePositionBonus(player, context.yourTeam);
   score += positionBonus * strategy.weights.position;
 
-  // Value
   const valueScore = calculateValueScore(player, context.currentPick);
   score += valueScore * strategy.weights.value;
 
-  // Opponent blocking
   const blockScore = calculateBlockScore(player, context.opponents);
   score += blockScore * strategy.weights.opponent;
 
@@ -205,21 +196,26 @@ export function scorePlayer(
 }
 
 function calculateStackBonus(player: Player, yourTeam: YourTeamState, lineCache: LineCombination[]): number {
-  // First: Check if player completes a specific line
   const playerLine = getPlayerLine(player.name, lineCache);
   if (playerLine) {
     const lineWithCount = yourTeam.lines.find(l => l.line.lineId === playerLine.lineId);
-    if (lineWithCount && lineWithCount.yourPlayerCount >= 2) {
-      // Huge bonus for completing a line (3rd player)
-      return Math.pow(10, lineWithCount.yourPlayerCount + 1) - 10;
-    }
+  if (lineWithCount && lineWithCount.yourPlayerCount >= 2) {
+    return 1.0 + lineWithCount.yourPlayerCount * 0.5;
+  }
+  if (lineWithCount && lineWithCount.yourPlayerCount >= 1) {
+    return 0.4;
+  }
   }
 
-  // Second: Check team stacking (any players from same team)
   const teamCount = yourTeam.teams[player.team] || 0;
+  if (teamCount >= 3) {
+    return 1.5 + teamCount * 0.5;
+  }
+  if (teamCount >= 2) {
+    return 0.6;
+  }
   if (teamCount >= 1) {
-    // Moderate bonus for team stacking (exponential)
-    return Math.pow(3, teamCount + 1) - 3;
+    return 0.15;
   }
 
   return 0;
@@ -230,7 +226,7 @@ function calculatePositionBonus(player: Player, yourTeam: YourTeamState): number
   const targetCounts = { C: 4, LW: 4, RW: 4, D: 6 };
 
   if (positionCount < targetCounts[player.position]) {
-    return (targetCounts[player.position] - positionCount) * 5;
+    return 0.3 + (targetCounts[player.position] - positionCount) * 0.15;
   }
   return 0;
 }
@@ -259,7 +255,7 @@ function calculateBlockScore(player: Player, opponents: OpponentState[]): number
   let score = 0;
   opponents.forEach(opp => {
     if (opp.likelyTargets.includes(player.name)) {
-      score += 20;
+      score += 15;
     }
     if (opp.positionNeeds.includes(player.position)) {
       score += 5;
@@ -288,7 +284,7 @@ export function generateRecommendations(
   // Get top 3
   return scoredPlayers
     .sort((a, b) => b.score - a.score)
-    .slice(0, 3)
+    .slice(0, 5)
     .map(({ player, score }) => ({
       player,
       score,
@@ -353,9 +349,9 @@ function generateReasoning(
   const blockingReasons: string[] = [];
   opponents.forEach(opp => {
     if (opp.likelyTargets.includes(player.name)) {
-      blockingReasons.push(`Blocks Team ${opp.managerIndex + 1} from targeting ${player.name}`);
+      blockingReasons.push(`Blocks ${opp.participantId} from targeting ${player.name}`);
     } else if (opp.positionNeeds.includes(player.position)) {
-      blockingReasons.push(`Blocks Team ${opp.managerIndex + 1} from getting ${player.position}`);
+      blockingReasons.push(`Blocks ${opp.participantId} from getting ${player.position}`);
     }
   });
   // Add at most 2 blocking reasons to avoid clutter

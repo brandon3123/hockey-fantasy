@@ -724,6 +724,7 @@ export default function LiveDraftPage() {
                 isDraftComplete={isDraftComplete}
                 seasonType={draft?.season_type ?? 'playoffs'}
                 playoffTeams={playoffTeams}
+                loading={picking}
               />
             </div>
           )}

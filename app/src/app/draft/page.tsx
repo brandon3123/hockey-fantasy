@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Player, DraftState } from '@/types/player';
-import { initializeDraft, assignPlayerToManager, getManagerPicks, getCurrentManager, getCurrentPickNumber, removeSpecificPick } from '@/lib/draft-logic';
+import { initializeDraft, assignPlayerToManager, getParticipantPicks, getCurrentManager, getCurrentPickNumber, removeSpecificPick } from '@/lib/draft-logic';
 import DraftGrid from '@/components/DraftGrid';
 import BestAvailable from '@/components/BestAvailable';
 import TeamStackPanel from '@/components/TeamStackPanel';
@@ -28,6 +28,11 @@ export default function DraftPage() {
   const [managers, setManagers] = useState(7);
   const [yourPosition, setYourPosition] = useState(1);
   const [playersPerTeam, setPlayersPerTeam] = useState(10);
+
+  const getManagerIndex = (participantId: string) => {
+    const match = participantId.match(/^manager-(\d+)$/);
+    return match ? parseInt(match[1]) : 0;
+  };
 
   useEffect(() => {
     if (managerNames.length !== managers) {
@@ -122,7 +127,7 @@ export default function DraftPage() {
 
     // Check if this manager already has this player
     const managerAlreadyHasPlayer = draftState.picks.some(
-      pick => pick.playerName === player.name && pick.managerIndex === currentManager - 1
+      pick => pick.playerName === player.name && pick.participantId === 'manager-' + (currentManager - 1)
     );
 
     if (managerAlreadyHasPlayer) {
@@ -133,8 +138,8 @@ export default function DraftPage() {
     // Check if player is already drafted by another team
     const playerAlreadyDrafted = draftState.picks.some(pick => pick.playerName === player.name);
     if (playerAlreadyDrafted) {
-      const existingTeam = draftState.picks.find(pick => pick.playerName === player.name)?.managerIndex;
-      alert(`${player.name} has already been drafted by ${managerNames[existingTeam!]}!`);
+      const existingTeam = draftState.picks.find(pick => pick.playerName === player.name)?.participantId;
+      alert(`${player.name} has already been drafted by ${managerNames[getManagerIndex(existingTeam!)]}!`);
       return;
     }
 
@@ -167,8 +172,8 @@ export default function DraftPage() {
     const lastPick = draftState.picks[draftState.picks.length - 1];
     if (!lastPick) return;
 
-    const managerName = managerNames[lastPick.managerIndex];
-    const isYourPick = lastPick.managerIndex === draftState.yourPosition - 1;
+    const managerName = managerNames[getManagerIndex(lastPick.participantId)];
+    const isYourPick = lastPick.participantId === draftState.yourParticipantId;
 
     const confirmMsg = isYourPick
       ? `Undo your pick of ${lastPick.playerName}?`
@@ -224,7 +229,7 @@ export default function DraftPage() {
       playerId: newPlayer.name,
       playerName: newPlayer.name,
       round: pickToReplace.round,
-      managerIndex: pickToReplace.managerIndex,
+      participantId: pickToReplace.participantId,
     };
 
     const finalState = {
@@ -248,7 +253,7 @@ export default function DraftPage() {
         managerNames,
       },
       picks: draftState.picks.map(pick => ({
-        manager: managerNames[pick.managerIndex],
+        manager: managerNames[getManagerIndex(pick.participantId)],
         round: pick.round,
         player: pick.playerName,
       })),
@@ -272,7 +277,7 @@ export default function DraftPage() {
 
     draftState.picks.forEach(pick => {
       const player = players.find(p => p.name === pick.playerName);
-      csv += `"${managerNames[pick.managerIndex]}",${pick.round},"${pick.playerName}",`;
+      csv += `"${managerNames[getManagerIndex(pick.participantId)]}",${pick.round},"${pick.playerName}",`;
       csv += player ? `"${player.team}","${player.position}",${player.projectedPoints.toFixed(1)}` : '","","",0';
       csv += '\\n';
     });
@@ -392,7 +397,7 @@ export default function DraftPage() {
   const isDraftComplete = draftState.currentRound > draftState.playersPerTeam;
   const currentManager = !isDraftComplete ? getCurrentManager(draftState) : null;
   const isYourTurn = !isDraftComplete && currentManager === draftState.yourPosition;
-  const yourPicks = getManagerPicks(draftState, draftState.yourPosition - 1);
+  const yourPicks = getParticipantPicks(draftState, draftState.yourParticipantId);
   const currentPickNumber = getCurrentPickNumber(draftState);
   const canUndo = draftState.picks.length > 0 && !isDraftComplete;
 
@@ -402,7 +407,7 @@ export default function DraftPage() {
     if (!duplicateCheck[pick.playerName]) {
       duplicateCheck[pick.playerName] = [];
     }
-    duplicateCheck[pick.playerName].push(managerNames[pick.managerIndex]);
+    duplicateCheck[pick.playerName].push(managerNames[getManagerIndex(pick.participantId)]);
   });
 
   const duplicates = Object.entries(duplicateCheck)
