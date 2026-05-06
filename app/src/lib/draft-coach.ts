@@ -271,10 +271,11 @@ export function generateRecommendations(
   draftState: DraftState,
   strategy: DraftStrategy,
   lineCache: LineCombination[],
-  allPlayers: Player[] = []
+  allPlayers: Player[] = [],
+  participantNames: Record<string, string> = {}
 ): DraftRecommendation[] {
   const yourTeam = analyzeYourTeam(draftState, lineCache, availablePlayers, allPlayers);
-  const opponents = analyzeOpponents(draftState, lineCache, availablePlayers, allPlayers);
+  const opponents = analyzeOpponents(draftState, lineCache, availablePlayers, allPlayers, participantNames);
   const currentPick = getCurrentPickNumber(draftState);
 
   // Score all players
