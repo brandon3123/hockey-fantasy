@@ -178,24 +178,27 @@ export async function GET() {
   const tonightTeams = new Set(tonightGames.flatMap(g => [g.away, g.home]));
   const activePlayerCount = rosterWithStatus.filter(r => tonightTeams.has(r.team)).length;
 
+  const isPlayoffs = draft.season_type === 'playoffs';
   const allPlayoffTeams = new Set<string>();
   const eliminatedTeamsSet = new Set<string>();
-  try {
-    const bracketRes = await fetch("https://api-web.nhle.com/v1/playoff-bracket/2026");
-    if (bracketRes.ok) {
-      const bracketData = await bracketRes.json();
-      for (const series of bracketData.series || []) {
-        const top = series.topSeedTeam?.abbrev;
-        const bottom = series.bottomSeedTeam?.abbrev;
-        if (top && top !== "TBD") allPlayoffTeams.add(top);
-        if (bottom && bottom !== "TBD") allPlayoffTeams.add(bottom);
-        if (series.winningTeamId && series.losingTeamId) {
-          if (series.topSeedTeam?.id === series.losingTeamId && top) eliminatedTeamsSet.add(top);
-          if (series.bottomSeedTeam?.id === series.losingTeamId && bottom) eliminatedTeamsSet.add(bottom);
+  if (isPlayoffs) {
+    try {
+      const bracketRes = await fetch("https://api-web.nhle.com/v1/playoff-bracket/2026");
+      if (bracketRes.ok) {
+        const bracketData = await bracketRes.json();
+        for (const series of bracketData.series || []) {
+          const top = series.topSeedTeam?.abbrev;
+          const bottom = series.bottomSeedTeam?.abbrev;
+          if (top && top !== "TBD") allPlayoffTeams.add(top);
+          if (bottom && bottom !== "TBD") allPlayoffTeams.add(bottom);
+          if (series.winningTeamId && series.losingTeamId) {
+            if (series.topSeedTeam?.id === series.losingTeamId && top) eliminatedTeamsSet.add(top);
+            if (series.bottomSeedTeam?.id === series.losingTeamId && bottom) eliminatedTeamsSet.add(bottom);
+          }
         }
       }
-    }
-  } catch {}
+    } catch {}
+  }
 
   const isAdmin = draft.admin_user_id === user.id;
 

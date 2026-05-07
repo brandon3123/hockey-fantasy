@@ -352,7 +352,7 @@ export default function HomePage() {
               </div>
             )}
 
-            {eliminatedTeams.length > 0 && (
+            {draft.seasonType === 'playoffs' && eliminatedTeams.length > 0 && (
               <div className={`bg-[#0a0f0a] border border-[#141e12] rounded-lg p-4 md:p-6 ${hasRosterAlerts ? '' : 'md:col-span-2'}`}>
                 <div className="mb-4 border-b border-[#1a2f1a] pb-3">
                   <span className="text-sm font-bold text-[#c8d9c3]">Teams Eliminated</span>
@@ -366,6 +366,32 @@ export default function HomePage() {
                   ))}
                 </div>
                 <div className="text-xs text-[#5a6b57] mt-3">{eliminatedTeams.length} of {totalPlayoffTeams} playoff teams eliminated</div>
+              </div>
+            )}
+
+            {draft.seasonType !== 'playoffs' && (
+              <div className={`bg-[#0a0f0a] border border-[#141e12] rounded-lg p-4 md:p-6 ${hasRosterAlerts ? '' : 'md:col-span-2'}`}>
+                <div className="mb-4 border-b border-[#1a2f1a] pb-3">
+                  <span className="text-sm font-bold text-[#c8d9c3]">Top Performers</span>
+                </div>
+                <div className="space-y-3">
+                  {[...roster].sort((a, b) => b.totalPoints - a.totalPoints).slice(0, 3).map((player, i) => (
+                    <div key={player.playerId} className="flex items-center gap-3">
+                      <span className="text-sm font-bold text-[#4a7c59] w-5">{i + 1}.</span>
+                      <TeamLogo team={player.team} className="w-7 h-7" />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-bold text-[#c8d9c3] truncate">{player.playerName}</div>
+                        <div className="text-[11px] text-[#5a6b57]">{player.position}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-bold text-[#4a7c59]">{player.totalPoints} pts</div>
+                        {player.yesterdayPoints > 0 && (
+                          <div className="text-[10px] text-[#6b9b7a]">+{player.yesterdayPoints} yesterday</div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
