@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { getIsAdmin } from '@/lib/admin';
 import { createServerClient } from '@supabase/ssr';
 
 export async function GET(
@@ -46,6 +47,6 @@ export async function GET(
     invites: invitesResult.data || [],
     participants: participantsResult.data || [],
     picks: picksResult.data || [],
-    is_admin: draft.admin_user_id === user.id,
+    is_admin: await getIsAdmin(user.id),
   });
 }

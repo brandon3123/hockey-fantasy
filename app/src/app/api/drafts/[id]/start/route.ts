@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServerClient } from '@supabase/ssr';
+import { getIsAdmin } from '@/lib/admin';
 
 export async function POST(
   request: Request,
@@ -16,7 +17,7 @@ export async function POST(
 
   const { data: draft, error: draftError } = await supabase
     .from('drafts')
-    .select('id, admin_user_id, status, players_per_team')
+    .select('id, status, players_per_team')
     .eq('id', id)
     .single();
 
@@ -24,8 +25,8 @@ export async function POST(
     return NextResponse.json({ error: 'Draft not found' }, { status: 404 });
   }
 
-  if (draft.admin_user_id !== user.id) {
-    return NextResponse.json({ error: 'Not your draft' }, { status: 403 });
+  if (!await getIsAdmin(user.id)) {
+    return NextResponse.json({ error: 'Admin only' }, { status: 403 });
   }
 
   if (draft.status === 'in_progress') {

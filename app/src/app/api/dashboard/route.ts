@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServerClient } from '@supabase/ssr';
 import { fetchTonightGames, fetchEspnInjuries, fetchActivePlayoffTeams } from '@/lib/nhl-api';
+import { getIsAdmin } from '@/lib/admin';
 
 export async function GET() {
   const supabase = await createClient();
@@ -200,7 +201,7 @@ export async function GET() {
     } catch {}
   }
 
-  const isAdmin = draft.admin_user_id === user.id;
+  const isAdmin = await getIsAdmin(user.id);
 
   return NextResponse.json({
     draft: {

@@ -3,7 +3,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 import TeamLogo from '@/components/TeamLogo';
+import InjuryBadge from '@/components/InjuryBadge';
 
 interface RosterPlayer {
   playerId: string;
@@ -167,7 +169,7 @@ export default function ScoresPage() {
   const { user } = useAuth();
   const draftId = params.id as string;
 
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { isAdmin } = useIsAdmin();
   const [authChecked, setAuthChecked] = useState(false);
   const [tab, setTab] = useState<Tab>('scores');
   const [draft, setDraft] = useState<DraftInfo | null>(null);
@@ -188,16 +190,11 @@ export default function ScoresPage() {
 
   useEffect(() => {
     if (!user) { setAuthChecked(true); return; }
-    fetch(`/api/drafts/${draftId}`).then(res => {
-      if (res.ok) return res.json();
-    }).then(data => {
-      if (data?.is_admin) {
-        setIsAdmin(true);
-      } else {
-        router.replace('/');
-      }
-    }).catch(() => router.replace('/')).finally(() => setAuthChecked(true));
-  }, [user, draftId, router]);
+    if (!isAdmin) {
+      router.replace('/');
+    }
+    setAuthChecked(true);
+  }, [user, isAdmin, router]);
 
   const fetchStandings = useCallback(async () => {
     setLoading(true);
@@ -395,8 +392,6 @@ export default function ScoresPage() {
                               const isOut = p.injuryStatus === 'out indefinitely' || p.injuryStatus === 'out for playoffs';
                               const isInactive = isOut || p.isEliminated;
                               const isEditing = editingPlayer === p.playerId;
-                              const injuryLabel = p.injuryStatus === 'day-to-day' ? 'DTD' : p.injuryStatus === 'week-to-week' ? 'WTW' : (p.injuryStatus === 'out indefinitely' || p.injuryStatus === 'out for playoffs') ? 'OUT' : null;
-                              const injuryBadgeColor = p.injuryStatus === 'day-to-day' ? 'bg-[#854d0e] text-[#fbbf24]' : p.injuryStatus === 'week-to-week' ? 'bg-[#9a3412] text-[#fb923c]' : 'bg-[#7f1d1d] text-[#fca5a5]';
                               return (
                                 <div key={p.playerId} className={`flex items-center justify-between text-xs py-1.5 px-2 rounded ${isInactive ? 'opacity-50' : ''} ${isEditing ? 'bg-[#0a0f0a] border border-[#4a7c59]' : ''}`}>
                                   <div className="flex items-center gap-2">
@@ -406,8 +401,8 @@ export default function ScoresPage() {
                                       {p.playerName}
                                     </span>
                                     <span className="text-[#5a6b57]">{p.position}</span>
-                                    {injuryLabel && (
-                                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${injuryBadgeColor}`}>{injuryLabel}</span>
+                                    {p.injuryStatus && p.injuryStatus !== 'healthy' && (
+                                      <InjuryBadge status={p.injuryStatus} description={p.injuryDescription} size="xs" />
                                     )}
                                   </div>
                                   <div className="flex items-center gap-3">

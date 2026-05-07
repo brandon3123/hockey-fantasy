@@ -4,22 +4,15 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 
 export default function Navigation() {
   const pathname = usePathname();
   const { user, loading, signOut } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const [externalOpen, setExternalOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!user) { setIsAdmin(false); return; }
-    fetch('/api/drafts')
-      .then(r => r.ok ? r.json() : null)
-      .then(data => setIsAdmin((data?.drafts?.length ?? 0) > 0))
-      .catch(() => setIsAdmin(false));
-  }, [user]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {

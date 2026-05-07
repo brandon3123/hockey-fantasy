@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { useDraftState, DraftPickRow, ParticipantData } from '@/hooks/useDraftState';
 import { Player } from '@/types/player';
 import TeamLogo from '@/components/TeamLogo';
+import InjuryBadge from '@/components/InjuryBadge';
 import Link from 'next/link';
 import { ActionLink } from '@/components/ActionButton';
 import {
@@ -389,17 +390,9 @@ export default function ResultsPage() {
                         .map((r) => {
                         const liveInjury = liveInjuries.get(r.player.name.toLowerCase());
                         const injuryStatus = liveInjury?.status ?? r.player.injury.status;
+                        const injuryDescription = liveInjury?.description ?? r.player.injury.description;
                         const isEliminated = eliminatedTeams.has(r.player.team);
-                        const isOut = injuryStatus === "out indefinitely" || injuryStatus === "out for playoffs";
-                        const isInactive = isOut || isEliminated;
-                        const injuryLabel =
-                          injuryStatus === "day-to-day" ? "DTD" :
-                          injuryStatus === "week-to-week" ? "WTW" :
-                          (injuryStatus === "out indefinitely" || injuryStatus === "out for playoffs") ? "OUT" : null;
-                        const injuryBadgeColor =
-                          injuryStatus === "day-to-day" ? "bg-[#854d0e] text-[#fbbf24]" :
-                          injuryStatus === "week-to-week" ? "bg-[#9a3412] text-[#fb923c]" :
-                          "bg-[#7f1d1d] text-[#fca5a5]";
+                        const isInactive = injuryStatus === "out indefinitely" || injuryStatus === "out for playoffs" || isEliminated;
 
                         return (
                           <div
@@ -414,11 +407,7 @@ export default function ResultsPage() {
                               </span>
                               <span className="text-[#5a6b57]">{r.player.position}</span>
                               <span className="text-[#2d3c28]">{r.player.pointsPerGame.toFixed(2)} ppg</span>
-                              {injuryLabel && (
-                                <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${injuryBadgeColor}`}>
-                                  {injuryLabel}
-                                </span>
-                              )}
+                              <InjuryBadge status={injuryStatus} description={injuryDescription} size="xs" />
                             </div>
                             <span className="text-[#6b9b7a] font-bold text-xs">{r.player.displayPoints.toFixed(1)}</span>
                           </div>

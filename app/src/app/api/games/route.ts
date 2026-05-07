@@ -1,10 +1,12 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServerClient } from '@supabase/ssr';
 import { fetchTonightGames } from '@/lib/nhl-api';
 
-export async function GET() {
-  const tonightGames = await fetchTonightGames();
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const timezone = searchParams.get('tz') || undefined;
+  const tonightGames = await fetchTonightGames(timezone);
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();

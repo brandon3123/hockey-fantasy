@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { getIsAdmin } from '@/lib/admin';
 
 export async function GET(
   request: Request,
@@ -10,10 +11,8 @@ export async function GET(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { data: draft } = await supabase
-    .from('drafts').select('admin_user_id').eq('id', id).single();
-  if (!draft || draft.admin_user_id !== user.id)
-    return NextResponse.json({ error: 'Not your draft' }, { status: 403 });
+  if (!await getIsAdmin(user.id))
+    return NextResponse.json({ error: 'Admin only' }, { status: 403 });
 
   const { data: runs, error } = await supabase
     .from('cron_runs').select('*').eq('draft_id', id)

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/auth-context';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 import InviteForm from '@/components/InviteForm';
 import ParticipantList from '@/components/ParticipantList';
 import DraftStartModal from '@/components/DraftStartModal';
@@ -59,7 +60,7 @@ export default function DraftDetailPage() {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [invites, setInvites] = useState<Invite[]>([]);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { isAdmin } = useIsAdmin();
   const [loading, setLoading] = useState(true);
   const [showStartModal, setShowStartModal] = useState(false);
   const [adminTeamName, setAdminTeamName] = useState('');
@@ -71,7 +72,6 @@ export default function DraftDetailPage() {
       setDraft(data.draft);
       setParticipants(data.participants || []);
       setInvites(data.invites || []);
-      setIsAdmin(data.is_admin);
     }
     setLoading(false);
   }, [draftId]);

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServerClient } from '@supabase/ssr';
+import { getIsAdmin } from '@/lib/admin';
 
 export async function GET(
   request: Request,
@@ -32,7 +33,7 @@ export async function POST(
 
   const { data: draft, error: draftError } = await supabase
     .from('drafts')
-    .select('id, admin_user_id, status, current_round, current_pick, players_per_team, pick_entry_mode')
+    .select('id, status, current_round, current_pick, players_per_team, pick_entry_mode')
     .eq('id', id)
     .single();
 
@@ -62,7 +63,7 @@ export async function POST(
     return NextResponse.json({ error: 'Player already drafted' }, { status: 409 });
   }
 
-  const isAdmin = draft.admin_user_id === user.id;
+  const isAdmin = await getIsAdmin(user.id);
 
   if (draft.pick_entry_mode === 'admin_only' && !isAdmin) {
     return NextResponse.json({ error: 'Only admin can make picks in admin_only mode' }, { status: 403 });

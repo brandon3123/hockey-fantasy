@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import TeamLogo from '@/components/TeamLogo';
+import InjuryBadge from '@/components/InjuryBadge';
 import { ActionLink } from '@/components/ActionButton';
 
 interface DraftInfo {
@@ -219,29 +220,14 @@ export default function StandingsPage() {
                     )}
                     {isExpanded && hasPlayers && (
                       <div className="border-t border-[#141e12] mt-2 pt-2">
-                        {draftedPlayers.map((p, i) => {
-                          const injuryLabel =
-                            p.injuryStatus === "day-to-day" ? "DTD" :
-                            p.injuryStatus === "week-to-week" ? "WTW" :
-                            (p.injuryStatus === "out indefinitely" || p.injuryStatus === "out for playoffs") ? "OUT" : null;
-                          const injuryBadgeColor =
-                            p.injuryStatus === "day-to-day" ? "bg-[#854d0e] text-[#fbbf24]" :
-                            p.injuryStatus === "week-to-week" ? "bg-[#9a3412] text-[#fb923c]" :
-                            "bg-[#7f1d1d] text-[#fca5a5]";
-
-                          return (
+                        {draftedPlayers.map((p, i) => (
                             <div key={`${p.playerName}-${p.team}-${i}`} className="flex items-center gap-1.5 py-0.5">
                               <TeamLogo team={p.team} className="w-3.5 h-3.5" />
                               <span className="text-[10px] text-[#c8d9c3]">{p.playerName}</span>
                               <span className="text-[10px] text-[#5a6b57]">{p.position}</span>
-                              {injuryLabel && (
-                                <span className={`px-1 py-0.5 rounded text-[8px] font-bold ${injuryBadgeColor}`}>
-                                  {injuryLabel}
-                                </span>
-                              )}
+                              <InjuryBadge status={p.injuryStatus} size="xs" />
                             </div>
-                          );
-                        })}
+                        ))}
                       </div>
                     )}
                   </div>
@@ -332,14 +318,6 @@ export default function StandingsPage() {
                             .map((p) => {
                               const isOut = p.injuryStatus === "out indefinitely" || p.injuryStatus === "out for playoffs";
                               const isInactive = isOut || p.isEliminated;
-                              const injuryLabel =
-                                p.injuryStatus === "day-to-day" ? "DTD" :
-                                p.injuryStatus === "week-to-week" ? "WTW" :
-                                (p.injuryStatus === "out indefinitely" || p.injuryStatus === "out for playoffs") ? "OUT" : null;
-                              const injuryBadgeColor =
-                                p.injuryStatus === "day-to-day" ? "bg-[#854d0e] text-[#fbbf24]" :
-                                p.injuryStatus === "week-to-week" ? "bg-[#9a3412] text-[#fb923c]" :
-                                "bg-[#7f1d1d] text-[#fca5a5]";
 
                               return (
                                 <div
@@ -353,11 +331,7 @@ export default function StandingsPage() {
                                       {p.playerName}
                                     </span>
                                     <span className="text-[#5a6b57]">{p.position}</span>
-                                    {injuryLabel && (
-                                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${injuryBadgeColor}`}>
-                                        {injuryLabel}
-                                      </span>
-                                    )}
+                                    <InjuryBadge status={p.injuryStatus} description={p.injuryDescription} size="xs" />
                                   </div>
                                   <div className="flex items-center gap-3">
                                     <span className="text-[#6b9b7a] font-bold">{p.points.toFixed(1)}</span>

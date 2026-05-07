@@ -8,6 +8,8 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  isAdmin: boolean;
+  adminLoading: boolean;
   signInWithEmail: (email: string, password: string) => Promise<{ error: string | null }>;
   signUpWithEmail: (email: string, password: string) => Promise<{ error: string | null }>;
   signInWithGoogle: () => Promise<void>;
@@ -20,6 +22,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminLoading, setAdminLoading] = useState(true);
   const supabase = createClient();
 
   useEffect(() => {
@@ -40,6 +44,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => subscription.unsubscribe();
   }, [supabase]);
+
+  useEffect(() => {
+    if (!user) {
+      setIsAdmin(false);
+      setAdminLoading(false);
+      return;
+    }
+    fetch('/api/me')
+      .then(r => r.ok ? r.json() : { isAdmin: false })
+      .then(data => {
+        setIsAdmin(data.isAdmin);
+        setAdminLoading(false);
+      })
+      .catch(() => {
+        setIsAdmin(false);
+        setAdminLoading(false);
+      });
+  }, [user]);
 
   const signInWithEmail = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -66,7 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signInWithEmail, signUpWithEmail, signInWithGoogle, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, isAdmin, adminLoading, signInWithEmail, signUpWithEmail, signInWithGoogle, signOut }}>
       {children}
     </AuthContext.Provider>
   );

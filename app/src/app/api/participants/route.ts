@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServerClient } from '@supabase/ssr';
+import { getIsAdmin } from '@/lib/admin';
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -100,8 +101,11 @@ export async function DELETE(request: Request) {
     .eq('id', participant.draft_id)
     .single();
 
-  if (!draft || draft.admin_user_id !== user.id) {
-    return NextResponse.json({ error: 'Not your draft' }, { status: 403 });
+  if (!draft) {
+    return NextResponse.json({ error: 'Draft not found' }, { status: 404 });
+  }
+  if (!await getIsAdmin(user.id)) {
+    return NextResponse.json({ error: 'Admin only' }, { status: 403 });
   }
 
   const { error } = await supabase
@@ -146,8 +150,11 @@ export async function PATCH(request: Request) {
     .eq('id', participant.draft_id)
     .single();
 
-  if (!draft || draft.admin_user_id !== user.id) {
-    return NextResponse.json({ error: 'Not your draft' }, { status: 403 });
+  if (!draft) {
+    return NextResponse.json({ error: 'Draft not found' }, { status: 404 });
+  }
+  if (!await getIsAdmin(user.id)) {
+    return NextResponse.json({ error: 'Admin only' }, { status: 403 });
   }
 
   const { error } = await supabase

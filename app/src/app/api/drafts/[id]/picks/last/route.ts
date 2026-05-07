@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServerClient } from '@supabase/ssr';
+import { getIsAdmin } from '@/lib/admin';
 
 export async function DELETE(
   request: Request,
@@ -16,7 +17,7 @@ export async function DELETE(
 
   const { data: draft, error: draftError } = await supabase
     .from('drafts')
-    .select('id, admin_user_id, status, current_round, current_pick')
+    .select('id, status, current_round, current_pick')
     .eq('id', id)
     .single();
 
@@ -24,7 +25,7 @@ export async function DELETE(
     return NextResponse.json({ error: 'Draft not found' }, { status: 404 });
   }
 
-  if (draft.admin_user_id !== user.id) {
+  if (!await getIsAdmin(user.id)) {
     return NextResponse.json({ error: 'Admin only' }, { status: 403 });
   }
 

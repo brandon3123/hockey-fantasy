@@ -1,12 +1,14 @@
 'use client';
 
 import { useAuth } from '@/context/auth-context';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import TeamLogo from '@/components/TeamLogo';
 import DraftStartModal from '@/components/DraftStartModal';
 import { ActionLink, ActionButton } from '@/components/ActionButton';
+import InjuryBadge from '@/components/InjuryBadge';
 
 interface DashboardData {
   draft: { id: string; name: string; status: string; seasonType: string; scoringFormat: string } | null;
@@ -55,6 +57,7 @@ function StatusBadge({ status }: { status: string }) {
 
 export default function HomePage() {
   const { user, loading: authLoading } = useAuth();
+  const { isAdmin: globalIsAdmin } = useIsAdmin();
   const router = useRouter();
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [drafts, setDrafts] = useState<Draft[]>([]);
@@ -200,7 +203,7 @@ export default function HomePage() {
                   <div className="text-sm text-[#5a6b57]">of {totalTeams} teams</div>
                 </div>
               )}
-              {isAdmin && (
+              {globalIsAdmin && (
                 <>
                   <ActionLink
                     href={`/dashboard/drafts/${draft.id}/admin/internal/scores`}
@@ -235,7 +238,7 @@ export default function HomePage() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               {roster.map(player => {
                 const isOut = player.injuryStatus.toLowerCase().includes('out') && player.injuryStatus !== 'day-to-day';
-                const isDTD = player.injuryStatus === 'day-to-day';
+                const isInjured = player.injuryStatus !== 'healthy';
                 return (
                   <div
                     key={player.playerId}
@@ -253,8 +256,9 @@ export default function HomePage() {
                         <span className="text-[#5a6b57]">&mdash;</span>
                       )}
                     </div>
-                    {isDTD && <div className="text-[10px] font-bold text-[#ff9f0a] mt-1">DAY-TO-DAY</div>}
-                    {isOut && !player.isEliminated && <div className="text-[10px] font-bold text-[#ff3b30] mt-1">OUT</div>}
+                    {isInjured && (
+                      <div className="mt-1"><InjuryBadge status={player.injuryStatus} description={player.injuryDescription} /></div>
+                    )}
                   </div>
                 );
               })}
@@ -334,17 +338,12 @@ export default function HomePage() {
                 </div>
                 <div className="space-y-2">
                   {injuredPlayers.map(player => {
-                    const isOut = player.injuryStatus.toLowerCase().includes('out') && player.injuryStatus !== 'day-to-day';
-                    const isDTD = player.injuryStatus === 'day-to-day';
                     return (
                       <div key={player.playerId} className="flex items-center gap-3 py-1.5">
-                         {isOut && !player.isEliminated && <span className="text-[10px] font-bold text-[#c8d9c3] bg-[#ff3b30] px-1.5 py-0.5 rounded">OUT</span>}
-                         {isDTD && !player.isEliminated && <span className="text-[10px] font-bold text-[#0a0f0a] bg-[#ff9f0a] px-1.5 py-0.5 rounded">DTD</span>}
+                         <InjuryBadge status={player.injuryStatus} description={player.injuryDescription} />
                          <TeamLogo team={player.team} className="w-5 h-5" />
                          <span className={`text-sm flex-1 ${player.isEliminated ? 'text-[#fca5a5] line-through decoration-[#fca5a5] decoration-2' : 'text-[#c8d9c3]'}`}>{player.playerName}</span>
-                         <span className="text-xs text-[#5a6b57]">
-                           {player.isEliminated ? 'Eliminated' : player.injuryDescription || ''}
-                         </span>
+                         {player.isEliminated && <span className="text-xs text-[#5a6b57]">Eliminated</span>}
                       </div>
                     );
                   })}
@@ -380,7 +379,10 @@ export default function HomePage() {
                       <span className="text-sm font-bold text-[#4a7c59] w-5">{i + 1}.</span>
                       <TeamLogo team={player.team} className="w-7 h-7" />
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-bold text-[#c8d9c3] truncate">{player.playerName}</div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-bold text-[#c8d9c3] truncate">{player.playerName}</span>
+                          <InjuryBadge status={player.injuryStatus} description={player.injuryDescription} />
+                        </div>
                         <div className="text-[11px] text-[#5a6b57]">{player.position}</div>
                       </div>
                       <div className="text-right">
@@ -401,14 +403,12 @@ export default function HomePage() {
     );
   }
 
-  const canCreateDraft = drafts.length > 0 || joined.length === 0;
-
   return (
     <div className="min-h-screen bg-[#050a05]">
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8 flex-wrap gap-2">
           <h1 className="text-2xl md:text-3xl font-bold text-[#c8d9c3]">My Drafts</h1>
-          {canCreateDraft && (
+          {globalIsAdmin && (
             <ActionLink
               href="/dashboard/drafts/new"
               variant="primary"
@@ -426,13 +426,15 @@ export default function HomePage() {
             </div>
             <h2 className="text-xl font-bold text-[#c8d9c3] mb-2">No drafts yet</h2>
             <p className="text-[#5a6b57] mb-6">Create your first draft or join one with an invite link</p>
-            <ActionLink
-              href="/dashboard/drafts/new"
-              variant="primary"
-              className="px-6 py-3 font-semibold"
-            >
-              Create New Draft
-            </ActionLink>
+            {globalIsAdmin && (
+              <ActionLink
+                href="/dashboard/drafts/new"
+                variant="primary"
+                className="px-6 py-3 font-semibold"
+              >
+                Create New Draft
+              </ActionLink>
+            )}
           </div>
         ) : (
           <div className="space-y-8">

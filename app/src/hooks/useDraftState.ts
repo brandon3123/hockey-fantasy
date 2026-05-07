@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Player } from '@/types/player'
 import { useDraftRealtime, DraftPickRow } from './useDraftRealtime'
+import { useIsAdmin } from './useIsAdmin'
 
 export type { DraftPickRow } from './useDraftRealtime'
 
@@ -122,7 +123,7 @@ export function useDraftState(draftId: string) {
   const [players, setPlayers] = useState<Player[]>([])
   const [playoffTeams, setPlayoffTeams] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
-  const [isAdmin, setIsAdmin] = useState(false)
+  const { isAdmin: globalIsAdmin } = useIsAdmin()
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
   const fetchDraftData = useCallback(async () => {
@@ -132,7 +133,6 @@ export function useDraftState(draftId: string) {
       setDraft(data.draft)
       setParticipants(data.participants || [])
       setPicks(data.picks || [])
-      setIsAdmin(data.is_admin)
     }
   }, [draftId])
 
@@ -164,7 +164,6 @@ export function useDraftState(draftId: string) {
         setDraft(data.draft)
         setParticipants(data.participants || [])
         setPicks(data.picks || [])
-        setIsAdmin(data.is_admin)
       }
 
       setLoading(false)
@@ -233,7 +232,7 @@ export function useDraftState(draftId: string) {
     availablePlayers,
     playoffTeams,
     loading,
-    isAdmin,
+    isAdmin: globalIsAdmin,
     currentUserId,
     managers,
     currentRound,

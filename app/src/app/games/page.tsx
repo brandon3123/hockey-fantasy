@@ -23,7 +23,8 @@ export default function GamesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/games')
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    fetch(`/api/games?tz=${encodeURIComponent(tz)}`)
       .then(res => res.json())
       .then((d: GamesData) => setData(d))
       .catch(() => {})

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { Resend } from 'resend';
 import { generateInviteEmailHtml } from '@/lib/email-templates';
+import { getIsAdmin } from '@/lib/admin';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -21,12 +22,15 @@ export async function POST(request: Request) {
 
   const { data: draft } = await supabase
     .from('drafts')
-    .select('admin_user_id, name')
+    .select('name')
     .eq('id', draft_id)
     .single();
 
-  if (!draft || draft.admin_user_id !== user.id) {
-    return NextResponse.json({ error: 'Not your draft' }, { status: 403 });
+  if (!draft) {
+    return NextResponse.json({ error: 'Draft not found' }, { status: 404 });
+  }
+  if (!await getIsAdmin(user.id)) {
+    return NextResponse.json({ error: 'Admin only' }, { status: 403 });
   }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
@@ -93,12 +97,15 @@ export async function PATCH(request: Request) {
 
   const { data: draft } = await supabase
     .from('drafts')
-    .select('admin_user_id, name')
+    .select('name')
     .eq('id', invite.draft_id)
     .single();
 
-  if (!draft || draft.admin_user_id !== user.id) {
-    return NextResponse.json({ error: 'Not your draft' }, { status: 403 });
+  if (!draft) {
+    return NextResponse.json({ error: 'Draft not found' }, { status: 404 });
+  }
+  if (!await getIsAdmin(user.id)) {
+    return NextResponse.json({ error: 'Admin only' }, { status: 403 });
   }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
@@ -146,12 +153,15 @@ export async function DELETE(request: Request) {
 
   const { data: draft } = await supabase
     .from('drafts')
-    .select('admin_user_id')
+    .select('id')
     .eq('id', invite.draft_id)
     .single();
 
-  if (!draft || draft.admin_user_id !== user.id) {
-    return NextResponse.json({ error: 'Not your draft' }, { status: 403 });
+  if (!draft) {
+    return NextResponse.json({ error: 'Draft not found' }, { status: 404 });
+  }
+  if (!await getIsAdmin(user.id)) {
+    return NextResponse.json({ error: 'Admin only' }, { status: 403 });
   }
 
   const { error } = await supabase
