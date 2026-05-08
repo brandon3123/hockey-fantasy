@@ -7,6 +7,8 @@ import { useAuth } from '@/context/auth-context';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
 import InviteForm from '@/components/InviteForm';
 import ParticipantList from '@/components/ParticipantList';
+import DraftSetupForm from '@/components/DraftSetupForm';
+import { ActionButton } from '@/components/ActionButton';
 import DraftStartModal from '@/components/DraftStartModal';
 
 interface Draft {
@@ -63,6 +65,7 @@ export default function DraftDetailPage() {
   const { isAdmin } = useIsAdmin();
   const [loading, setLoading] = useState(true);
   const [showStartModal, setShowStartModal] = useState(false);
+  const [editingConfig, setEditingConfig] = useState(false);
   const [adminTeamName, setAdminTeamName] = useState('');
 
   const fetchDraft = useCallback(async () => {
@@ -104,6 +107,21 @@ export default function DraftDetailPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ invite_id: id }),
     });
+  };
+
+  const handleUpdateDraft = async (data: Record<string, unknown>) => {
+    const res = await fetch(`/api/drafts/${draftId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    const result = await res.json();
+    if (!res.ok) {
+      return { error: result.error || 'Failed to update draft' };
+    }
+    setEditingConfig(false);
+    fetchDraft();
+    return { draft: result.draft };
   };
 
   const handleTogglePaid = async (id: string, has_paid: boolean) => {
@@ -264,50 +282,92 @@ export default function DraftDetailPage() {
           )}
         </div>
 
-        <div className="mb-6">
-          <SectionDivider label="Event Details" />
-          <div className="bg-[#0a0f0a] border border-[#141e12] rounded-xl p-5">
-            <div className="grid grid-cols-2 gap-y-3 text-sm">
-              {draft.draft_date && (
-                <>
-                  <span className="text-[#5a6b57]">Date</span>
-                  <span className="text-[#c8d9c3]">{new Date(draft.draft_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                </>
+        {editingConfig ? (
+          <div className="mb-6">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="h-px flex-1 bg-[#1a2f1a]" />
+              <h2 className="text-xs font-bold text-[#5a6b57] uppercase tracking-widest">Edit Draft Config</h2>
+              <div className="h-px flex-1 bg-[#1a2f1a]" />
+            </div>
+            <DraftSetupForm
+              initialData={{
+                name: draft.name ?? undefined,
+                season_type: draft.season_type ?? undefined,
+                draft_date: draft.draft_date ?? undefined,
+                draft_time: draft.draft_time ?? undefined,
+                location: draft.location ?? undefined,
+                entry_fee: draft.entry_fee,
+                currency: draft.currency ?? undefined,
+                payment_method: draft.payment_method ?? undefined,
+                payment_info: draft.payment_info ?? undefined,
+                notes: draft.notes ?? undefined,
+                players_per_team: draft.players_per_team,
+                scoring_format: draft.scoring_format ?? undefined,
+              }}
+              onSubmit={handleUpdateDraft}
+              submitLabel="Save Changes"
+              isEditing
+            />
+            <button
+              onClick={() => setEditingConfig(false)}
+              className="w-full py-2 mt-2 text-sm text-[#5a6b57] hover:text-[#c8d9c3] transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <div className="mb-6">
+            <SectionDivider label="Event Details" />
+            <div className="bg-[#0a0f0a] border border-[#141e12] rounded-xl p-5">
+              <div className="grid grid-cols-2 gap-y-3 text-sm">
+                {draft.draft_date && (
+                  <>
+                    <span className="text-[#5a6b57]">Date</span>
+                    <span className="text-[#c8d9c3]">{new Date(draft.draft_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                  </>
+                )}
+                {draft.draft_time && (
+                  <>
+                    <span className="text-[#5a6b57]">Time</span>
+                    <span className="text-[#c8d9c3]">{draft.draft_time}</span>
+                  </>
+                )}
+                {draft.location && (
+                  <>
+                    <span className="text-[#5a6b57]">Location</span>
+                    <span className="text-[#c8d9c3]">{draft.location}</span>
+                  </>
+                )}
+                <span className="text-[#5a6b57]">Players Per Team</span>
+                <span className="text-[#c8d9c3]">{draft.players_per_team}</span>
+                <span className="text-[#5a6b57]">Scoring</span>
+                <span className="text-[#c8d9c3]">{draft.scoring_format === '2pt_goals_1pt_assists' ? '2pt Goals / 1pt Assists' : '1pt per Goal & Assist'}</span>
+                {draft.entry_fee > 0 && (
+                  <>
+                    <span className="text-[#5a6b57]">Entry Fee</span>
+                    <span className="text-[#c8d9c3]">{draft.currency}${draft.entry_fee}</span>
+                  </>
+                )}
+                {draft.payment_info && (
+                  <>
+                    <span className="text-[#5a6b57]">Payment</span>
+                    <span className="text-[#c8d9c3]">{draft.payment_method} &middot; {draft.payment_info}</span>
+                  </>
+                )}
+              </div>
+              {draft.notes && (
+                <p className="text-sm text-[#5a6b57] italic mt-4 pt-4 border-t border-[#1a2f1a]">{draft.notes}</p>
               )}
-              {draft.draft_time && (
-                <>
-                  <span className="text-[#5a6b57]">Time</span>
-                  <span className="text-[#c8d9c3]">{draft.draft_time}</span>
-                </>
-              )}
-              {draft.location && (
-                <>
-                  <span className="text-[#5a6b57]">Location</span>
-                  <span className="text-[#c8d9c3]">{draft.location}</span>
-                </>
-              )}
-              <span className="text-[#5a6b57]">Players Per Team</span>
-              <span className="text-[#c8d9c3]">{draft.players_per_team}</span>
-              <span className="text-[#5a6b57]">Scoring</span>
-              <span className="text-[#c8d9c3]">{draft.scoring_format === '2pt_goals_1pt_assists' ? '2pt Goals / 1pt Assists' : '1pt per Goal & Assist'}</span>
-              {draft.entry_fee > 0 && (
-                <>
-                  <span className="text-[#5a6b57]">Entry Fee</span>
-                  <span className="text-[#c8d9c3]">{draft.currency}${draft.entry_fee}</span>
-                </>
-              )}
-              {draft.payment_info && (
-                <>
-                  <span className="text-[#5a6b57]">Payment</span>
-                  <span className="text-[#c8d9c3]">{draft.payment_method} &middot; {draft.payment_info}</span>
-                </>
+              {isAdmin && (
+                <div className="mt-4 pt-4 border-t border-[#1a2f1a]">
+                  <ActionButton onClick={() => setEditingConfig(true)} variant="primary" className="px-4 py-2 text-sm font-semibold">
+                    Edit Config
+                  </ActionButton>
+                </div>
               )}
             </div>
-            {draft.notes && (
-              <p className="text-sm text-[#5a6b57] italic mt-4 pt-4 border-t border-[#1a2f1a]">{draft.notes}</p>
-            )}
           </div>
-        </div>
+        )}
 
         <div className="space-y-6">
           {isPreDraft && (

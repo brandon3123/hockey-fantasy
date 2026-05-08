@@ -50,3 +50,62 @@ export async function GET(
     is_admin: await getIsAdmin(user.id),
   });
 }
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const adminCheck = await getIsAdmin(user.id);
+  if (!adminCheck) {
+    return NextResponse.json({ error: 'Admin only' }, { status: 403 });
+  }
+
+  const { data: existing } = await supabase
+    .from('drafts')
+    .select('id')
+    .eq('id', id)
+    .single();
+
+  if (!existing) {
+    return NextResponse.json({ error: 'Draft not found' }, { status: 404 });
+  }
+
+  const body = await request.json();
+  const allowedFields = [
+    'name', 'season_type', 'draft_date', 'draft_time', 'location',
+    'entry_fee', 'currency', 'payment_method', 'payment_info',
+    'notes', 'players_per_team', 'scoring_format',
+  ];
+
+  const updates: Record<string, unknown> = {};
+  for (const field of allowedFields) {
+    if (body[field] !== undefined) {
+      updates[field] = body[field];
+    }
+  }
+
+  if (Object.keys(updates).length === 0) {
+    return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
+  }
+
+  const { data, error } = await supabase
+    .from('drafts')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ draft: data });
+}

@@ -20,9 +20,10 @@ interface DraftSetupFormProps {
   };
   onSubmit: (data: Record<string, unknown>) => Promise<{ error?: string; draft?: Record<string, unknown> }>;
   submitLabel?: string;
+  isEditing?: boolean;
 }
 
-export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'Create Draft' }: DraftSetupFormProps) {
+export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'Create Draft', isEditing }: DraftSetupFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,7 +69,7 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
       return;
     }
 
-    if (result.draft?.id) {
+    if (!isEditing && result.draft?.id) {
       router.push(`/dashboard/drafts/${result.draft.id}`);
     }
 
