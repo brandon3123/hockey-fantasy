@@ -8,6 +8,8 @@ from typing import Dict, List, Optional
 import time
 import json
 
+from season_config import current_nhl_season
+
 BASE_URL = "https://api-web.nhle.com"
 
 # Simple in-memory cache to prevent redundant API calls
@@ -104,16 +106,17 @@ def fetch_team_roster(team_abbrev: str, use_cache: bool = True) -> Optional[Dict
             print(f"  Rate limited on roster request for {team_abbrev}, using cache if available")
         return None
 
-def scrape_all_player_stats(season: str = "20252026") -> Dict[str, Dict]:
+def scrape_all_player_stats(season: str = None) -> Dict[str, Dict]:
     """
     Scrape complete player stats from NHL API for all players.
 
     Args:
-        season: Season in YYYYYYYY format (default: 20242025)
+        season: Season in YYYYYYYY format (default: current NHL season)
 
     Returns:
         Dict mapping player name -> {goals, assists, games, ppg, team, position}
     """
+    season = season or current_nhl_season()
     print("Scraping player stats from NHL API...")
 
     player_stats = {}
@@ -203,18 +206,20 @@ def scrape_all_player_stats(season: str = "20252026") -> Dict[str, Dict]:
     return player_stats
 
 
-def scrape_player_game_log(player_id: int, season: str = "20252026") -> Optional[Dict]:
+def scrape_player_game_log(player_id: int, season: str = None) -> Optional[Dict]:
     """
     Scrape game log for a specific player to get recent form.
     Uses caching and rate limiting to be respectful of the API.
 
     Args:
         player_id: NHL player ID
-        season: Season in YYYYYYYY format
+        season: Season in YYYYYYYY format (default: current NHL season)
 
     Returns:
         Dict with last10 and last20 game stats
     """
+    season = season or current_nhl_season()
+
     # Check cache first
     if player_id in _cache['game_logs']:
         _api_calls['cached_game_logs'] += 1

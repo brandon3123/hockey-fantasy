@@ -15,6 +15,8 @@ from scrape_nhl_api import scrape_all_player_stats, scrape_player_game_log, get_
 # Keep the hardcoded stats as fallback
 from top_players_stats import TOP_PLAYER_STATS
 
+from season_config import current_nhl_season
+
 MONEYPUCK_BASE_URL = "https://moneypuck.com"
 MONEYPUCK_LOCAL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "moneypuck")
 
@@ -118,18 +120,21 @@ def _get_moneypuck_path():
 _MONEYPUCK_CSV_PATH = _get_moneypuck_path()
 
 
-def scrape_player_stats() -> Dict[str, Dict]:
+def scrape_player_stats(season: str = None) -> Dict[str, Dict]:
     """
-    Get real player stats from NHL API.
+    Get real player stats from NHL API for a season.
+
+    Args:
+        season: Season in YYYYYYYY format (default: current NHL season)
 
     Returns:
         Dict mapping player name -> {goals, assists, games, ppg, team, position}
     """
     print("Scraping player stats from NHL API...")
-    return scrape_all_player_stats()
+    return scrape_all_player_stats(season or current_nhl_season())
 
 
-def generate_stats_for_player(name: str, team: str, position: str) -> Dict:
+def generate_stats_for_player(name: str, team: str, position: str, season: str = None) -> Dict:
     """
     Get real stats for a player from NHL API data.
     Falls back to hardcoded stats if API fails.
@@ -139,10 +144,13 @@ def generate_stats_for_player(name: str, team: str, position: str) -> Dict:
         name: Player name
         team: Team abbreviation
         position: C, LW, RW, or D
+        season: Season in YYYYYYYY format (default: current NHL season)
 
     Returns:
         Dict with player stats
     """
+    season = season or current_nhl_season()
+
     # Try to get real stats from NHL API first
     player_id = get_player_id_from_name(name, team)
 
@@ -152,7 +160,7 @@ def generate_stats_for_player(name: str, team: str, position: str) -> Dict:
     if player_id:
         if name in TOP_PLAYER_STATS:
             should_fetch_game_log = True
-            game_log = scrape_player_game_log(player_id)
+            game_log = scrape_player_game_log(player_id, season)
 
     # Fall back to hardcoded stats if available
     if name in TOP_PLAYER_STATS:
