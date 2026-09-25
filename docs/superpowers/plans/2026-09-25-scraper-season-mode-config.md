@@ -333,6 +333,7 @@ git commit -m "feat: add preseason projection math with tests"
 **Files:**
 - Create: `scraper/scrape_fantasypros_preseason.py`
 - Create: `scraper/tests/test_fantasypros_preseason.py`
+- Create: `scraper/conftest.py` (empty — puts `scraper/` on sys.path so plain `venv/bin/pytest` works, not just `venv/bin/python -m pytest`)
 
 Note: as of 2026-09-25 FantasyPros' NHL pages are dormant (off-season shells; `/nhl/projections.php` 404s). The parser must still parse correctly when the pages come back; the `< MIN_PLAYERS` rule makes dormant pages fall back cleanly.
 
@@ -360,6 +361,7 @@ FIXTURE = """
 def test_points_column_index():
     assert _points_column_index(["RK", "PLAYER NAME", "TEAM", "POS", "PROJ. PTS"]) == 4
     assert _points_column_index(["RK", "PLAYER NAME", "PTS"]) == 2
+    assert _points_column_index(["RK", "PLAYER NAME", "PTS", "PROJ PTS"]) == 3
     assert _points_column_index(["RK", "PLAYER NAME", "PROJ"]) == -1
     assert _points_column_index(["RK", "PLAYER NAME", "AVG."]) == -1
 
@@ -419,12 +421,18 @@ HEADERS = {"User-Agent": "Mozilla/5.0"}
 
 
 def _points_column_index(headers: List[str]) -> int:
-    """Index of a projected-points column in a table header, or -1."""
+    """Index of a projected-points column in a table header, or -1.
+
+    Prefers an explicit projection column ("proj pts") over a plain
+    "pts"/"points" column — cheatsheet pages can carry both, and a plain
+    PTS column may be last season's actuals rather than projections.
+    """
     for i, h in enumerate(headers):
         h_lower = h.lower()
         if "proj" in h_lower and "pt" in h_lower:
             return i
-        if h_lower in ("pts", "points"):
+    for i, h in enumerate(headers):
+        if h.lower() in ("pts", "points"):
             return i
     return -1
 
