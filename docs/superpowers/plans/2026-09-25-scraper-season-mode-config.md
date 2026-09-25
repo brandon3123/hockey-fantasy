@@ -1275,6 +1275,7 @@ git commit -m "feat: season/mode-aware combine with preseason projections and mo
 
 **Files:**
 - Modify `app/src/lib/utils.ts` — amend `enrichDisplayFields` only (keep the `RawPlayer` type and everything else)
+- Modify `app/src/app/draft/page.tsx` — enrich the localStorage `draftState` restore path (flagged in Task 0's code review: a draft saved by a pre-fix build carries unenriched `availablePlayers`, which crashes the board on restore)
 - Create `app/scripts/test-enrich-display-fields.ts` — permanent tsx test (repo has no JS test framework; follows the `app/scripts/import-players.ts` script convention; `tsx` is not a devDependency — run via `npx tsx`)
 
 - [ ] **Step 1: Write the test script (RED)**
@@ -1414,6 +1415,21 @@ export function enrichDisplayFields(player: RawPlayer): Player {
   };
 }
 ```
+
+Also in this step — enrich the localStorage `draftState` restore path in `app/src/app/draft/page.tsx` (line 78; flagged in Task 0's code review): a draft saved by a pre-fix build carries unenriched `availablePlayers`, which crashes the board on restore. Change:
+
+```ts
+setDraftState(JSON.parse(savedDraft));
+```
+
+to:
+
+```ts
+const savedDraftState = JSON.parse(savedDraft);
+setDraftState({ ...savedDraftState, availablePlayers: savedDraftState.availablePlayers?.map(enrichDisplayFields) });
+```
+
+(`enrichDisplayFields` is already imported in this file from Task 0; already-enriched saved entries pass through untouched.)
 
 - [ ] **Step 4: Run the test — confirm GREEN**
 
