@@ -1468,6 +1468,8 @@ git commit -m "feat: projections-first display fields for pre-season draft board
 
 (Plan amendment by controller: the original Step 6 listed only `utils.ts` + the test script, but this task also modifies `app/src/app/draft/page.tsx` (localStorage restore enrichment, Step 3) — that change must be committed too or it would be left dirty in the worktree.)
 
+Note (Task 7 review follow-ups, deferred): the quality review approved the change (idempotent `??` passthrough, null-safe branches, real-data regression) with no Critical/Important issues; deferred minors — (1) no synthetic case for `gamesPlayed` absent/null (the `?? 0` guard is runtime defense but untested since types declare it non-optional); (2) passthrough case only uses truthy display values (a `displayPoints: 0` case would catch a hypothetical `??`→`||` regression); (3) `RawPlayer` type duplicated between `utils.ts` and the test script (deliberate per the self-contained-script convention). Recommendation recorded: re-run the enrichment test after Task 8's pre-season data lands to exercise the regression loop's pre-season branch against real data.
+
 ### Task 8: End-to-end manual verification (no commit)
 
 **Goal:** Prove the whole flow for the user's actual scenario — a pre-season 2026-27 regular-season external draft — and confirm the board renders with projections.
