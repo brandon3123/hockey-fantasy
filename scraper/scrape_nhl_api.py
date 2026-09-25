@@ -15,7 +15,7 @@ BASE_URL = "https://api-web.nhle.com"
 # Simple in-memory cache to prevent redundant API calls
 _cache = {
     'rosters': {},  # team_abbrev -> roster_data
-    'game_logs': {},  # player_id -> game_log_data
+    'game_logs': {},  # (player_id, season) -> game_log_data
     'stats': {}  # Optional cache for stats
 }
 
@@ -221,9 +221,9 @@ def scrape_player_game_log(player_id: int, season: str = None) -> Optional[Dict]
     season = season or current_nhl_season()
 
     # Check cache first
-    if player_id in _cache['game_logs']:
+    if (player_id, season) in _cache['game_logs']:
         _api_calls['cached_game_logs'] += 1
-        return _cache['game_logs'][player_id]
+        return _cache['game_logs'][(player_id, season)]
 
     _api_calls['game_logs'] += 1
 
@@ -268,7 +268,7 @@ def scrape_player_game_log(player_id: int, season: str = None) -> Optional[Dict]
             }
 
             # Cache the result
-            _cache['game_logs'][player_id] = result
+            _cache['game_logs'][(player_id, season)] = result
             return result
 
     except Exception as e:
