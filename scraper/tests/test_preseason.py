@@ -17,6 +17,10 @@ def test_resolve_falls_back_when_points_key_missing():
     assert resolve_preseason_projection("Nathan MacKinnon", {}, prev) == 127.0
 
 
+def test_resolve_zero_projection_beats_prev_season():
+    assert resolve_preseason_projection("X", {"X": 0.0}, {"X": {"points": 100}}) == 0.0
+
+
 def test_resolve_returns_none_when_no_data():
     assert resolve_preseason_projection("Anyone Else", {}, {}) is None
 
@@ -26,7 +30,7 @@ def test_preseason_fields():
     assert fields["goals"] == 0
     assert fields["assists"] == 0
     assert fields["games"] == 0
-    assert fields["ppg"] == round(110.0 / 82, 2)
+    assert fields["ppg"] == 1.34
     assert fields["projected_points"] == 110.0
     assert fields["games_remaining"] == 82
 
