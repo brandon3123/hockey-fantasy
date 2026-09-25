@@ -814,6 +814,8 @@ git add scraper/scrape_nhl_api.py scraper/scrape_moneypuck.py scraper/tests/test
 git commit -m "feat: thread season through NHL API and stats modules, no hardcoded season defaults"
 ```
 
+Note (Task 5 review follow-up, applied): the game-log cache in `scrape_nhl_api.py` (`_cache['game_logs']`) is keyed by `(player_id, season)` instead of `player_id` alone — with seasons now variable, a player_id-only key could silently return another season's cached game log within one process. Known limitation (pre-existing, out of scope): `get_player_id_from_name` → `fetch_team_roster` roster lookups are not season-parameterized, so historical-season game logs for players who changed teams may resolve IDs against current rosters.
+
 ---
 
 ### Task 6: `combine.py` — prompts, mode logic, `build_players` merge
