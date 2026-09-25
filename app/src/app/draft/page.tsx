@@ -12,6 +12,7 @@ import TeamCompositionVisualizer from '@/components/TeamCompositionVisualizer';
 import WatchlistToggle from '@/components/WatchlistToggle';
 import DraftCoach from '@/components/DraftCoach';
 import { STRATEGIES } from '@/lib/draft-coach';
+import { enrichDisplayFields } from '@/lib/utils';
 import type { DraftStrategy } from '@/types/draft-coach';
 
 export default function DraftPage() {
@@ -50,7 +51,7 @@ export default function DraftPage() {
         const response = await fetch('/players.json', { signal: controller.signal });
         if (!response.ok) throw new Error(`Failed to load players: ${response.status}`);
         const data = await response.json();
-        setPlayers(data);
+        setPlayers(data.map(enrichDisplayFields));
       } catch (err) {
         if ((err as Error).name !== 'AbortError') {
           console.error(err);

@@ -6,6 +6,23 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+type RawPlayer = Omit<Player, 'displayPoints' | 'displayGames'> &
+  Partial<Pick<Player, 'displayPoints' | 'displayGames'>>;
+
+/**
+ * Add displayPoints/displayGames to a raw players.json entry.
+ * Raw scraper data does not include them; live drafts enrich in useDraftState.
+ * Regular-season semantics (actual G+A / games played) are the safe default
+ * for pages without a draft season_type context.
+ */
+export function enrichDisplayFields(player: RawPlayer): Player {
+  return {
+    ...player,
+    displayPoints: player.displayPoints ?? (player.regularSeasonGoals ?? 0) + (player.regularSeasonAssists ?? 0),
+    displayGames: player.displayGames ?? player.gamesPlayed ?? 0,
+  };
+}
+
 export function isInjured(player: Player): boolean {
   return player.injury.status !== 'healthy';
 }

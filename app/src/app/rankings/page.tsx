@@ -5,6 +5,7 @@ import { Player } from '@/types/player';
 import PlayerTable from '@/components/PlayerTable';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { enrichDisplayFields } from '@/lib/utils';
 
 interface PlayerRow {
   id: string;
@@ -92,7 +93,7 @@ export default function RankingsPage() {
         try {
           const res = await fetch('/players.json');
           const fallbackData = await res.json();
-          setPlayers(fallbackData);
+          setPlayers(fallbackData.map(enrichDisplayFields));
         } catch (e) {
           console.error('Fallback also failed:', e);
         }
