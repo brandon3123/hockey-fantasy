@@ -40,3 +40,14 @@ def test_preseason_fields_zero_projection():
     assert fields["ppg"] == 0.0
     assert fields["projected_points"] == 0.0
     assert fields["games_remaining"] == 82
+
+
+def test_resolve_matches_accented_name_in_fantasypros():
+    preseason_points = {"Tomas Hertl": 78.0}
+    prev = {"Tomáš Hertl": {"goals": 25, "assists": 35, "points": 60}}
+    assert resolve_preseason_projection("Tomáš Hertl", preseason_points, prev) == 78.0
+
+
+def test_resolve_matches_accented_name_in_prev_season():
+    prev = {"Tomas Hertl": {"goals": 25, "assists": 35, "points": 60}}
+    assert resolve_preseason_projection("Tomáš Hertl", {}, prev) == 60.0
