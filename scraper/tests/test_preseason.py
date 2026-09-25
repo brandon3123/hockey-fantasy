@@ -51,3 +51,11 @@ def test_resolve_matches_accented_name_in_fantasypros():
 def test_resolve_matches_accented_name_in_prev_season():
     prev = {"Tomas Hertl": {"goals": 25, "assists": 35, "points": 60}}
     assert resolve_preseason_projection("Tomáš Hertl", {}, prev) == 60.0
+
+
+def test_resolve_matches_case_only_difference():
+    assert resolve_preseason_projection("tomas hertl", {"Tomas Hertl": 78.0}, {}) == 78.0
+
+
+def test_resolve_no_normalized_false_positive():
+    assert resolve_preseason_projection("Tomáš Hertl", {}, {"Someone Else": {"points": 50}}) is None
