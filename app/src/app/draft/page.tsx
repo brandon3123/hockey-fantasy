@@ -75,7 +75,8 @@ export default function DraftPage() {
       const savedDraft = localStorage.getItem('draftState');
       const savedNames = localStorage.getItem('managerNames');
       if (savedDraft) {
-        setDraftState(JSON.parse(savedDraft));
+        const savedDraftState = JSON.parse(savedDraft);
+        setDraftState({ ...savedDraftState, availablePlayers: savedDraftState.availablePlayers?.map(enrichDisplayFields) });
         setSetupComplete(true);
       }
       if (savedNames) {

@@ -12,14 +12,23 @@ type RawPlayer = Omit<Player, 'displayPoints' | 'displayGames'> &
 /**
  * Add displayPoints/displayGames to a raw players.json entry.
  * Raw scraper data does not include them; live drafts enrich in useDraftState.
- * Regular-season semantics (actual G+A / games played) are the safe default
- * for pages without a draft season_type context.
+ * In-season (gamesPlayed > 0): actual G+A / games played.
+ * Pre-season (gamesPlayed === 0): projections first — projectedPoints /
+ * gamesRemaining — so the external draft board is usable before the season starts.
+ * Already-enriched entries pass through untouched.
  */
 export function enrichDisplayFields(player: RawPlayer): Player {
+  const gamesPlayed = player.gamesPlayed ?? 0;
   return {
     ...player,
-    displayPoints: player.displayPoints ?? (player.regularSeasonGoals ?? 0) + (player.regularSeasonAssists ?? 0),
-    displayGames: player.displayGames ?? player.gamesPlayed ?? 0,
+    displayPoints:
+      player.displayPoints ??
+      (gamesPlayed > 0
+        ? (player.regularSeasonGoals ?? 0) + (player.regularSeasonAssists ?? 0)
+        : (player.projectedPoints ?? 0)),
+    displayGames:
+      player.displayGames ??
+      (gamesPlayed > 0 ? gamesPlayed : (player.gamesRemaining ?? 0)),
   };
 }
 
