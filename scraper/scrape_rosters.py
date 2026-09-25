@@ -1,5 +1,5 @@
 """
-Scrape NHL playoff rosters with injury status.
+Scrape NHL skater rosters for a season and draft mode.
 Skaters only (no goalies) since they score 0 points in this pool.
 Uses NHL.com official API.
 """
@@ -8,9 +8,7 @@ from typing import List, Dict
 import requests
 import time
 
-# NHL.com API - use 2025-26 season (current season)
-# Format: YYYYZZZZ where ZZZZ is YYYY+1
-CURRENT_SEASON = "20252026"
+from season_config import current_nhl_season
 
 ALL_TEAMS = [
     "ANA", "UTA", "BOS", "BUF", "CAR", "CBJ", "CGY", "CHI",
@@ -60,19 +58,28 @@ def get_playoff_teams() -> List[str]:
     print("  Falling back to all teams (could not detect playoff teams)")
     return ALL_TEAMS
 
-def scrape_playoff_rosters() -> List[Dict]:
-    """
-    Scrape NHL rosters for playoff teams using official NHL.com API.
+def roster_teams(mode: str) -> List[str]:
+    """Teams to scrape for a draft mode: all 32 for regular, playoff teams for playoffs."""
+    if mode == "regular":
+        return list(ALL_TEAMS)
+    return get_playoff_teams()
 
-    Returns:
-        List of skaters with name, team, position, injury status
+
+def scrape_rosters(season: str, mode: str) -> List[Dict]:
     """
-    playoff_teams = get_playoff_teams()
+    Scrape NHL skater rosters for the given season and draft mode.
+
+    Regular mode scrapes all 32 teams; playoffs mode scrapes playoff teams
+    (auto-detected from standings, with all-teams fallback).
+    """
+    teams = roster_teams(mode)
+    if mode == "regular":
+        print(f"  Regular mode: scraping all {len(teams)} teams")
     rosters = []
 
-    for team_abbr in playoff_teams:
+    for team_abbr in teams:
         try:
-            url = f"https://api-web.nhle.com/v1/roster/{team_abbr}/{CURRENT_SEASON}"
+            url = f"https://api-web.nhle.com/v1/roster/{team_abbr}/{season}"
             response = requests.get(url, timeout=10)
             response.raise_for_status()
             data = response.json()
@@ -132,12 +139,10 @@ def scrape_injury_report() -> Dict[str, Dict]:
     return scrape_espn_injuries()
 
 if __name__ == "__main__":
-    # Scrape rosters
-    print("Scraping playoff rosters...")
-    rosters = scrape_playoff_rosters()
-    print(f"Found {len(rosters)} playoff skaters")
+    print("Scraping rosters...")
+    rosters = scrape_rosters(current_nhl_season(), 'playoffs')
+    print(f"Found {len(rosters)} skaters")
 
-    # Print sample
     print("\nSample players:")
     for player in rosters[:5]:
         print(f"  {player['name']} ({player['team']} {player['position']}) - {player['injury']['status']}")
