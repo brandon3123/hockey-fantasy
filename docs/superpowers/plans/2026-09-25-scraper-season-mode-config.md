@@ -1462,9 +1462,11 @@ Run (workdir `app/`):
 - [ ] **Step 6: Commit**
 
 ```bash
-git add app/src/lib/utils.ts app/scripts/test-enrich-display-fields.ts
+git add app/src/lib/utils.ts app/src/app/draft/page.tsx app/scripts/test-enrich-display-fields.ts
 git commit -m "feat: projections-first display fields for pre-season draft board"
 ```
+
+(Plan amendment by controller: the original Step 6 listed only `utils.ts` + the test script, but this task also modifies `app/src/app/draft/page.tsx` (localStorage restore enrichment, Step 3) — that change must be committed too or it would be left dirty in the worktree.)
 
 ### Task 8: End-to-end manual verification (no commit)
 
