@@ -17,6 +17,7 @@ FIXTURE = """
 def test_points_column_index():
     assert _points_column_index(["RK", "PLAYER NAME", "TEAM", "POS", "PROJ. PTS"]) == 4
     assert _points_column_index(["RK", "PLAYER NAME", "PTS"]) == 2
+    assert _points_column_index(["RK", "PLAYER NAME", "PTS", "PROJ PTS"]) == 3
     assert _points_column_index(["RK", "PLAYER NAME", "PROJ"]) == -1
     assert _points_column_index(["RK", "PLAYER NAME", "AVG."]) == -1
 

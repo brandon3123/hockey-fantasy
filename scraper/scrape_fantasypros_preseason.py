@@ -23,12 +23,18 @@ HEADERS = {"User-Agent": "Mozilla/5.0"}
 
 
 def _points_column_index(headers: List[str]) -> int:
-    """Index of a projected-points column in a table header, or -1."""
+    """Index of a projected-points column in a table header, or -1.
+
+    Prefers an explicit projection column ("proj pts") over a plain
+    "pts"/"points" column — cheatsheet pages can carry both, and a plain
+    PTS column may be last season's actuals rather than projections.
+    """
     for i, h in enumerate(headers):
         h_lower = h.lower()
         if "proj" in h_lower and "pt" in h_lower:
             return i
-        if h_lower in ("pts", "points"):
+    for i, h in enumerate(headers):
+        if h.lower() in ("pts", "points"):
             return i
     return -1
 
