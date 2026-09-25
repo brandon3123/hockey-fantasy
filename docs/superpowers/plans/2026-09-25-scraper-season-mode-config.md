@@ -238,12 +238,16 @@ def test_resolve_returns_none_when_no_data():
     assert resolve_preseason_projection("Anyone Else", {}, {}) is None
 
 
+def test_resolve_zero_projection_beats_prev_season():
+    assert resolve_preseason_projection("X", {"X": 0.0}, {"X": {"points": 100}}) == 0.0
+
+
 def test_preseason_fields():
     fields = preseason_player_fields(110.0)
     assert fields["goals"] == 0
     assert fields["assists"] == 0
     assert fields["games"] == 0
-    assert fields["ppg"] == round(110.0 / 82, 2)
+    assert fields["ppg"] == 1.34
     assert fields["projected_points"] == 110.0
     assert fields["games_remaining"] == 82
 
@@ -313,7 +317,7 @@ def preseason_player_fields(projected_points: float) -> Dict:
 - [ ] **Step 4: Run tests to verify they pass**
 
 Run (workdir `scraper/`): `venv/bin/python -m pytest tests/test_preseason.py -v`
-Expected: 6 passed.
+Expected: 7 passed.
 
 - [ ] **Step 5: Commit**
 
