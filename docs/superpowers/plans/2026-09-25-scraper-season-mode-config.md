@@ -1283,6 +1283,8 @@ git add scraper/combine.py scraper/tests/test_combine.py
 git commit -m "feat: season/mode-aware combine with preseason projections and mode ranking"
 ```
 
+Note (Task 6 review follow-ups, deferred): the quality review approved the rewrite as-is and deferred these items rather than amend plan-specified code — (1) `is_preseason = (mode == 'regular' and len(player_stats) == 0)` cannot distinguish "no data yet" from "NHL API fetch failed" (`scrape_all_player_stats` swallows errors and returns `{}`); a mid-season API outage would silently misclassify as preseason — future hardening: raise on total fetch failure or y/N-confirm when preseason is auto-detected mid-season; (2) `resolve_stats` tier 2 (name+team) is effectively unreachable since `player_stats` is keyed by name alone — future cleanup: key stats by `(name, team)` or drop the tier; (3) playoffs mode fetches standings twice (`get_playoff_teams()` here + `roster_teams()` inside `scrape_rosters`); (4) regular mode still writes all 32 teams under the `teams.json` key `"playoff_teams"` (semantically misleading, schema rename would be breaking); (5) untested branches beyond the plan's 9 tests: `pointsPerGame`-format pass-through (`last10/last20`), in-season `generate_stats_for_player` fallback, `teamAdvancementOdds: None`.
+
 ### Task 7: Frontend display-field precedence (projections first pre-season)
 
 **Goal:** `enrichDisplayFields` shows actual points once the season is running, but projections (`projectedPoints` / `gamesRemaining`) while `gamesPlayed === 0`, so the pre-season external draft board is draft-usable. Live drafts keep their own season-aware enrichment in `useDraftState` — unaffected.
