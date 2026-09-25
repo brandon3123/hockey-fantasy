@@ -193,7 +193,7 @@ def prompt_season_and_mode() -> Tuple[int, str, str]:
 - [ ] **Step 5: Run tests to verify they pass**
 
 Run (workdir `scraper/`): `venv/bin/python -m pytest tests/test_season_config.py -v`
-Expected: 10 passed.
+Expected: 9 passed.
 
 - [ ] **Step 6: Commit**
 
