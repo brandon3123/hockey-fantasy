@@ -8,6 +8,9 @@ interface DraftStartModalProps {
   adminTeamName: string;
   onStart: () => void;
   onClose: () => void;
+  // Roster drafts: seats are pre-created name rows — self-draft is impossible
+  // (no accounts) and seat names are editable until the draft starts.
+  participantMode?: 'invite' | 'roster';
 }
 
 export default function DraftStartModal({
@@ -16,6 +19,7 @@ export default function DraftStartModal({
   adminTeamName,
   onStart,
   onClose,
+  participantMode = 'invite',
 }: DraftStartModalProps) {
   const [positions, setPositions] = useState<Map<string, number>>(() => {
     const map = new Map<string, number>();
@@ -23,6 +27,8 @@ export default function DraftStartModal({
     return map;
   });
   const [mode, setMode] = useState<'admin_only' | 'self_draft'>('admin_only');
+  const isRoster = participantMode === 'roster';
+  const [renames, setRenames] = useState<Record<string, string>>({});
   const [timerEnabled, setTimerEnabled] = useState(false);
   const [timerSeconds, setTimerSeconds] = useState(60);
   const [randomize, setRandomize] = useState(true);
@@ -68,6 +74,7 @@ export default function DraftStartModal({
           pick_entry_mode: mode,
           pick_timer_seconds: timerEnabled ? timerSeconds : null,
           admin_team_name: adminTeamName,
+          ...(isRoster ? { renames } : {}),
         }),
       });
 
@@ -102,16 +109,18 @@ export default function DraftStartModal({
               Draft Order
             </label>
             <div className="flex gap-2 mb-3">
-              <button
-                onClick={handleRandomize}
-                className={`px-3 py-1.5 text-xs font-semibold rounded transition-colors ${
-                  randomize
-                    ? 'bg-[#4a7c59] text-[#c8d9c3]'
-                    : 'bg-[#050a05] text-[#5a6b57] border border-[#141e12] hover:bg-[#141e12]'
-                }`}
-              >
-                Randomize
-              </button>
+              {!isRoster && (
+                <button
+                  onClick={handleRandomize}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded transition-colors ${
+                    randomize
+                      ? 'bg-[#4a7c59] text-[#c8d9c3]'
+                      : 'bg-[#050a05] text-[#5a6b57] border border-[#141e12] hover:bg-[#141e12]'
+                  }`}
+                >
+                  Randomize
+                </button>
+              )}
               <button
                 onClick={() => setRandomize(false)}
                 className={`px-3 py-1.5 text-xs font-semibold rounded transition-colors ${
@@ -133,7 +142,18 @@ export default function DraftStartModal({
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-[#c8d9c3]">{p.team_name}</span>
+                    {isRoster ? (
+                      <input
+                        type="text"
+                        value={renames[p.id] ?? p.team_name}
+                        onChange={(e) =>
+                          setRenames((prev) => ({ ...prev, [p.id]: e.target.value }))
+                        }
+                        className="px-2 py-1 text-sm bg-[#141e12] text-[#c8d9c3] border border-[#141e12] rounded focus:outline-none focus:ring-1 focus:ring-[#4a7c59] w-40"
+                      />
+                    ) : (
+                      <span className="text-sm text-[#c8d9c3]">{p.team_name}</span>
+                    )}
                     {p.id === '__admin__' && (
                       <span className="text-[10px] px-1.5 py-0.5 bg-[#4a7c59] text-[#c8d9c3] rounded font-semibold">
                         ADMIN
@@ -189,13 +209,16 @@ export default function DraftStartModal({
                   type="radio"
                   name="pickMode"
                   checked={mode === 'self_draft'}
+                  disabled={isRoster}
                   onChange={() => setMode('self_draft')}
                   className="accent-[#4a7c59]"
                 />
                 <div>
                   <div className="text-sm text-[#c8d9c3]">Self Draft</div>
                   <div className="text-xs text-[#5a6b57]">
-                    Participants pick from their own phone on their turn
+                    {isRoster
+                      ? 'Unavailable — roster drafts have no accounts to pick from'
+                      : 'Participants pick from their own phone on their turn'}
                   </div>
                 </div>
               </label>

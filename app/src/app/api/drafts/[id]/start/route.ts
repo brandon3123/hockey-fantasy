@@ -17,7 +17,7 @@ export async function POST(
 
   const { data: draft, error: draftError } = await supabase
     .from('drafts')
-    .select('id, status, players_per_team')
+    .select('id, status, players_per_team, participant_mode')
     .eq('id', id)
     .single();
 
@@ -38,13 +38,17 @@ export async function POST(
   }
 
   const body = await request.json();
-  const { positions, pick_entry_mode, pick_timer_seconds, admin_team_name } = body;
+  const { positions, pick_entry_mode, pick_timer_seconds, admin_team_name, renames } = body;
 
   if (!positions || !Array.isArray(positions) || positions.length === 0) {
     return NextResponse.json({ error: 'positions array required' }, { status: 400 });
   }
 
-  if (!pick_entry_mode || !['admin_only', 'self_draft'].includes(pick_entry_mode)) {
+  // Roster drafts have no accounts to self-draft from: the mode is forced.
+  const isRosterDraft = draft.participant_mode === 'roster';
+  const effectiveMode = isRosterDraft ? 'admin_only' : pick_entry_mode;
+
+  if (!effectiveMode || !['admin_only', 'self_draft'].includes(effectiveMode)) {
     return NextResponse.json({ error: 'pick_entry_mode must be admin_only or self_draft' }, { status: 400 });
   }
 
@@ -68,7 +72,9 @@ export async function POST(
 
   let adminParticipantId = existingParticipant?.id || null;
 
-  if (!existingParticipant) {
+  // Roster drafts seat everyone up front; if the admin opted out of a seat,
+  // do not fabricate one at start time.
+  if (!existingParticipant && !isRosterDraft) {
     const { data: newParticipant, error: createError } = await adminClient
       .from('draft_participants')
       .insert({
@@ -115,11 +121,33 @@ export async function POST(
     }
   }
 
+  // Roster seats are renameable until the draft starts (start modal).
+  if (isRosterDraft && renames && typeof renames === 'object') {
+    for (const [participantId, newName] of Object.entries(renames)) {
+      const trimmed = typeof newName === 'string' ? newName.trim() : '';
+      if (!trimmed) continue;
+      const { error: renameError } = await adminClient
+        .from('draft_participants')
+        .update({ team_name: trimmed })
+        .eq('id', participantId)
+        .eq('draft_id', id)
+        .is('user_id', null);
+
+      if (renameError) {
+        const conflict = renameError.code === '23505';
+        return NextResponse.json(
+          { error: conflict ? 'Team name already in use' : renameError.message },
+          { status: conflict ? 400 : 500 }
+        );
+      }
+    }
+  }
+
   const updateData: Record<string, unknown> = {
     status: 'in_progress',
     current_round: 1,
     current_pick: 1,
-    pick_entry_mode,
+    pick_entry_mode: effectiveMode,
   };
 
   if (pick_timer_seconds !== undefined) {

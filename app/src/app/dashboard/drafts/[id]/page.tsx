@@ -15,6 +15,7 @@ interface Draft {
   id: string;
   name: string;
   season_type: string;
+  participant_mode: string;
   status: string;
   draft_date: string | null;
   draft_time: string | null;
@@ -410,6 +411,7 @@ export default function DraftDetailPage() {
             draftId={draftId}
             participants={participantsWithAdmin}
             adminTeamName={adminTeamName || 'Commissioner'}
+            participantMode={draft.participant_mode === 'roster' ? 'roster' : 'invite'}
             onStart={() => {
               setShowStartModal(false);
               router.push(`/draft/${draftId}/live`);
