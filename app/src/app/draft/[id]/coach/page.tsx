@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ActionLink } from '@/components/ActionButton';
 import { useDraftState, DraftPickRow, DraftData, ParticipantData } from '@/hooks/useDraftState';
 import { Player, DraftState, DraftPick } from '@/types/player';
+import { toLegacyDraftState } from '@/lib/bind-draft-state';
 import MyTeamTab from '@/components/MyTeamTab';
 import TeamBrowserTab from '@/components/TeamBrowserTab';
 import DraftCoach from '@/components/DraftCoach';
@@ -15,33 +16,6 @@ import TeamStackPanel from '@/components/TeamStackPanel';
 import DraftBoard from '@/components/DraftBoard';
 
 type Tab = 'myteam' | 'coach' | 'best' | 'all' | 'stack' | 'teams' | 'board';
-
-function mapToLegacyDraftState(
-  draft: DraftData,
-  participants: ParticipantData[],
-  picks: DraftPickRow[],
-  availablePlayers: Player[],
-  adminPosition: number,
-  adminParticipantId: string
-): DraftState {
-  const legacyPicks: DraftPick[] = picks.map((p) => ({
-    playerId: p.player_id,
-    playerName: p.player_name,
-    round: p.round,
-    participantId: p.participant_id,
-  }));
-
-  return {
-    managers: participants.length,
-    yourPosition: adminPosition,
-    yourParticipantId: adminParticipantId,
-    playersPerTeam: draft.players_per_team,
-    currentRound: draft.current_round,
-    currentPick: draft.current_pick,
-    picks: legacyPicks,
-    availablePlayers,
-  };
-}
 
 export default function CoachPage() {
   const params = useParams();
@@ -77,9 +51,9 @@ export default function CoachPage() {
   const legacyState = useMemo(
     () =>
       draft
-        ? mapToLegacyDraftState(draft, participants, picks, availablePlayers, adminPosition, adminParticipant?.id ?? '')
+        ? toLegacyDraftState(draft, participants, picks, availablePlayers, adminPosition, adminParticipant?.id ?? '')
         : null,
-    [draft, participants, picks, availablePlayers, adminPosition]
+    [draft, participants, picks, availablePlayers, adminPosition, adminParticipant?.id]
   );
 
   const adminPicks = useMemo(
