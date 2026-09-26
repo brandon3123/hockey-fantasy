@@ -82,7 +82,7 @@ export async function PATCH(
   const allowedFields = [
     'name', 'season_type', 'draft_date', 'draft_time', 'location',
     'entry_fee', 'currency', 'payment_method', 'payment_info',
-    'notes', 'players_per_team', 'scoring_format',
+    'notes', 'players_per_team', 'scoring_format', 'participant_mode',
   ];
 
   const updates: Record<string, unknown> = {};

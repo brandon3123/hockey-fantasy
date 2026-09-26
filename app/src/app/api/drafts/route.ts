@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createServerClient } from '@supabase/ssr';
 import { getIsAdmin } from '@/lib/admin';
+import { buildParticipantRows, normalizeRosterNames } from '@/lib/roster-participants';
 
 export async function GET() {
   const supabase = await createClient();
@@ -107,6 +109,10 @@ export async function POST(request: Request) {
     notes,
     players_per_team,
     scoring_format,
+    participant_mode,
+    participants,
+    seat_me,
+    my_name,
   } = body;
 
   if (draft_date) {
@@ -118,11 +124,28 @@ export async function POST(request: Request) {
     }
   }
 
+  // Roster mode: participants are typed-in team names with no accounts.
+  const isRosterMode = participant_mode === 'roster';
+  let seatRows: ReturnType<typeof buildParticipantRows> = [];
+  if (isRosterMode) {
+    const result = normalizeRosterNames(Array.isArray(participants) ? participants.map(String) : []);
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: 400 });
+    }
+    seatRows = buildParticipantRows(result.names, {
+      draftId: '',
+      adminUserId: user.id,
+      seatMe: seat_me === true,
+      myName: typeof my_name === 'string' ? my_name : undefined,
+    });
+  }
+
   const { data, error } = await supabase
     .from('drafts')
     .insert({
       name,
       season_type,
+      participant_mode: isRosterMode ? 'roster' : 'invite',
       draft_date,
       draft_time,
       location,
@@ -140,6 +163,29 @@ export async function POST(request: Request) {
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  if (seatRows.length > 0) {
+    const adminClient = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        cookies: {
+          getAll() { return []; },
+          setAll() {},
+        },
+      }
+    );
+
+    const { error: seatsError } = await adminClient
+      .from('draft_participants')
+      .insert(seatRows.map(row => ({ ...row, draft_id: data.id })));
+
+    if (seatsError) {
+      // The draft exists but is seatless — surface the failure loudly rather
+      // than leaving a roster draft nobody can start.
+      return NextResponse.json({ error: `Draft created but seating failed: ${seatsError.message}` }, { status: 500 });
+    }
   }
 
   return NextResponse.json({ draft: data }, { status: 201 });
