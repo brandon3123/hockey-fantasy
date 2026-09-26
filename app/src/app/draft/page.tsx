@@ -5,10 +5,11 @@ import { useSearchParams } from 'next/navigation';
 import { Player, DraftState } from '@/types/player';
 import { initializeDraft, assignPlayerToManager, getParticipantPicks, getCurrentManager, getCurrentPickNumber, removeSpecificPick } from '@/lib/draft-logic';
 import { toLegacyDraftState, managerNamesFrom } from '@/lib/bind-draft-state';
-import { useDraftState } from '@/hooks/useDraftState';
+import { useDraftState, DraftPickRow, ParticipantData } from '@/hooks/useDraftState';
 import DraftGrid from '@/components/DraftGrid';
 import BestAvailable from '@/components/BestAvailable';
 import TeamStackPanel from '@/components/TeamStackPanel';
+import TeamBrowserTab from '@/components/TeamBrowserTab';
 import PlayerList from '@/components/PlayerList';
 import PositionTracker from '@/components/PositionTracker';
 import TeamCompositionVisualizer from '@/components/TeamCompositionVisualizer';
@@ -21,6 +22,11 @@ import type { DraftStrategy } from '@/types/draft-coach';
 interface BoundDraftSession {
   legacyState: DraftState | null;
   managerNames: string[];
+  participantNames: Record<string, string>;
+  seasonType: 'regular' | 'playoffs';
+  playoffTeams: string[];
+  boundPicks: DraftPickRow[];
+  boundParticipants: ParticipantData[];
   draftName: string;
   status: string;
   isDraftComplete: boolean;
@@ -37,7 +43,8 @@ function useBoundDraft(boundDraftId: string | null): BoundDraftSession | null {
   // Hooks run unconditionally: /draft binds and unbinds via the query param.
   const bound = useDraftState(boundDraftId ?? '00000000-0000-0000-0000-000000000000');
 
-  const { draft, participants, picks, players, loading, refresh } = bound;
+  const { draft, participants, picks, players, availablePlayers: unclaimedPlayers, loading, refresh, playoffTeams } = bound;
+  const availablePlayers = unclaimedPlayers ?? players;
 
   // Memoized on data identity: the hydration effect copies these into page
   // state, and an unstable reference would loop renders forever.
@@ -51,13 +58,18 @@ function useBoundDraft(boundDraftId: string | null): BoundDraftSession | null {
     const legacyState = draft
       ? toLegacyDraftState(
           { players_per_team: draft.players_per_team, current_round: draft.current_round, current_pick: draft.current_pick },
-          participants, picks, players, 1, ordered[0]?.id ?? '',
+          participants, picks, availablePlayers, 1, ordered[0]?.id ?? '',
         )
       : null;
 
     return {
     legacyState,
     managerNames: managerNamesFrom(participants),
+    participantNames: Object.fromEntries(participants.map(p => [p.id, p.team_name])),
+    seasonType: draft?.season_type === 'playoffs' ? 'playoffs' : 'regular',
+    playoffTeams: bound.playoffTeams,
+    boundPicks: picks,
+    boundParticipants: participants,
     draftName: draft?.name ?? '',
     status: draft?.status ?? '',
     isDraftComplete: draft?.status === 'complete',
@@ -91,7 +103,7 @@ function useBoundDraft(boundDraftId: string | null): BoundDraftSession | null {
       await refresh();
     },
     };
-  }, [draft, participants, picks, players, loading, refresh, boundDraftId]);
+  }, [draft, participants, picks, players, availablePlayers, loading, refresh, playoffTeams, boundDraftId]);
 
   if (!boundDraftId) return null;
   return session;
@@ -108,7 +120,7 @@ function DraftPageInner() {
   const [setupComplete, setSetupComplete] = useState(false);
   const [showTips, setShowTips] = useState(true);
   const [managerNames, setManagerNames] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<'coach' | 'best' | 'full' | 'team' | 'positions' | 'visualizer'>('coach');
+  const [activeTab, setActiveTab] = useState<'coach' | 'best' | 'full' | 'team' | 'teams' | 'positions' | 'visualizer'>('coach');
   const [watchlist, setWatchlist] = useState<Set<string>>(new Set());
   const [strategy, setStrategy] = useState<DraftStrategy>(STRATEGIES.balanced);
   const [mobileTab, setMobileTab] = useState<'board' | 'panel'>('board');
@@ -123,12 +135,14 @@ function DraftPageInner() {
   };
 
   useEffect(() => {
+    // Bound mode's names come from the hosted draft's seats.
+    if (isBound) return;
     if (managerNames.length !== managers) {
       setManagerNames(Array.from({ length: managers }, (_, i) =>
         i === yourPosition - 1 ? 'You' : `Team ${i + 1}`
       ));
     }
-  }, [managers, yourPosition]);
+  }, [managers, yourPosition, isBound]);
 
   // Bound mode: hydrate from the hosted draft instead of the setup panel.
   useEffect(() => {
@@ -735,6 +749,16 @@ function DraftPageInner() {
                 Pos
               </button>
               <button
+                onClick={() => setActiveTab('teams')}
+                className={`flex-1 px-2 py-2.5 rounded text-xs font-medium transition-colors ${
+                  activeTab === 'teams'
+                    ? 'bg-[#4a7c59] text-[#c8d9c3]'
+                    : 'text-[#5a6b57] hover:bg-[#141e12]'
+                }`}
+              >
+                Teams
+              </button>
+              <button
                 onClick={() => setActiveTab('visualizer')}
                 className={`flex-1 px-2 py-2.5 rounded text-xs font-medium transition-colors ${
                   activeTab === 'visualizer'
@@ -756,7 +780,10 @@ function DraftPageInner() {
                   allPlayers={players}
                   onDraftPlayer={handleDraftForCurrentManager}
                   draftComplete={draftState.picks.length >= draftState.managers * draftState.playersPerTeam}
-                  participantNames={Object.fromEntries(managerNames.map((name, i) => [`manager-${i}`, name]))}
+                  participantNames={isBound
+                    ? bound!.participantNames
+                    : Object.fromEntries(managerNames.map((name, i) => [`manager-${i}`, name]))}
+                  seasonType={isBound ? bound!.seasonType : 'regular'}
                 />
               </div>
             )}
@@ -795,6 +822,38 @@ function DraftPageInner() {
               <PositionTracker
                 draftState={draftState}
                 allPlayers={players}
+              />
+            )}
+
+            {activeTab === 'teams' && (
+              <TeamBrowserTab
+                players={players.length > 0 ? players : draftState.availablePlayers}
+                picks={isBound
+                  ? bound!.boundPicks
+                  : draftState.picks.map((p, i) => ({
+                      id: `local-${i}`,
+                      draft_id: 'local',
+                      pick_number: i + 1,
+                      created_at: '',
+                      player_id: p.playerId,
+                      player_name: p.playerName,
+                      participant_id: p.participantId,
+                      round: p.round,
+                    }))}
+                participants={isBound
+                  ? bound!.boundParticipants
+                  : managerNames.map((name, i) => ({
+                      id: `manager-${i}`,
+                      user_id: '',
+                      team_name: name,
+                      draft_position: i + 1,
+                      has_paid: false,
+                      created_at: '',
+                    }))}
+                onDraftPlayer={handleDraftForCurrentManager}
+                isDraftComplete={isDraftComplete}
+                seasonType={isBound ? bound!.seasonType : 'regular'}
+                playoffTeams={isBound ? bound!.playoffTeams : []}
               />
             )}
 
