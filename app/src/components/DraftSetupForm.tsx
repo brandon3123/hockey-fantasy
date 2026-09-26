@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { normalizeRosterNames } from '@/lib/roster-participants';
 
 interface DraftSetupFormProps {
   initialData?: {
     name?: string;
     season_type?: string;
+    participant_mode?: string;
     draft_date?: string;
     draft_time?: string;
     location?: string;
@@ -40,6 +42,12 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
   const [notes, setNotes] = useState(initialData?.notes ?? '');
   const [playersPerTeam, setPlayersPerTeam] = useState(initialData?.players_per_team ?? 10);
   const [scoringFormat, setScoringFormat] = useState(initialData?.scoring_format ?? '1pt_per_goal_assist');
+  const [participantMode, setParticipantMode] = useState<'invite' | 'roster'>(
+    (initialData?.participant_mode as 'invite' | 'roster') ?? 'invite'
+  );
+  const [rosterNames, setRosterNames] = useState<string[]>(['', '']);
+  const [seatMe, setSeatMe] = useState(true);
+  const [myName, setMyName] = useState('');
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -48,9 +56,10 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
     setLoading(true);
     setError(null);
 
-    const result = await onSubmit({
+    const payload: Record<string, unknown> = {
       name,
       season_type: seasonType,
+      participant_mode: participantMode,
       draft_date: draftDate || null,
       draft_time: draftTime || null,
       location: location || null,
@@ -61,7 +70,21 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
       notes: notes || null,
       players_per_team: playersPerTeam,
       scoring_format: scoringFormat,
-    });
+    };
+
+    if (participantMode === 'roster') {
+      const roster = normalizeRosterNames(rosterNames);
+      if (!roster.ok) {
+        setError(roster.error);
+        setLoading(false);
+        return;
+      }
+      payload.participants = roster.names;
+      payload.seat_me = seatMe;
+      payload.my_name = myName || null;
+    }
+
+    const result = await onSubmit(payload);
 
     if (result.error) {
       setError(result.error);
@@ -115,6 +138,116 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
               </select>
             </div>
           </div>
+          {!isEditing && (
+            <div>
+              <label className={labelClass}>Players</label>
+              <div className="flex gap-2 mb-2">
+                <button
+                  type="button"
+                  onClick={() => setParticipantMode('invite')}
+                  className={`flex-1 px-3 py-2 text-sm rounded-md border transition-colors ${
+                    participantMode === 'invite'
+                      ? 'bg-[#4a7c59] text-[#c8d9c3] border-[#4a7c59]'
+                      : 'bg-[#050a05] text-[#5a6b57] border-[#141e12] hover:border-[#4a7c59]'
+                  }`}
+                >
+                  With invites
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setParticipantMode('roster')}
+                  className={`flex-1 px-3 py-2 text-sm rounded-md border transition-colors ${
+                    participantMode === 'roster'
+                      ? 'bg-[#4a7c59] text-[#c8d9c3] border-[#4a7c59]'
+                      : 'bg-[#050a05] text-[#5a6b57] border-[#141e12] hover:border-[#4a7c59]'
+                  }`}
+                >
+                  In room (no invites)
+                </button>
+              </div>
+              {participantMode === 'roster' && (
+                <div className="bg-[#050a05] border border-[#141e12] rounded-md p-3 space-y-2">
+                  <p className="text-xs text-[#5a6b57]">
+                    Type everyone in the room — typed order is the draft order (reorderable at start). No invites or accounts needed.
+                  </p>
+                  {rosterNames.map((rosterName, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <span className="text-xs text-[#5a6b57] w-5 text-right">{idx + 1}.</span>
+                      <input
+                        type="text"
+                        value={rosterName}
+                        onChange={(e) => {
+                          const next = [...rosterNames];
+                          next[idx] = e.target.value;
+                          setRosterNames(next);
+                        }}
+                        placeholder={`Team ${idx + 1} name`}
+                        className={inputClass}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setRosterNames(rosterNames.filter((_, i) => i !== idx))}
+                        disabled={rosterNames.length <= 2}
+                        className="px-2 py-1 text-xs text-[#9b6b6b] border border-[#141e12] rounded disabled:opacity-30"
+                        title="Remove"
+                      >
+                        ✕
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (idx === 0) return;
+                          const next = [...rosterNames];
+                          [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]];
+                          setRosterNames(next);
+                        }}
+                        disabled={idx === 0}
+                        className="px-2 py-1 text-xs text-[#5a6b57] border border-[#141e12] rounded disabled:opacity-30"
+                        title="Move up"
+                      >
+                        ↑
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (idx === rosterNames.length - 1) return;
+                          const next = [...rosterNames];
+                          [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]];
+                          setRosterNames(next);
+                        }}
+                        disabled={idx === rosterNames.length - 1}
+                        className="px-2 py-1 text-xs text-[#5a6b57] border border-[#141e12] rounded disabled:opacity-30"
+                        title="Move down"
+                      >
+                        ↓
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setRosterNames([...rosterNames, ''])}
+                    disabled={rosterNames.length >= 20}
+                    className="text-xs text-[#6b9b7a] border border-[#4a7c59] px-3 py-1.5 rounded disabled:opacity-30"
+                  >
+                    + Add team
+                  </button>
+                  <label className="flex items-center gap-2 text-xs text-[#c8d9c3] pt-1">
+                    <input type="checkbox" checked={seatMe} onChange={(e) => setSeatMe(e.target.checked)} />
+                    Seat me in this draft too
+                  </label>
+                  {seatMe && (
+                    <input
+                      type="text"
+                      value={myName}
+                      onChange={(e) => setMyName(e.target.value)}
+                      placeholder="Your team name (defaults to Commissioner)"
+                      className={inputClass}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Date</label>
