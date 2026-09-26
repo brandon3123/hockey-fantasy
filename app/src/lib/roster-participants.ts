@@ -12,6 +12,22 @@ export interface ParticipantRow {
 
 export type NamesResult = { ok: true; names: string[] } | { ok: false; error: string };
 
+/**
+ * First case-insensitive duplicate in a final seat list, or null.
+ * Covers every source of a seat name — typed rows, the admin's own seat,
+ * start-modal renames — since they all share one namespace per draft.
+ */
+export function findDuplicateName(names: string[]): string | null {
+  const seen = new Set<string>();
+  for (const raw of names) {
+    const name = raw.trim();
+    const key = name.toLowerCase();
+    if (seen.has(key)) return name;
+    seen.add(key);
+  }
+  return null;
+}
+
 const MIN_NAMES = 2;
 const MAX_NAMES = 20;
 

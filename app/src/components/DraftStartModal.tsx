@@ -4,12 +4,12 @@ import { useState, useCallback } from 'react';
 
 interface DraftStartModalProps {
   draftId: string;
-  participants: Array<{ id: string; team_name: string; draft_position: number | null }>;
+  participants: Array<{ id: string; team_name: string; draft_position: number | null; user_id?: string | null }>;
   adminTeamName: string;
   onStart: () => void;
   onClose: () => void;
   // Roster drafts: seats are pre-created name rows — self-draft is impossible
-  // (no accounts) and seat names are editable until the draft starts.
+  // (no accounts) and only name-only seats are renameable until start.
   participantMode?: 'invite' | 'roster';
 }
 
@@ -142,7 +142,7 @@ export default function DraftStartModal({
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    {isRoster ? (
+                    {isRoster && !p.user_id ? (
                       <input
                         type="text"
                         value={renames[p.id] ?? p.team_name}
