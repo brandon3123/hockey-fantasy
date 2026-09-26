@@ -61,12 +61,15 @@ const noProj = enrichDisplayFields(basePlayer({ projectedPoints: 0 }));
 check('pre-season no-projection displayPoints', noProj.displayPoints, 0);
 check('pre-season no-projection displayGames', noProj.displayGames, 82);
 
-// 4. Already enriched: passthrough untouched.
+// 4. Already enriched: REBUILT, not trusted. The passthrough contract was
+// superseded when displayFieldsFor became the one rule — passthrough is what
+// let mapper-preset playoff values leak into regular-mode boards (the
+// "all players read 0" bug family). See scripts/test-display-fields.ts.
 const passthrough = enrichDisplayFields(
   basePlayer({ gamesPlayed: 82, regularSeasonGoals: 20, regularSeasonAssists: 30, displayPoints: 55.5, displayGames: 12 })
 );
-check('passthrough displayPoints', passthrough.displayPoints, 55.5);
-check('passthrough displayGames', passthrough.displayGames, 12);
+check('preset displayPoints rebuilt by the rule (G+A wins in-season)', passthrough.displayPoints, 50);
+check('preset displayGames rebuilt by the rule (games played)', passthrough.displayGames, 82);
 
 // 5. Regression: every real players.json entry enriches per the precedence rule.
 // Robust to both in-season data (stale file) and pre-season data (after Task 8's run).
