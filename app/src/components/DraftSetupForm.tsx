@@ -59,7 +59,6 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
     const payload: Record<string, unknown> = {
       name,
       season_type: seasonType,
-      participant_mode: participantMode,
       draft_date: draftDate || null,
       draft_time: draftTime || null,
       location: location || null,
@@ -72,16 +71,20 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
       scoring_format: scoringFormat,
     };
 
-    if (participantMode === 'roster') {
-      const roster = normalizeRosterNames(rosterNames);
-      if (!roster.ok) {
-        setError(roster.error);
-        setLoading(false);
-        return;
+    // participant_mode is frozen at creation — editing never flips it.
+    if (!isEditing) {
+      payload.participant_mode = participantMode;
+      if (participantMode === 'roster') {
+        const roster = normalizeRosterNames(rosterNames);
+        if (!roster.ok) {
+          setError(roster.error);
+          setLoading(false);
+          return;
+        }
+        payload.participants = roster.names;
+        payload.seat_me = seatMe;
+        payload.my_name = myName || null;
       }
-      payload.participants = roster.names;
-      payload.seat_me = seatMe;
-      payload.my_name = myName || null;
     }
 
     const result = await onSubmit(payload);

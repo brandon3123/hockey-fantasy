@@ -82,7 +82,9 @@ export async function PATCH(
   const allowedFields = [
     'name', 'season_type', 'draft_date', 'draft_time', 'location',
     'entry_fee', 'currency', 'payment_method', 'payment_info',
-    'notes', 'players_per_team', 'scoring_format', 'participant_mode',
+    'notes', 'players_per_team', 'scoring_format',
+    // participant_mode is fixed at creation — editing it would silently move
+    // a roster draft to invites (or vice versa) and strand its seats.
   ];
 
   const updates: Record<string, unknown> = {};

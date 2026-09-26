@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Player, DraftState } from '@/types/player';
 import { initializeDraft, assignPlayerToManager, getParticipantPicks, getCurrentManager, getCurrentPickNumber, removeSpecificPick } from '@/lib/draft-logic';
@@ -34,25 +34,28 @@ interface BoundDraftSession {
  * picks through the API (which owns turn order and auto-completion).
  */
 function useBoundDraft(boundDraftId: string | null): BoundDraftSession | null {
+  // Hooks run unconditionally: /draft binds and unbinds via the query param.
   const bound = useDraftState(boundDraftId ?? '00000000-0000-0000-0000-000000000000');
 
-  if (!boundDraftId) return null;
-
   const { draft, participants, picks, players, loading, refresh } = bound;
-  const ordered = [...participants].sort((a, b) => {
-    const ap = a.draft_position ?? Number.MAX_SAFE_INTEGER;
-    const bp = b.draft_position ?? Number.MAX_SAFE_INTEGER;
-    return ap - bp;
-  });
 
-  const legacyState = draft
-    ? toLegacyDraftState(
-        { players_per_team: draft.players_per_team, current_round: draft.current_round, current_pick: draft.current_pick },
-        participants, picks, players, 1, ordered[0]?.id ?? '',
-      )
-    : null;
+  // Memoized on data identity: the hydration effect copies these into page
+  // state, and an unstable reference would loop renders forever.
+  const session: BoundDraftSession = useMemo(() => {
+    const ordered = [...participants].sort((a, b) => {
+      const ap = a.draft_position ?? Number.MAX_SAFE_INTEGER;
+      const bp = b.draft_position ?? Number.MAX_SAFE_INTEGER;
+      return ap - bp;
+    });
 
-  const session: BoundDraftSession = {
+    const legacyState = draft
+      ? toLegacyDraftState(
+          { players_per_team: draft.players_per_team, current_round: draft.current_round, current_pick: draft.current_pick },
+          participants, picks, players, 1, ordered[0]?.id ?? '',
+        )
+      : null;
+
+    return {
     legacyState,
     managerNames: managerNamesFrom(participants),
     draftName: draft?.name ?? '',
@@ -87,7 +90,10 @@ function useBoundDraft(boundDraftId: string | null): BoundDraftSession | null {
       }
       await refresh();
     },
-  };
+    };
+  }, [draft, participants, picks, players, loading, refresh, boundDraftId]);
+
+  if (!boundDraftId) return null;
   return session;
 }
 

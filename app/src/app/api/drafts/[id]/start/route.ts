@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServerClient } from '@supabase/ssr';
 import { getIsAdmin } from '@/lib/admin';
+import { findDuplicateName } from '@/lib/roster-participants';
 
 export async function POST(
   request: Request,
@@ -121,8 +122,25 @@ export async function POST(
     }
   }
 
-  // Roster seats are renameable until the draft starts (start modal).
+  // Roster seats are renameable until the draft starts (start modal). Renames
+  // share one namespace with every other seat — final names, case-insensitive.
   if (isRosterDraft && renames && typeof renames === 'object') {
+    const { data: seatsForNames } = await adminClient
+      .from('draft_participants')
+      .select('id, team_name')
+      .eq('draft_id', id);
+    const seatsWithName = seatsForNames ?? [];
+
+    const finalNames = positions.map((pos: { participant_id: string }) => {
+      const seat = seatsWithName.find(p => p.id === pos.participant_id);
+      const renamed = renames[pos.participant_id];
+      return typeof renamed === 'string' && renamed.trim() ? renamed : seat?.team_name ?? '';
+    });
+    const dup = findDuplicateName(finalNames);
+    if (dup) {
+      return NextResponse.json({ error: `Duplicate team name: ${dup}` }, { status: 400 });
+    }
+
     for (const [participantId, newName] of Object.entries(renames)) {
       const trimmed = typeof newName === 'string' ? newName.trim() : '';
       if (!trimmed) continue;

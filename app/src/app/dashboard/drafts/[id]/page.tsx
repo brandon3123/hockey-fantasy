@@ -387,7 +387,7 @@ export default function DraftDetailPage() {
         )}
 
         <div className="space-y-6">
-          {isPreDraft && (
+          {isPreDraft && draft.participant_mode !== 'roster' && (
             <div>
               <SectionDivider label="Your Team Name" />
               <div className="bg-[#0a0f0a] border border-[#141e12] rounded-xl p-5">
@@ -402,7 +402,7 @@ export default function DraftDetailPage() {
             </div>
           )}
 
-          {isPreDraft && (
+          {isPreDraft && draft.participant_mode !== 'roster' && (
             <div>
               <SectionDivider label="Invite Participants" />
               <InviteForm draftId={draftId} onInviteSent={fetchDraft} />
@@ -445,12 +445,13 @@ export default function DraftDetailPage() {
         {showStartModal && (
           <DraftStartModal
             draftId={draftId}
-            participants={participantsWithAdmin}
+            participants={draft.participant_mode === 'roster' ? participants : participantsWithAdmin}
             adminTeamName={adminTeamName || 'Commissioner'}
             participantMode={draft.participant_mode === 'roster' ? 'roster' : 'invite'}
             onStart={() => {
               setShowStartModal(false);
-              router.push(`/draft/${draftId}/live`);
+              // Roster drafts: the admin runs the room from /draft.
+              router.push(draft.participant_mode === 'roster' ? `/draft?draft=${draftId}` : `/draft/${draftId}/live`);
             }}
             onClose={() => setShowStartModal(false)}
           />

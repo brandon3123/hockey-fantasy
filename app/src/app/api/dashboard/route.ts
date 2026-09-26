@@ -85,30 +85,6 @@ export async function GET() {
   // of a personal roster — never guess which name seat is "theirs".
   const myRosterResolved: 'mine' | 'none' = myParticipant ? 'mine' : 'none';
 
-  if (!myParticipant) {
-    return NextResponse.json({
-      draft: {
-        id: draft.id,
-        name: draft.name,
-        status: draft.status,
-        seasonType: draft.season_type,
-        scoringFormat: draft.scoring_format,
-      },
-      isAdmin: await getIsAdmin(user.id),
-      rank: null,
-      totalTeams: 0,
-      totalPoints: 0,
-      yesterdayPoints: 0,
-      roster: [],
-      standings: [],
-      tonightGames: [],
-      activePlayerCount: 0,
-      eliminatedTeams: [],
-      totalPlayoffTeams: 0,
-      myRosterResolved,
-    });
-  }
-
   const playerMap = new Map<string, { name: string; team: string; position: string }>();
   for (const p of players) {
     playerMap.set(p.id, { name: p.name, team: p.team, position: p.position });
@@ -154,13 +130,13 @@ export async function GET() {
       participantId,
       teamName: teamByParticipant.get(participantId) || 'Unknown',
       totalPoints,
-      isYou: participantId === myParticipant.id,
+      isYou: !!myParticipant && participantId === myParticipant.id,
     }))
     .sort((a, b) => b.totalPoints - a.totalPoints);
 
-  const rank = standings.findIndex(s => s.isYou) + 1;
+  const rank = myParticipant ? standings.findIndex(s => s.isYou) + 1 : null;
 
-  const myPicks = picksByParticipant.get(myParticipant.id) || [];
+  const myPicks = myParticipant ? (picksByParticipant.get(myParticipant.id) || []) : [];
   const roster = myPicks.map(pick => {
     const player = playerMap.get(pick.player_id);
     const playerScores = scoresByPlayer.get(pick.player_id);
@@ -231,6 +207,9 @@ export async function GET() {
 
   const isAdmin = await getIsAdmin(user.id);
 
+  // Seatless admin (roster draft, "seat me" off): full draft-wide payload —
+  // real standings and games, empty personal roster. The home page renders
+  // this without the My Team panel (myRosterResolved: 'none').
   return NextResponse.json({
     draft: {
       id: draft.id,
@@ -240,7 +219,7 @@ export async function GET() {
       scoringFormat: draft.scoring_format,
     },
     isAdmin,
-    rank,
+    rank: rank || null,
     totalTeams: participants.length,
     totalPoints,
     yesterdayPoints: yesterdayTotal,

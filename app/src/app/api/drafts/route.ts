@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServerClient } from '@supabase/ssr';
 import { getIsAdmin } from '@/lib/admin';
-import { buildParticipantRows, normalizeRosterNames } from '@/lib/roster-participants';
+import { buildParticipantRows, findDuplicateName, normalizeRosterNames } from '@/lib/roster-participants';
 
 export async function GET() {
   const supabase = await createClient();
@@ -131,6 +131,12 @@ export async function POST(request: Request) {
     const result = normalizeRosterNames(Array.isArray(participants) ? participants.map(String) : []);
     if (!result.ok) {
       return NextResponse.json({ error: result.error }, { status: 400 });
+    }
+    const adminSeatName = seat_me === true ? (typeof my_name === 'string' && my_name.trim() ? my_name.trim() : 'Commissioner') : null;
+    // The final seat list shares one namespace — the admin seat included.
+    const dup = findDuplicateName(adminSeatName ? [...result.names, adminSeatName] : result.names);
+    if (dup) {
+      return NextResponse.json({ error: `Duplicate team name: ${dup}` }, { status: 400 });
     }
     seatRows = buildParticipantRows(result.names, {
       draftId: '',

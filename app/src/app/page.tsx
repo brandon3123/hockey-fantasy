@@ -27,6 +27,7 @@ interface DashboardData {
   activePlayerCount: number;
   eliminatedTeams: string[];
   totalPlayoffTeams: number;
+  myRosterResolved: 'mine' | 'none';
 }
 
 interface Draft {
@@ -180,7 +181,7 @@ export default function HomePage() {
   }
 
   if (dashboard?.draft && dashboard.draft.status === 'complete') {
-    const { draft, isAdmin, rank, totalTeams, totalPoints, yesterdayPoints, roster, standings, tonightGames, activePlayerCount, eliminatedTeams, totalPlayoffTeams } = dashboard;
+    const { draft, isAdmin, rank, totalTeams, totalPoints, yesterdayPoints, roster, standings, tonightGames, activePlayerCount, eliminatedTeams, totalPlayoffTeams, myRosterResolved } = dashboard;
 
     const hasRosterAlerts = roster.some(p => p.injuryStatus !== 'healthy' || p.isEliminated);
     const injuredPlayers = roster.filter(p => p.injuryStatus !== 'healthy' || p.isEliminated);
@@ -225,6 +226,23 @@ export default function HomePage() {
             </div>
           </div>
 
+          {myRosterResolved === 'none' ? (
+            <div className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-4 md:p-6">
+              <div className="flex items-center justify-between mb-4 border-b border-[#1a2f1a] pb-3">
+                <span className="text-sm font-bold text-[#c8d9c3]">Roster Browser</span>
+                <ActionLink
+                  href={`/dashboard/drafts/${draft.id}`}
+                  variant="primary"
+                  className="px-3 py-1.5 text-xs"
+                >
+                  Open Draft
+                </ActionLink>
+              </div>
+              <p className="text-sm text-[#5a6b57]">
+                This is a host-tracked roster draft and you haven&apos;t claimed a seat — standings and games below are draft-wide. Claim a seat from the draft page to get a personal roster here.
+              </p>
+            </div>
+          ) : (
           <div className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-4 md:p-6">
             <div className="flex items-center justify-between mb-4 border-b border-[#1a2f1a] pb-3">
               <span className="text-sm font-bold text-[#c8d9c3]">My Team</span>
@@ -264,6 +282,7 @@ export default function HomePage() {
               })}
             </div>
           </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-4 md:p-6">
