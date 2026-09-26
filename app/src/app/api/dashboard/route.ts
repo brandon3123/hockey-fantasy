@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createServerClient } from '@supabase/ssr';
 import { fetchTonightGames, fetchEspnInjuries, fetchActivePlayoffTeams } from '@/lib/nhl-api';
 import { getIsAdmin } from '@/lib/admin';
+import { isEliminatedFor } from '@/lib/elimination';
 
 export async function GET() {
   const supabase = await createClient();
@@ -159,20 +160,23 @@ export async function GET() {
   const totalPoints = roster.reduce((sum, r) => sum + r.totalPoints, 0);
   const yesterdayTotal = roster.reduce((sum, r) => sum + r.yesterdayPoints, 0);
 
+  // Only consulted for playoffs drafts; a regular draft must never strike
+  // players out, so it is skipped entirely (also saves the request).
+  const emptyTeams: Promise<Set<string>> = Promise.resolve(new Set<string>());
   const [espnInjuries, activePlayoffTeams, tonightGames] = await Promise.all([
     fetchEspnInjuries(),
-    fetchActivePlayoffTeams(),
-    fetchTonightGames(),
+    draft.season_type === 'playoffs' ? fetchActivePlayoffTeams() : emptyTeams,
+    fetchTonightGames('America/Denver'),
   ]);
 
+  const rosterDraftType = draft.season_type === 'playoffs' ? 'playoffs' as const : 'regular' as const;
   const rosterWithStatus = roster.map(r => {
     const live = espnInjuries.get(r.playerName.toLowerCase());
-    const isEliminated = !activePlayoffTeams.has(r.team) && activePlayoffTeams.size > 0;
     return {
       ...r,
       injuryStatus: live?.status || 'healthy',
       injuryDescription: live?.description || null,
-      isEliminated,
+      isEliminated: isEliminatedFor(r.team, rosterDraftType, activePlayoffTeams),
     };
   });
 

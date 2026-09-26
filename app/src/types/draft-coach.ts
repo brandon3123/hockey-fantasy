@@ -14,7 +14,7 @@ export interface DraftStrategy {
   };
 }
 
-// Line combinations from MoneyPuck
+// Line combinations from PuckPedia (pre-season depth charts) or MoneyPuck
 export interface LineCombination {
   lineId: string;
   team: string;
@@ -24,6 +24,10 @@ export interface LineCombination {
   situation: string;
   icetime: number;
   games_played: number;
+  // Pre-season depth charts carry no ice time, so the lineup number orders them.
+  line_number?: number;
+  line_label?: string | null;
+  source?: string;
   metrics: {
     xGoalsPercentage: number;
     corsiPercentage: number;

@@ -29,7 +29,7 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
   const [error, setError] = useState<string | null>(null);
 
   const [name, setName] = useState(initialData?.name ?? '');
-  const [seasonType, setSeasonType] = useState(initialData?.season_type ?? 'playoffs');
+  const [seasonType, setSeasonType] = useState(initialData?.season_type ?? 'regular_season');
   const [draftDate, setDraftDate] = useState(initialData?.draft_date ?? '');
   const [draftTime, setDraftTime] = useState(initialData?.draft_time ?? '');
   const [location, setLocation] = useState(initialData?.location ?? '');
@@ -103,8 +103,8 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
             <div>
               <label className={labelClass}>Season Type</label>
               <select value={seasonType} onChange={(e) => setSeasonType(e.target.value)} className={selectClass}>
-                <option value="playoffs">Playoffs</option>
                 <option value="regular_season">Regular Season</option>
+                <option value="playoffs">Playoffs</option>
               </select>
             </div>
             <div>

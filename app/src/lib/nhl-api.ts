@@ -177,8 +177,10 @@ export async function fetchCompletedGames(
   return games.filter((g) => g.gameState === "OFF");
 }
 
-export async function fetchTonightGames(timezone?: string): Promise<TonightGame[]> {
-  const todayTz = getDateForTimezone(timezone ?? 'America/New_York');
+export async function fetchTonightGames(timezone: string = 'America/Denver'): Promise<TonightGame[]> {
+  // "Tonight" is computed in the requested zone (the app's audience is
+  // Mountain; the schedule day boundary must match the wall clock users see).
+  const todayTz = getDateForTimezone(timezone);
   try {
     const res = await fetch(`${NHL_API_BASE}/v1/schedule/now`);
     if (!res.ok) return fetchScheduleByDate(todayTz);

@@ -5,7 +5,7 @@ import { Player } from '@/types/player';
 import PlayerTable from '@/components/PlayerTable';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import { enrichDisplayFields } from '@/lib/utils';
+import { enrichDisplayFields, displayFieldsFor } from '@/lib/utils';
 
 interface PlayerRow {
   id: string;
@@ -62,8 +62,8 @@ function mapRowToPlayer(row: PlayerRow): Player {
     projectedPlayoffPoints: row.projected_playoff_points,
     gamesRemaining: row.games_remaining,
     projectedPoints: row.projected_points,
-    displayPoints: row.regular_season_goals + row.regular_season_assists,
-    displayGames: row.games_played,
+    // Rebuilt by displayFieldsFor below; a value preset here would be trusted
+    // as "already enriched". G+A was used before and read 0 all pre-season.
     rank: row.rank,
     adp: row.adp ?? undefined,
     injury: {
@@ -71,7 +71,7 @@ function mapRowToPlayer(row: PlayerRow): Player {
       expectedReturn: row.injury_expected_return,
       description: row.injury_description,
     },
-  };
+  } as Player;
 }
 
 export default function RankingsPage() {
@@ -98,7 +98,10 @@ export default function RankingsPage() {
           console.error('Fallback also failed:', e);
         }
       } else if (data) {
-        setPlayers(data.map(mapRowToPlayer));
+        setPlayers(data.map(r => {
+          const p = mapRowToPlayer(r);
+          return { ...p, ...displayFieldsFor(p, 'regular') };
+        }));
       }
       setLoading(false);
     };

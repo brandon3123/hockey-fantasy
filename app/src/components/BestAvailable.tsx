@@ -15,6 +15,8 @@ interface BestAvailableProps {
   watchlist?: Set<string>;
   onToggleWatchlist?: (playerName: string) => void;
   draftComplete?: boolean;
+  // Playoff advancement odds on tiles only make sense in a playoff draft.
+  seasonType?: 'regular' | 'playoffs';
 }
 
 export default function BestAvailable({
@@ -23,13 +25,14 @@ export default function BestAvailable({
   onDraftPlayer,
   watchlist = new Set(),
   onToggleWatchlist,
-  draftComplete = false
+  draftComplete = false,
+  seasonType = 'regular',
 }: BestAvailableProps) {
   const [lines, setLines] = useState<any[]>([]);
 
   useEffect(() => {
     const loadData = async () => {
-      const linesData = await loadLines();
+      const linesData = await loadLines('regular');
       if (linesData) setLines(linesData);
     };
     loadData();
@@ -42,9 +45,9 @@ export default function BestAvailable({
   const top3 = sorted.slice(0, 3);
   const bestHealthy = sorted.find(p => !isInjured(p));
 
-  const getPlayerLineInfo = (playerName: string) => {
+  const getPlayerLineInfo = (playerName: string, team: string) => {
     if (!lines.length) return null;
-    return getPlayerLine(playerName, lines);
+    return getPlayerLine(playerName, lines, team);
   };
 
   return (
@@ -106,7 +109,7 @@ export default function BestAvailable({
                     {player.team} • {player.position}
                   </div>
                   {lines.length > 0 && (() => {
-                    const lineInfo = getPlayerLineInfo(player.name);
+                    const lineInfo = getPlayerLineInfo(player.name, player.team);
                     if (!lineInfo) return null;
                     return (
                       <div className="text-xs text-[#5a6b57] mt-1">
@@ -127,6 +130,9 @@ export default function BestAvailable({
 
                   <div className="flex flex-col gap-1 mt-1 items-end">
                     {(() => {
+                      // Advancement odds are playoff-draft currency; hide them
+                      // in regular-season drafts where they mean nothing.
+                      if (seasonType !== 'playoffs') return null;
                       const round2Chance = player.teamAdvancementOdds?.round2 ? player.teamAdvancementOdds.round2 * 100 : null;
                       if (!round2Chance) return null;
                       return (
@@ -193,6 +199,7 @@ export default function BestAvailable({
                   {bestHealthy.displayPoints.toFixed(1)}
                 </div>
                 {(() => {
+                  if (seasonType !== 'playoffs') return null;
                   const round2Chance = bestHealthy.teamAdvancementOdds?.round2 ? bestHealthy.teamAdvancementOdds.round2 * 100 : null;
                   if (!round2Chance) return null;
                   return (

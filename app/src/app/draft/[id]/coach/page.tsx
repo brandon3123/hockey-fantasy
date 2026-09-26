@@ -222,6 +222,7 @@ export default function CoachPage() {
               onDraftPlayer={handleDraftPlayer}
               draftComplete={isDraftComplete}
               participantNames={Object.fromEntries(participants.map(p => [p.id, p.team_name]))}
+              seasonType={draft.season_type === 'playoffs' ? 'playoffs' : 'regular'}
             />
           )}
 
@@ -231,6 +232,7 @@ export default function CoachPage() {
               currentPick={overallPick}
               onDraftPlayer={handleDraftPlayer}
               draftComplete={isDraftComplete}
+              seasonType={draft.season_type === 'playoffs' ? 'playoffs' : 'regular'}
             />
           )}
 

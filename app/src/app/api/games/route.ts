@@ -5,7 +5,7 @@ import { fetchTonightGames } from '@/lib/nhl-api';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const timezone = searchParams.get('tz') || undefined;
+  const timezone = searchParams.get('tz') || 'America/Denver';
   const tonightGames = await fetchTonightGames(timezone);
 
   const supabase = await createClient();

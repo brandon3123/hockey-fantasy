@@ -69,13 +69,21 @@ export function analyzeYourTeam(draftState: DraftState, lines: LineCombination[]
     }
   });
 
-  // Find partial lines - lines where you have 1-2 players
-  lines.forEach(line => {
-    const yourPlayersInLine = line.players.filter(playerName =>
-      yourPicks.some(pick => pick.playerName === playerName)
-    );
-    if (yourPlayersInLine.length > 0) {
-      yourLines.push({ line, yourPlayerCount: yourPlayersInLine.length });
+  // Find partial lines - lines where any of your picks play.
+  // Lines carry surnames only ("Mcdavid") while picks carry full names
+  // ("Connor McDavid"), so a raw comparison matches nothing and every stack
+  // looks empty. Resolve each pick through getPlayerLine instead: exact /
+  // surname matching, constrained to the player's own team.
+  yourPicks.forEach(pick => {
+    const player = playerPool.find(p => p.name === pick.playerName);
+    if (!player) return;
+    const playerLine = getPlayerLine(player.name, lines, player.team);
+    if (!playerLine) return;
+    const existing = yourLines.find(l => l.line.lineId === playerLine.lineId);
+    if (existing) {
+      existing.yourPlayerCount += 1;
+    } else {
+      yourLines.push({ line: playerLine, yourPlayerCount: 1 });
     }
   });
 
@@ -114,7 +122,7 @@ export function analyzeOpponents(draftState: DraftState, lines: LineCombination[
         composition[player.position] = (composition[player.position] || 0) + 1;
         teams[player.team] = (teams[player.team] || 0) + 1;
 
-        const playerLine = getPlayerLine(player.name, lines);
+        const playerLine = getPlayerLine(player.name, lines, player.team);
         if (playerLine) {
           const existingLine = partialLines.find(l => l.lineId === playerLine.lineId);
           if (!existingLine) {
@@ -198,7 +206,7 @@ export function scorePlayer(
 }
 
 function calculateStackBonus(player: Player, yourTeam: YourTeamState, lineCache: LineCombination[]): number {
-  const playerLine = getPlayerLine(player.name, lineCache);
+  const playerLine = getPlayerLine(player.name, lineCache, player.team);
   if (playerLine) {
     const lineWithCount = yourTeam.lines.find(l => l.line.lineId === playerLine.lineId);
   if (lineWithCount && lineWithCount.yourPlayerCount >= 2) {
@@ -307,7 +315,7 @@ function generateReasoning(
   const reasons: string[] = [];
 
   // Line stacking
-  const playerLine = getPlayerLine(player.name, lineCache);
+  const playerLine = getPlayerLine(player.name, lineCache, player.team);
   if (playerLine) {
     const lineWithCount = yourTeam.lines.find(l => l.line.lineId === playerLine.lineId);
     if (lineWithCount) {
@@ -375,7 +383,7 @@ function generateReasoning(
 }
 
 function calculateFit(player: Player, yourTeam: YourTeamState, lineCache: LineCombination[]): 'excellent' | 'good' | 'fair' {
-  const playerLine = getPlayerLine(player.name, lineCache);
+  const playerLine = getPlayerLine(player.name, lineCache, player.team);
   if (playerLine) {
     const lineWithCount = yourTeam.lines.find(l => l.line.lineId === playerLine.lineId);
     if (lineWithCount) {

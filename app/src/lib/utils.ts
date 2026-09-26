@@ -9,26 +9,54 @@ export function cn(...inputs: ClassValue[]) {
 type RawPlayer = Omit<Player, 'displayPoints' | 'displayGames'> &
   Partial<Pick<Player, 'displayPoints' | 'displayGames'>>;
 
+export type SeasonType = 'regular' | 'playoffs';
+
+/**
+ * The one rule for what "points" and "games" mean on the board.
+ *
+ * Pre-season (gamesPlayed === 0): projections first — projectedPoints /
+ * gamesRemaining — so the board is usable before the season starts. This used
+ * to be duplicated in three places with different answers: the live-draft hook
+ * and the rankings page both used raw G+A, which is 0 for every player until
+ * games are played, leaving the whole board reading zero.
+ *
+ * In-season (gamesPlayed > 0): actual G+A / games played.
+ * Playoffs mode: projectedPlayoffPoints / projectedPlayoffGames.
+ *
+ * Enriched entries are rebuilt too: a preset displayPoints can arrive from a
+ * row mapper that prefers playoff numbers, and regular mode must not inherit it.
+ */
+export function displayFieldsFor(
+  player: Player,
+  seasonType: SeasonType = 'regular',
+): Pick<Player, 'displayPoints' | 'displayGames'> {
+  if (seasonType === 'playoffs') {
+    return {
+      displayPoints: player.projectedPlayoffPoints ?? 0,
+      displayGames: player.projectedPlayoffGames ?? 0,
+    };
+  }
+  const gamesPlayed = player.gamesPlayed ?? 0;
+  return gamesPlayed > 0
+    ? {
+        displayPoints: (player.regularSeasonGoals ?? 0) + (player.regularSeasonAssists ?? 0),
+        displayGames: gamesPlayed,
+      }
+    : {
+        displayPoints: player.projectedPoints ?? 0,
+        displayGames: player.gamesRemaining ?? 0,
+      };
+}
+
 /**
  * Add displayPoints/displayGames to a raw players.json entry.
  * Raw scraper data does not include them; live drafts enrich in useDraftState.
- * In-season (gamesPlayed > 0): actual G+A / games played.
- * Pre-season (gamesPlayed === 0): projections first — projectedPoints /
- * gamesRemaining — so the external draft board is usable before the season starts.
  * Already-enriched entries pass through untouched.
  */
 export function enrichDisplayFields(player: RawPlayer): Player {
-  const gamesPlayed = player.gamesPlayed ?? 0;
   return {
     ...player,
-    displayPoints:
-      player.displayPoints ??
-      (gamesPlayed > 0
-        ? (player.regularSeasonGoals ?? 0) + (player.regularSeasonAssists ?? 0)
-        : (player.projectedPoints ?? 0)),
-    displayGames:
-      player.displayGames ??
-      (gamesPlayed > 0 ? gamesPlayed : (player.gamesRemaining ?? 0)),
+    ...displayFieldsFor(player as Player, 'regular'),
   };
 }
 

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServerClient } from '@supabase/ssr';
 import { fetchTonightGames, fetchEspnInjuries, fetchActivePlayoffTeams } from '@/lib/nhl-api';
+import { isEliminatedFor } from '@/lib/elimination';
 
 export async function GET(
   request: Request,
@@ -53,9 +54,12 @@ export async function GET(
     playerMap.set(p.id, { name: p.name, team: p.team, position: p.position });
   }
 
+  const isPlayoffsDraft = draft.season_type === 'playoffs';
   const [espnInjuries, activePlayoffTeams] = await Promise.all([
     fetchEspnInjuries(),
-    fetchActivePlayoffTeams(),
+    // A regular draft must never strike players out: the bracket reflects the
+    // finished 2025-26 postseason, not this season. Skipped when irrelevant.
+    isPlayoffsDraft ? fetchActivePlayoffTeams() : Promise.resolve(new Set<string>()),
   ]);
 
   const scoresByPlayer = new Map<string, Map<string, { goals: number; assists: number; points: number }>>();
@@ -110,7 +114,7 @@ export async function GET(
       }
 
       const injuryInfo = espnInjuries.get(playerInfo.name.toLowerCase());
-      const isEliminated = activePlayoffTeams.size > 0 && playerInfo.team && !activePlayoffTeams.has(playerInfo.team);
+      const isEliminated = isEliminatedFor(playerInfo.team, isPlayoffsDraft ? 'playoffs' : 'regular', activePlayoffTeams);
 
       return {
         playerId: pick.player_id,

@@ -15,6 +15,8 @@ interface DraftCoachProps {
   onDraftPlayer: (player: Player) => void;
   draftComplete?: boolean;
   participantNames?: Record<string, string>;
+  // Playoff advancement odds on tiles only make sense in a playoff draft.
+  seasonType?: 'regular' | 'playoffs';
 }
 
 export default function DraftCoach({
@@ -23,7 +25,8 @@ export default function DraftCoach({
   allPlayers,
   onDraftPlayer,
   draftComplete = false,
-  participantNames = {}
+  participantNames = {},
+  seasonType = 'regular',
 }: DraftCoachProps) {
   // Load strategy from localStorage on mount
   const [strategy, setStrategy] = useState<DraftStrategy>(() => {
@@ -66,7 +69,7 @@ export default function DraftCoach({
   useEffect(() => {
     // Initialize data
     const initializeData = async () => {
-      const linesData = await loadLines();
+      const linesData = await loadLines('regular');
       const rankingsData = await loadRankings();
       if (linesData) setLines(linesData);
       if (rankingsData) setRankings(rankingsData);
@@ -198,7 +201,7 @@ export default function DraftCoach({
 
           const round2Chance = player.teamAdvancementOdds?.round2 ? player.teamAdvancementOdds.round2 * 100 : null;
 
-          const lineInfo = lines.length > 0 ? getPlayerLine(player.name, lines) : null;
+          const lineInfo = lines.length > 0 ? getPlayerLine(player.name, lines, player.team) : null;
 
           return (
             <div
@@ -250,8 +253,8 @@ export default function DraftCoach({
                 </div>
               )}
               <div className="flex flex-wrap gap-2">
-                {/* Team Advancement Odds Badge */}
-                {round2Chance !== null && (
+                {/* Team Advancement Odds Badge — playoff drafts only */}
+                {seasonType === 'playoffs' && round2Chance !== null && (
                   <div className={`text-xs px-2 py-1 rounded font-medium ${
                     round2Chance >= 60 ? 'bg-[#1a3d1a] text-[#6b9b7a] border border-[#4a7c59]' :
                     round2Chance >= 40 ? 'bg-[#3d3a1a] text-[#9b8f6b] border border-[#7c744a]' :

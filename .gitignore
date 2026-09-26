@@ -7,3 +7,4 @@ node_modules/
 *.log
 .superpowers/
 .worktrees/
+scraper/puckpedia/

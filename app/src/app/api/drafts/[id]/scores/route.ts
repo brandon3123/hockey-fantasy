@@ -13,7 +13,7 @@ export async function PATCH(
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { data: draft } = await supabase
-    .from('drafts').select('scoring_format').eq('id', id).single();
+    .from('drafts').select('scoring_format, season_type').eq('id', id).single();
   if (!draft) return NextResponse.json({ error: 'Draft not found' }, { status: 404 });
   if (!await getIsAdmin(user.id))
     return NextResponse.json({ error: 'Admin only' }, { status: 403 });
@@ -32,7 +32,7 @@ export async function PATCH(
 
   const { data: existing } = await adminClient
     .from('player_scores').select('season_type').eq('draft_id', id).eq('player_id', player_id).limit(1);
-  const seasonType = (existing && existing.length > 0) ? existing[0].season_type : 'playoffs';
+  const seasonType = (existing && existing.length > 0) ? existing[0].season_type : (draft.season_type ?? 'regular_season');
 
   await adminClient.from('player_scores').delete().eq('draft_id', id).eq('player_id', player_id);
 

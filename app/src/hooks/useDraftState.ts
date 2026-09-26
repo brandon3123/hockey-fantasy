@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Player } from '@/types/player'
 import { useDraftRealtime, DraftPickRow } from './useDraftRealtime'
 import { useIsAdmin } from './useIsAdmin'
+import { displayFieldsFor, SeasonType } from '@/lib/utils'
 
 export type { DraftPickRow } from './useDraftRealtime'
 
@@ -187,17 +188,18 @@ export function useDraftState(draftId: string) {
     }, [fetchDraftData]),
   })
 
-  const seasonType = draft?.season_type ?? 'playoffs'
+  // Same mapping as before, just typed: missing/garbage season_type keeps the
+  // original 'playoffs' fallback; anything other than 'playoffs' is regular.
+  const seasonTypeRaw = draft?.season_type ?? 'playoffs'
+  const seasonType: SeasonType = seasonTypeRaw === 'playoffs' ? 'playoffs' : 'regular'
 
   const enrichedPlayers = useMemo(() => {
+    // displayPoints is rebuilt here, not copied from the row mapper: mapper
+    // rows prefer playoff numbers, which would otherwise leak into regular
+    // mode. displayFieldsFor is the shared pre-season/in-season rule.
     return players.map(p => ({
       ...p,
-      displayPoints: seasonType === 'playoffs'
-        ? (p.projectedPlayoffPoints ?? 0)
-        : (p.regularSeasonGoals + p.regularSeasonAssists),
-      displayGames: seasonType === 'playoffs'
-        ? (p.projectedPlayoffGames ?? 0)
-        : p.gamesPlayed,
+      ...displayFieldsFor(p, seasonType),
     }))
   }, [players, seasonType])
 

@@ -9,7 +9,7 @@ import random
 import sys
 import urllib.request
 from datetime import date, timedelta
-from typing import Dict, List
+from typing import Dict, Iterable, List
 from scrape_nhl_api import scrape_all_player_stats, scrape_player_game_log, get_player_id_from_name, clear_cache
 
 # Keep the hardcoded stats as fallback
@@ -257,6 +257,75 @@ def generate_stats_for_player(name: str, team: str, position: str, season: str =
     }
 
 
+# MoneyPuck and the NHL API do not always use the same abbreviation. Utah was
+# "ARI" until the franchise moved in 2024 and the NHL API switched to "UTA", but
+# MoneyPuck's published files still use the old code. Looking odds up by raw
+# code therefore found nothing for Utah, and a team with no odds gets a playoff
+# projection of zero for every player on it.
+TEAM_CODE_ALIASES = {
+    'ARI': 'UTA',
+}
+
+
+def canonical_team_code(code: str) -> str:
+    """Map a MoneyPuck team code to the code the NHL API uses.
+
+    Unrecognised codes are returned unchanged so a new team keeps its odds
+    rather than being dropped.
+    """
+    code = code.strip().upper()
+    return TEAM_CODE_ALIASES.get(code, code)
+
+
+def parse_team_odds(csv_text: str) -> Dict[str, Dict[str, float]]:
+    """
+    Parse team advancement odds from simulations CSV text.
+
+    Keys the result by the NHL API team code so a lookup by a roster player's
+    team finds the right row.
+
+    Returns:
+        Dict mapping team abbreviation -> {round1, round2, round3, round4} odds
+    """
+    team_odds = {}
+
+    for row in csv.DictReader(csv_text.splitlines()):
+        if row.get('scenerio', '') != 'ALL':
+            continue
+
+        raw_team = (row.get('teamCode') or '').strip()
+        if not raw_team:
+            continue
+
+        try:
+            round1 = float(row.get('madePlayoffs', 0))
+            round2 = float(row.get('round2', 0))
+            round3 = float(row.get('round3', 0))
+            round4 = float(row.get('round4', 0))
+        except (ValueError, TypeError):
+            continue
+
+        # Only include teams with a meaningful playoff chance
+        if round1 < 0.01:
+            continue
+
+        team_odds[canonical_team_code(raw_team)] = {
+            'round1': round(round1, 3),
+            'round2': round(round2, 3),
+            'round3': round(round3, 3),
+            'round4': round(round4, 3),
+        }
+
+    return team_odds
+
+
+def teams_missing_odds(
+    team_odds: Dict[str, Dict[str, float]], all_teams: Iterable[str]
+) -> List[str]:
+    """Teams that have no advancement odds, i.e. would project zero playoff games."""
+    return [team for team in all_teams if team not in team_odds]
+
+
 def scrape_moneypuck_team_odds(csv_path: str = None) -> Dict[str, Dict[str, float]]:
     """
     Load team advancement odds from MoneyPuck Monte Carlo simulations.
@@ -270,45 +339,31 @@ def scrape_moneypuck_team_odds(csv_path: str = None) -> Dict[str, Dict[str, floa
     if csv_path is None:
         csv_path = _get_moneypuck_path()
 
-    team_odds = {}
-
     try:
         with open(csv_path, 'r') as f:
-            reader = csv.DictReader(f)
-
-            for row in reader:
-                if row.get('scenerio', '') != 'ALL':
-                    continue
-
-                team = row.get('teamCode', '').strip()
-                if not team:
-                    continue
-
-                try:
-                    round1 = float(row.get('madePlayoffs', 0))
-                    round2 = float(row.get('round2', 0))
-                    round3 = float(row.get('round3', 0))
-                    round4 = float(row.get('round4', 0))
-                except (ValueError, TypeError):
-                    continue
-
-                # Only include teams with a meaningful playoff chance
-                if round1 < 0.01:
-                    continue
-
-                team_odds[team] = {
-                    'round1': round(round1, 3),
-                    'round2': round(round2, 3),
-                    'round3': round(round3, 3),
-                    'round4': round(round4, 3),
-                }
+            team_odds = parse_team_odds(f.read())
 
         print(f"  Found MoneyPuck odds for {len(team_odds)} teams")
 
+        # A missing team is invisible in the output but sends every one of its
+        # players to the bottom of the board in playoffs mode, so say so loudly.
+        try:
+            from scrape_rosters import ALL_TEAMS
+            missing = teams_missing_odds(team_odds, ALL_TEAMS)
+        except ImportError:
+            missing = []
+        if missing:
+            print(f"  WARNING: no advancement odds for {len(missing)} team(s): "
+                  f"{', '.join(missing)}")
+            print("           Their players will project 0 playoff games until "
+                  "MoneyPuck publishes them.")
+
     except FileNotFoundError:
         print(f"  Error: MoneyPuck CSV not found at {csv_path}")
+        return {}
     except Exception as e:
         print(f"  Error loading MoneyPuck CSV: {e}")
+        return {}
 
     return team_odds
 

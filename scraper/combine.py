@@ -14,6 +14,10 @@ from scrape_moneypuck import (scrape_moneypuck_team_odds, scrape_player_stats,
                               parse_rankings_csv, download_all_moneypuck_files)
 from scrape_fantasypros_ros import load_fantasypros_ros
 from scrape_fantasypros_preseason import scrape_preseason_points
+from scrape_fantasypros_adp import (
+    scrape_fantasypros_adp, resolve_adp, build_adp_index, lookup_adp,
+)
+from scrape_puckpedia_lines import scrape_puckpedia_lines, select_lines
 
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_OUTPUT_PATH = os.path.join(_SCRIPT_DIR, "../app/public/players.json")
@@ -66,6 +70,7 @@ def build_players(
     (playoffs-mode behavior). Players are ranked by rank_key(mode).
     """
     combined_players = []
+    adp_index = build_adp_index(ros_data)
 
     for roster_player in rosters:
         name = roster_player['name']
@@ -124,8 +129,11 @@ def build_players(
             projected_playoff_games = 0
             projected_playoff_points = 0
 
-        # Get ROS from FantasyPros data (better than ADP for playoff drafts)
-        ros_rank = ros_data.get(name)  # Returns None if not found
+        # Get ROS from FantasyPros data (better than ADP for playoff drafts).
+        # Matched on the normalized name: FantasyPros drops accents that the
+        # NHL API keeps, so an exact lookup would lose the ADP for those
+        # players (e.g. "Tim Stutzle" vs "Tim Stützle").
+        ros_rank = lookup_adp(adp_index, name)  # Returns None if not found
 
         player = {
             'name': name,
@@ -160,6 +168,65 @@ def build_players(
         player['rank'] = i + 1
 
     return combined_players
+
+
+def load_adp_data() -> Dict[str, float]:
+    """ADP for the `adp` field: the live FantasyPros page, else the manual export."""
+    print("  - Scraping ADP from FantasyPros...")
+    live_adp = scrape_fantasypros_adp()
+    if live_adp:
+        print(f"    Using {len(live_adp)} live ADP values")
+        return resolve_adp(live_adp, {})
+
+    print("    Live ADP unavailable; falling back to the local FantasyPros export")
+    fallback = load_fantasypros_ros()
+    print(f"    Found {len(fallback)} players in the fallback export")
+    return resolve_adp({}, fallback)
+
+
+def skip_puckpedia() -> bool:
+    """SKIP_PUCKPEDIA_LINES=1 runs the scraper without the depth-chart crawl.
+
+    The crawl is slow (one page per skater) and only buys current lines, so it
+    can be switched off while working on the rest of the pipeline.
+    """
+    return os.environ.get('SKIP_PUCKPEDIA_LINES', '').strip().lower() in ('1', 'true', 'yes')
+
+
+def load_line_data(rosters: List[Dict], moneypuck_paths: Dict[str, str],
+                   mode: str) -> Dict[str, List[Dict]]:
+    """Line combinations per season type.
+
+    Regular-season lines come from PuckPedia depth charts, which are current
+    pre-season; the MoneyPuck CSVs only refresh once games are played, so they
+    stay as the fallback. Playoff lines have no PuckPedia equivalent and always
+    come from MoneyPuck.
+    """
+    moneypuck_regular = parse_lines_csv(moneypuck_paths.get('lines_regular.csv'))
+    moneypuck_playoffs = parse_lines_csv(moneypuck_paths.get('lines_playoffs.csv'))
+    print(f"    Found {len(moneypuck_regular)} MoneyPuck regular season line combinations")
+    print(f"    Found {len(moneypuck_playoffs)} MoneyPuck playoff line combinations")
+
+    if mode == 'playoffs':
+        return {'regular': moneypuck_regular, 'playoffs': moneypuck_playoffs}
+
+    if skip_puckpedia():
+        print("    Skipping PuckPedia depth charts (SKIP_PUCKPEDIA_LINES is set)")
+        return {'regular': moneypuck_regular, 'playoffs': moneypuck_playoffs}
+
+    try:
+        puckpedia_lines = scrape_puckpedia_lines(rosters)
+    except Exception as e:
+        print(f"    Error scraping PuckPedia lines: {e}")
+        print(f"    Falling back to MoneyPuck lines")
+        puckpedia_lines = []
+
+    if puckpedia_lines:
+        print(f"    Using {len(puckpedia_lines)} PuckPedia lines from current depth charts")
+    else:
+        print(f"    No PuckPedia lines; falling back to MoneyPuck lines")
+    return {'regular': select_lines(puckpedia_lines, moneypuck_regular),
+            'playoffs': moneypuck_playoffs}
 
 
 def combine_data() -> Tuple[List[Dict], Dict[str, List[Dict]], List[Dict], List[str]]:
@@ -222,18 +289,11 @@ def combine_data() -> Tuple[List[Dict], Dict[str, List[Dict]], List[Dict], List[
         prev_season_stats = scrape_player_stats(prev_season_code)
         print(f"    Loaded {len(prev_season_stats)} players from {prev_season_code} as fallback")
 
-    print("  - Loading ROS from FantasyPros (Rest of Season)...")
-    ros_data = load_fantasypros_ros()
-    print(f"    Found {len(ros_data)} players with ROS data")
+    print("  - Loading ADP for the draft board...")
+    adp_data = load_adp_data()
 
-    lines_data = {}
-    print("  - Loading MoneyPuck regular season lines...")
-    lines_data['regular'] = parse_lines_csv(moneypuck_paths.get('lines_regular.csv'))
-    print(f"    Found {len(lines_data['regular'])} regular season line combinations")
-
-    print("  - Loading MoneyPuck playoff lines...")
-    lines_data['playoffs'] = parse_lines_csv(moneypuck_paths.get('lines_playoffs.csv'))
-    print(f"    Found {len(lines_data['playoffs'])} playoff line combinations")
+    print("  - Loading line combinations...")
+    lines_data = load_line_data(rosters, moneypuck_paths, mode)
 
     print("  - Loading MoneyPuck rankings data...")
     rankings_data = parse_rankings_csv(moneypuck_paths.get('rankings.csv'))
@@ -241,7 +301,7 @@ def combine_data() -> Tuple[List[Dict], Dict[str, List[Dict]], List[Dict], List[
 
     print("  - Merging data...")
     combined_players = build_players(
-        rosters, player_stats, team_odds, ros_data, mode, season_code,
+        rosters, player_stats, team_odds, adp_data, mode, season_code,
         is_preseason, preseason_points, prev_season_stats,
     )
     print(f"  - Combined {len(combined_players)} players")

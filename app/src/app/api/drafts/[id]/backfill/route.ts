@@ -75,7 +75,7 @@ export async function POST(
         ? result.goals * 2 + result.assists : result.goals + result.assists;
       rowsToUpsert.push({
         player_id: playerId, draft_id: id,
-        season_type: draft.season_type ?? 'playoffs',
+        season_type: draft.season_type ?? 'regular_season',
         score_date: dateStr, goals: result.goals, assists: result.assists, points: pts,
       });
       scorers.push({
