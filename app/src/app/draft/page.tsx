@@ -1,8 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Player, DraftState } from '@/types/player';
 import { initializeDraft, assignPlayerToManager, getParticipantPicks, getCurrentManager, getCurrentPickNumber, removeSpecificPick } from '@/lib/draft-logic';
+import { toLegacyDraftState, managerNamesFrom } from '@/lib/bind-draft-state';
+import { useDraftState } from '@/hooks/useDraftState';
 import DraftGrid from '@/components/DraftGrid';
 import BestAvailable from '@/components/BestAvailable';
 import TeamStackPanel from '@/components/TeamStackPanel';
@@ -15,7 +18,85 @@ import { STRATEGIES } from '@/lib/draft-coach';
 import { enrichDisplayFields } from '@/lib/utils';
 import type { DraftStrategy } from '@/types/draft-coach';
 
-export default function DraftPage() {
+interface BoundDraftSession {
+  legacyState: DraftState | null;
+  managerNames: string[];
+  draftName: string;
+  status: string;
+  isDraftComplete: boolean;
+  loading: boolean;
+  makePick: (player: Player) => Promise<void>;
+  undoLast: () => Promise<void>;
+}
+
+/**
+ * Bind /draft to a hosted roster draft: hydrate from Supabase and write
+ * picks through the API (which owns turn order and auto-completion).
+ */
+function useBoundDraft(boundDraftId: string | null): BoundDraftSession | null {
+  const bound = useDraftState(boundDraftId ?? '00000000-0000-0000-0000-000000000000');
+
+  if (!boundDraftId) return null;
+
+  const { draft, participants, picks, players, loading, refresh } = bound;
+  const ordered = [...participants].sort((a, b) => {
+    const ap = a.draft_position ?? Number.MAX_SAFE_INTEGER;
+    const bp = b.draft_position ?? Number.MAX_SAFE_INTEGER;
+    return ap - bp;
+  });
+
+  const legacyState = draft
+    ? toLegacyDraftState(
+        { players_per_team: draft.players_per_team, current_round: draft.current_round, current_pick: draft.current_pick },
+        participants, picks, players, 1, ordered[0]?.id ?? '',
+      )
+    : null;
+
+  const session: BoundDraftSession = {
+    legacyState,
+    managerNames: managerNamesFrom(participants),
+    draftName: draft?.name ?? '',
+    status: draft?.status ?? '',
+    isDraftComplete: draft?.status === 'complete',
+    loading: loading || !draft,
+    // Turn order lives server-side: the picks API rejects off-clock entries.
+    makePick: async (player: Player) => {
+      const currentManager = legacyState ? getCurrentManager(legacyState) : null;
+      const seat = currentManager ? ordered[currentManager - 1] : null;
+      if (!seat) { alert('Draft is not accepting picks right now.'); return; }
+      const res = await fetch(`/api/drafts/${boundDraftId}/picks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          participant_id: seat.id,
+          player_id: `${player.name}-${player.team}-${player.position}`.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          player_name: player.name,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || 'Failed to record pick');
+      }
+      await refresh();
+    },
+    undoLast: async () => {
+      const res = await fetch(`/api/drafts/${boundDraftId}/picks/last`, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || 'Failed to undo pick');
+      }
+      await refresh();
+    },
+  };
+  return session;
+}
+
+function DraftPageInner() {
+  const searchParams = useSearchParams();
+  const boundDraftId = searchParams.get('draft');
+  const bound = useBoundDraft(boundDraftId);
+  const isBound = !!bound;
+
   const [players, setPlayers] = useState<Player[]>([]);
   const [draftState, setDraftState] = useState<DraftState | null>(null);
   const [setupComplete, setSetupComplete] = useState(false);
@@ -42,6 +123,16 @@ export default function DraftPage() {
       ));
     }
   }, [managers, yourPosition]);
+
+  // Bound mode: hydrate from the hosted draft instead of the setup panel.
+  useEffect(() => {
+    if (!bound) return;
+    if (bound.loading) return;
+    if (!bound.legacyState) return;
+    setDraftState(bound.legacyState);
+    setManagerNames(bound.managerNames);
+    setSetupComplete(true);
+  }, [bound?.legacyState, bound?.managerNames, bound?.loading]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -72,15 +163,18 @@ export default function DraftPage() {
     }
 
     try {
-      const savedDraft = localStorage.getItem('draftState');
-      const savedNames = localStorage.getItem('managerNames');
-      if (savedDraft) {
-        const savedDraftState = JSON.parse(savedDraft);
-        setDraftState({ ...savedDraftState, availablePlayers: savedDraftState.availablePlayers?.map(enrichDisplayFields) });
-        setSetupComplete(true);
-      }
-      if (savedNames) {
-        setManagerNames(JSON.parse(savedNames));
+      // Bound mode hydrates from Supabase; never restore a stale local draft.
+      if (!boundDraftId) {
+        const savedDraft = localStorage.getItem('draftState');
+        const savedNames = localStorage.getItem('managerNames');
+        if (savedDraft) {
+          const savedDraftState = JSON.parse(savedDraft);
+          setDraftState({ ...savedDraftState, availablePlayers: savedDraftState.availablePlayers?.map(enrichDisplayFields) });
+          setSetupComplete(true);
+        }
+        if (savedNames) {
+          setManagerNames(JSON.parse(savedNames));
+        }
       }
     } catch (e) {
       console.error('Failed to restore draft state:', e);
@@ -112,6 +206,12 @@ export default function DraftPage() {
 
   const handleDraftPlayer = (player: Player) => {
     if (!draftState) return;
+
+    // Bound mode: persist through the API (it owns turn order + completion).
+    if (isBound) {
+      void bound!.makePick(player);
+      return;
+    }
 
     // Calculate total picks in draft
     const totalPicks = draftState.managers * draftState.playersPerTeam;
@@ -170,6 +270,15 @@ export default function DraftPage() {
 
   const handleUndoPick = () => {
     if (!draftState) return;
+
+    // Bound mode: the API owns the clock; undo the last persisted pick.
+    if (isBound) {
+      const lastPick = draftState.picks[draftState.picks.length - 1];
+      if (lastPick && confirm(`Undo ${managerNames[getManagerIndex(lastPick.participantId)] ?? 'team'}'s pick of ${lastPick.playerName}?`)) {
+        void bound!.undoLast();
+      }
+      return;
+    }
 
     const lastPick = draftState.picks[draftState.picks.length - 1];
     if (!lastPick) return;
@@ -292,6 +401,30 @@ export default function DraftPage() {
     link.click();
     URL.revokeObjectURL(url);
   };
+
+  if (isBound && (bound!.loading || !draftState)) {
+    return (
+      <div className="min-h-screen bg-[#050a05] flex items-center justify-center">
+        <div className="text-[#5a6b57]">Loading draft room{bound!.draftName ? ` — ${bound!.draftName}` : ''}...</div>
+      </div>
+    );
+  }
+
+  if (isBound && bound!.isDraftComplete && draftState) {
+    return (
+      <div className="min-h-screen bg-[#050a05] flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="text-xl font-bold text-[#c8d9c3]">{bound!.draftName} is complete</div>
+          <a
+            href={`/dashboard/drafts/${boundDraftId}`}
+            className="inline-block px-4 py-2 bg-[#4a7c59] text-[#c8d9c3] rounded-lg font-semibold hover:bg-[#3d664a] transition-colors"
+          >
+            View on Dashboard
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   if (!setupComplete) {
     return (
@@ -669,5 +802,17 @@ export default function DraftPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function DraftPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#050a05] flex items-center justify-center">
+        <div className="text-[#5a6b57]">Loading...</div>
+      </div>
+    }>
+      <DraftPageInner />
+    </Suspense>
   );
 }
