@@ -35,6 +35,7 @@ interface Participant {
   draft_position: number | null;
   has_paid: boolean;
   created_at: string;
+  user_id?: string | null;
 }
 
 interface Invite {
@@ -99,6 +100,21 @@ export default function DraftDetailPage() {
     });
     if (res.ok) {
       fetchDraft();
+    }
+  };
+
+  // Roster drafts: bind one of the typed name seats to my account (one-time).
+  const handleClaimSeat = async (participantId: string) => {
+    const res = await fetch(`/api/drafts/${draftId}/participants/claim`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ participant_id: participantId }),
+    });
+    if (res.ok) {
+      fetchDraft();
+    } else {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error || 'Failed to claim seat');
     }
   };
 
@@ -390,6 +406,26 @@ export default function DraftDetailPage() {
             <div>
               <SectionDivider label="Invite Participants" />
               <InviteForm draftId={draftId} onInviteSent={fetchDraft} />
+            </div>
+          )}
+
+          {draft.participant_mode === 'roster' && isAdmin && !participants.some(p => p.user_id) && (
+            <div className="bg-[#0a0f0a] border border-[#141e12] rounded-xl p-5">
+              <SectionDivider label="This Is My Team" />
+              <p className="text-xs text-[#5a6b57] mb-3">
+                Pick which seat is yours — one-time, binds your account to that team so the dashboard can show your roster.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {participants.filter(p => !p.user_id).map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => handleClaimSeat(p.id)}
+                    className="px-3 py-1.5 text-xs bg-[#050a05] text-[#c8d9c3] border border-[#4a7c59] rounded hover:bg-[#141e12] transition-colors"
+                  >
+                    {p.team_name}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 

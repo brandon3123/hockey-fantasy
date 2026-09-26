@@ -8,6 +8,7 @@ interface Participant {
   draft_position: number | null;
   has_paid: boolean;
   created_at: string;
+  user_id?: string | null;
 }
 
 interface Invite {
@@ -77,20 +78,27 @@ export default function ParticipantList({ participants, invites, totalSlots, onR
               <div className="flex items-center gap-3">
                 <span className="text-[#6b9b7a]">&#10003;</span>
                 <span className="font-medium text-[#c8d9c3]">{p.team_name}</span>
+                {!p.user_id && (
+                  <span className="text-[10px] px-1.5 py-0.5 bg-[#141e12] text-[#5a6b57] rounded" title="Name-only seat (no account)">
+                    room
+                  </span>
+                )}
               </div>
               <div className="flex items-center gap-3">
-                <button
-                  onClick={() => handleTogglePaid(p.id, !p.has_paid)}
-                  disabled={isLoading}
-                  className={`text-xs px-2 py-1 rounded transition-colors disabled:cursor-wait ${
-                    p.has_paid
-                      ? 'bg-[#1a2f1a] text-[#6b9b7a] hover:bg-[#2a3f2a]'
-                      : 'bg-[#3d3a1a] text-[#9b8f6b] hover:bg-[#4d4a2a]'
-                  }`}
-                  title={p.has_paid ? 'Click to mark as unpaid' : 'Click to mark as paid'}
-                >
-                  {loadingAction === `paid-${p.id}` ? '...' : p.has_paid ? 'Paid' : 'Unpaid'}
-                </button>
+                {p.user_id && (
+                  <button
+                    onClick={() => handleTogglePaid(p.id, !p.has_paid)}
+                    disabled={isLoading}
+                    className={`text-xs px-2 py-1 rounded transition-colors disabled:cursor-wait ${
+                      p.has_paid
+                        ? 'bg-[#1a2f1a] text-[#6b9b7a] hover:bg-[#2a3f2a]'
+                        : 'bg-[#3d3a1a] text-[#9b8f6b] hover:bg-[#4d4a2a]'
+                    }`}
+                    title={p.has_paid ? 'Click to mark as unpaid' : 'Click to mark as paid'}
+                  >
+                    {loadingAction === `paid-${p.id}` ? '...' : p.has_paid ? 'Paid' : 'Unpaid'}
+                  </button>
+                )}
                 {onRemoveParticipant && (
                   <button
                     onClick={() => handleRemoveParticipant(p.id)}

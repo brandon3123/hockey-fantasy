@@ -81,8 +81,32 @@ export async function GET() {
   const scores = scoresResult.data || [];
   const players = playersResult.data || [];
 
+  // Roster drafts: an admin without a seat gets the draft-wide view instead
+  // of a personal roster — never guess which name seat is "theirs".
+  const myRosterResolved: 'mine' | 'none' = myParticipant ? 'mine' : 'none';
+
   if (!myParticipant) {
-    return NextResponse.json({ draft: { id: draft.id, name: draft.name, status: draft.status }, rank: null });
+    return NextResponse.json({
+      draft: {
+        id: draft.id,
+        name: draft.name,
+        status: draft.status,
+        seasonType: draft.season_type,
+        scoringFormat: draft.scoring_format,
+      },
+      isAdmin: await getIsAdmin(user.id),
+      rank: null,
+      totalTeams: 0,
+      totalPoints: 0,
+      yesterdayPoints: 0,
+      roster: [],
+      standings: [],
+      tonightGames: [],
+      activePlayerCount: 0,
+      eliminatedTeams: [],
+      totalPlayoffTeams: 0,
+      myRosterResolved,
+    });
   }
 
   const playerMap = new Map<string, { name: string; team: string; position: string }>();
@@ -232,5 +256,6 @@ export async function GET() {
     activePlayerCount,
     eliminatedTeams: [...eliminatedTeamsSet],
     totalPlayoffTeams: allPlayoffTeams.size,
+    myRosterResolved,
   });
 }
