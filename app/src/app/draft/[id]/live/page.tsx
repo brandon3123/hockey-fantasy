@@ -8,6 +8,9 @@ import { useDraftState, DraftPickRow, ParticipantData } from '@/hooks/useDraftSt
 import PlayerList from '@/components/PlayerList';
 import DraftCoach from '@/components/DraftCoach';
 import TeamStackPanel from '@/components/TeamStackPanel';
+import BestAvailable from '@/components/BestAvailable';
+import PositionTracker from '@/components/PositionTracker';
+import TeamCompositionVisualizer from '@/components/TeamCompositionVisualizer';
 import { toLegacyDraftState } from '@/lib/bind-draft-state';
 import TeamBrowserTab from '@/components/TeamBrowserTab';
 import TeamLogo from '@/components/TeamLogo';
@@ -196,7 +199,7 @@ function ReplacePickModal({
   );
 }
 
-type SidebarTab = 'players' | 'teams' | 'coach' | 'stack';
+type SidebarTab = 'coach' | 'best' | 'players' | 'stack' | 'positions' | 'teams' | 'visualizer';
 
 function DraftBoardGrid({
   participants,
@@ -252,7 +255,7 @@ function DraftBoardGrid({
           className="cursor-pointer p-1 border border-[#141e12] bg-[#050a05] rounded hover:border-[#4a7c59] transition-all"
           title="Click to replace this player"
         >
-          <div className="text-xs font-medium text-[#c8d9c3] leading-tight truncate">
+          <div className="text-xs font-medium text-[#c8d9c3] leading-tight">
             {pick.player_name}
           </div>
           <div className="flex items-center justify-center gap-0.5">
@@ -289,10 +292,7 @@ function DraftBoardGrid({
                 MANAGER
               </th>
               {Array.from({ length: playersPerTeam }, (_, i) => (
-                <th
-                  key={i}
-                  className="px-1 py-2.5 text-center font-semibold text-xs border-r border-[#3d664a] min-w-[50px]"
-                >
+                <th key={i} className="px-1 py-2.5 text-center font-semibold text-xs border-r border-[#3d664a] min-w-[60px]">
                   R{i + 1}
                 </th>
               ))}
@@ -703,46 +703,27 @@ export default function LiveDraftPage() {
 
         <div className={`${mobileBoardTab !== 'players' ? 'hidden lg:flex' : 'flex'} w-full lg:w-96 shrink-0 flex-col border-t lg:border-t-0 lg:border-l border-[#141e12] bg-[#050a05]`}>
           <div className="shrink-0 flex flex-wrap gap-1 p-2 border-b border-[#141e12]">
-            <button
-              onClick={() => setSidebarTab('coach')}
-              className={`flex-1 px-2 py-2.5 text-xs font-semibold rounded transition-colors ${
-                sidebarTab === 'coach'
-                  ? 'bg-[#4a7c59] text-[#c8d9c3]'
-                  : 'bg-[#0a0f0a] text-[#5a6b57] hover:bg-[#141e12]'
-              }`}
-            >
-              Coach
-            </button>
-            <button
-              onClick={() => setSidebarTab('players')}
-              className={`flex-1 px-2 py-2.5 text-xs font-semibold rounded transition-colors ${
-                sidebarTab === 'players'
-                  ? 'bg-[#4a7c59] text-[#c8d9c3]'
-                  : 'bg-[#0a0f0a] text-[#5a6b57] hover:bg-[#141e12]'
-              }`}
-            >
-              Players
-            </button>
-            <button
-              onClick={() => setSidebarTab('teams')}
-              className={`flex-1 px-2 py-2.5 text-xs font-semibold rounded transition-colors ${
-                sidebarTab === 'teams'
-                  ? 'bg-[#4a7c59] text-[#c8d9c3]'
-                  : 'bg-[#0a0f0a] text-[#5a6b57] hover:bg-[#141e12]'
-              }`}
-            >
-              Teams
-            </button>
-            <button
-              onClick={() => setSidebarTab('stack')}
-              className={`flex-1 px-2 py-2.5 text-xs font-semibold rounded transition-colors ${
-                sidebarTab === 'stack'
-                  ? 'bg-[#4a7c59] text-[#c8d9c3]'
-                  : 'bg-[#0a0f0a] text-[#5a6b57] hover:bg-[#141e12]'
-              }`}
-            >
-              Stack
-            </button>
+            {([
+              ['coach', 'Coach'],
+              ['best', 'Best'],
+              ['players', 'All'],
+              ['stack', 'Stack'],
+              ['positions', 'Pos'],
+              ['teams', 'Teams'],
+              ['visualizer', 'Visual'],
+            ] as Array<[SidebarTab, string]>).map(([tab, label]) => (
+              <button
+                key={tab}
+                onClick={() => setSidebarTab(tab)}
+                className={`flex-1 px-2 py-2.5 text-xs font-semibold rounded transition-colors ${
+                  sidebarTab === tab
+                    ? 'bg-[#4a7c59] text-[#c8d9c3]'
+                    : 'bg-[#0a0f0a] text-[#5a6b57] hover:bg-[#141e12]'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
           {sidebarTab === 'coach' && legacyState && (
             <div className="flex-1 overflow-y-auto p-4">
@@ -754,6 +735,32 @@ export default function LiveDraftPage() {
                 draftComplete={isDraftComplete}
                 participantNames={participantNames}
                 seasonType={coachSeasonType}
+              />
+            </div>
+          )}
+          {sidebarTab === 'best' && (
+            <div className="flex-1 overflow-y-auto p-4">
+              <BestAvailable
+                availablePlayers={availablePlayers}
+                currentPick={(currentRound - 1) * managers + currentPick}
+                onDraftPlayer={handlePickPlayer}
+                draftComplete={isDraftComplete}
+              />
+            </div>
+          )}
+          {sidebarTab === 'positions' && legacyState && (
+            <div className="flex-1 overflow-y-auto p-4">
+              <PositionTracker
+                draftState={legacyState}
+                allPlayers={players}
+              />
+            </div>
+          )}
+          {sidebarTab === 'visualizer' && legacyState && (
+            <div className="flex-1 overflow-y-auto p-4">
+              <TeamCompositionVisualizer
+                draftState={legacyState}
+                allPlayers={players}
               />
             </div>
           )}
