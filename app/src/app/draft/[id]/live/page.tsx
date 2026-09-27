@@ -753,7 +753,7 @@ export default function LiveDraftPage() {
               />
             </div>
           )}
-          {sidebarTab === 'players' ? (
+          {sidebarTab === 'players' && (
             <PlayerList
               availablePlayers={availablePlayers}
               onPickPlayer={handlePickPlayer}
@@ -765,7 +765,8 @@ export default function LiveDraftPage() {
               showSearch={true}
               showHeader={true}
             />
-          ) : sidebarTab === 'stack' ? (
+          )}
+          {sidebarTab === 'stack' && (
             <div className="flex-1 overflow-y-auto p-4">
               <TeamStackPanel
                 yourPicks={yourPicks.map(p => ({
@@ -780,7 +781,8 @@ export default function LiveDraftPage() {
                 draftComplete={isDraftComplete}
               />
             </div>
-          ) : (
+          )}
+          {sidebarTab === 'teams' && (
             <div className="flex-1 overflow-y-auto p-4">
               <TeamBrowserTab
                 players={players}
