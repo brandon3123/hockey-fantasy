@@ -210,11 +210,17 @@ export function useDraftState(draftId: string) {
 
   const pickedPlayerIds = new Set(picks.map(p => p.player_id))
   const allPlayers = playoffTeamPlayers
-  const availablePlayers = allPlayers
-    .filter(
-      p => !pickedPlayerIds.has(`${p.name}-${p.team}-${p.position}`.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
-    )
-    .sort((a, b) => b.displayPoints - a.displayPoints)
+  // Memoized on data identity: consumers (the bound /draft session) key their
+  // own memos and effects off this reference. An inline filter+sort would hand
+  // back a new array every render and loop every effect that depends on it.
+  const availablePlayers = useMemo(() => {
+    const pickedPlayerIds = new Set(picks.map(p => p.player_id))
+    return allPlayers
+      .filter(
+        p => !pickedPlayerIds.has(`${p.name}-${p.team}-${p.position}`.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
+      )
+      .sort((a, b) => b.displayPoints - a.displayPoints)
+  }, [allPlayers, picks])
 
   const managers = participants.length
   const currentRound = draft?.current_round ?? 1
