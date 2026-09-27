@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { swapPosition } from '@/lib/roster-participants';
 
 interface DraftStartModalProps {
   draftId: string;
@@ -49,9 +50,10 @@ export default function DraftStartModal({
   const handleManualPosition = useCallback(
     (participantId: string, pos: number) => {
       setPositions((prev) => {
-        const map = new Map(prev);
-        map.set(participantId, pos);
-        return map;
+        // Assigning a taken number SWAPS with the holder — two seats can
+        // never share a position, which would strand the draft clock.
+        const swapped = swapPosition(Object.fromEntries(prev), participantId, pos);
+        return new Map(Object.entries(swapped).map(([id, v]) => [id, v]));
       });
       setRandomize(false);
     },

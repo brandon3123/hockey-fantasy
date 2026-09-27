@@ -28,6 +28,36 @@ export function findDuplicateName(names: string[]): string | null {
   return null;
 }
 
+/**
+ * Assign a seat a new draft position, SWAPPING with whoever held it.
+ * Without the swap, two seats can hold the same number and the draft clock
+ * strands: the turn check expects a position nobody owns.
+ * Returns a new record; the input is untouched.
+ */
+export function swapPosition(
+  positions: Record<string, number>,
+  moverId: string,
+  newPosition: number,
+): Record<string, number> {
+  const oldPosition = positions[moverId];
+  if (oldPosition === undefined || oldPosition === newPosition) return positions;
+
+  const holderId = Object.keys(positions).find(id => positions[id] === newPosition);
+  const next = { ...positions, [moverId]: newPosition };
+  if (holderId !== undefined) next[holderId] = oldPosition;
+  return next;
+}
+
+/**
+ * True when the submitted draft positions form a complete 1..N permutation of
+ * ALL seats — the start-time backstop against duplicate or missing numbers.
+ */
+export function isCompleteOrder(positions: number[], seatCount: number): boolean {
+  if (positions.length !== seatCount) return false;
+  const sorted = [...positions].sort((a, b) => a - b);
+  return sorted.every((v, i) => v === i + 1);
+}
+
 const MIN_NAMES = 2;
 const MAX_NAMES = 20;
 

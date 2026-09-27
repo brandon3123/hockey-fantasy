@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServerClient } from '@supabase/ssr';
 import { getIsAdmin } from '@/lib/admin';
-import { findDuplicateName } from '@/lib/roster-participants';
+import { findDuplicateName, isCompleteOrder } from '@/lib/roster-participants';
 
 export async function POST(
   request: Request,
@@ -63,6 +63,20 @@ export async function POST(
       },
     }
   );
+
+  // The order must be a complete 1..N permutation — duplicate or missing
+  // numbers strand the clock (a turn check against a position nobody holds).
+  const { count: seatCount } = await adminClient
+    .from('draft_participants')
+    .select('id', { count: 'exact', head: true })
+    .eq('draft_id', id);
+  if (!isCompleteOrder(
+    positions.map((p: { draft_position: number }) => p.draft_position),
+    seatCount ?? 0,
+  )) {
+    return NextResponse.json({ error: 'Draft order must assign each position exactly once' }, { status: 400 });
+  }
+
 
   const { data: existingParticipant } = await adminClient
     .from('draft_participants')

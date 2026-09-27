@@ -3,7 +3,7 @@
  *
  * Run from app/: npx tsx scripts/test-roster-participants.ts
  */
-import { buildParticipantRows, findDuplicateName, normalizeRosterNames } from '../src/lib/roster-participants';
+import { buildParticipantRows, findDuplicateName, isCompleteOrder, normalizeRosterNames, swapPosition } from '../src/lib/roster-participants';
 
 let failures = 0;
 
@@ -29,6 +29,20 @@ check('admin seat is last with position n+1', rows.map(r => ({ team: r.team_name
 check('rows carry the draft id', rows.every(r => r.draft_id === 'd1'), true);
 check('admin seat defaults to Commissioner', buildParticipantRows(['B', 'Kevin'], { draftId: 'd1', adminUserId: 'u1', seatMe: true })[2].team_name, 'Commissioner');
 check('seatMe off yields only typed rows', buildParticipantRows(['B', 'Kevin'], { draftId: 'd1', adminUserId: 'u1', seatMe: false }).length, 2);
+
+// Draft-order swap: assigning a seat a taken number must SWAP with the holder
+// (the bug that let two seats both hold #2 and stranded the draft clock).
+const order = { a: 1, b: 2, c: 3 };
+check('moving #3 to #1 swaps with the holder', swapPosition(order, 'c', 1), { a: 3, b: 2, c: 1 });
+check('moving to own position is a no-op', swapPosition(order, 'a', 1), { a: 1, b: 2, c: 3 });
+check('swap does not mutate the input', order, { a: 1, b: 2, c: 3 });
+
+// Start-time backstop: the submitted order must be a permutation of 1..N
+// across ALL seats.
+check('complete order 1..3 passes', isCompleteOrder([2, 3, 1], 3), true);
+check('duplicate numbers fail', isCompleteOrder([2, 2, 1], 3), false);
+check('missing numbers fail', isCompleteOrder([1, 2], 3), false);
+check('empty order fails', isCompleteOrder([], 3), false);
 
 // Uniqueness covers the FINAL seat list: typed names + the admin seat +
 // start-modal renames all share one namespace (case-insensitive).
