@@ -6,6 +6,9 @@ import Link from 'next/link';
 import { ActionLink } from '@/components/ActionButton';
 import { useDraftState, DraftPickRow, ParticipantData } from '@/hooks/useDraftState';
 import PlayerList from '@/components/PlayerList';
+import DraftCoach from '@/components/DraftCoach';
+import TeamStackPanel from '@/components/TeamStackPanel';
+import { toLegacyDraftState } from '@/lib/bind-draft-state';
 import TeamBrowserTab from '@/components/TeamBrowserTab';
 import TeamLogo from '@/components/TeamLogo';
 import InjuryFlag from '@/components/InjuryFlag';
@@ -193,7 +196,7 @@ function ReplacePickModal({
   );
 }
 
-type SidebarTab = 'players' | 'teams';
+type SidebarTab = 'players' | 'teams' | 'coach' | 'stack';
 
 function DraftBoardGrid({
   participants,
@@ -455,6 +458,21 @@ export default function LiveDraftPage() {
     refresh,
   } = useDraftState(draftId);
 
+  // The coach panel needs the same legacy state shape the coach page builds.
+  const adminPosition = currentParticipant?.draft_position ?? 1;
+  const adminParticipantId = currentParticipant?.id ?? '';
+  const legacyState = draft
+    ? toLegacyDraftState(
+        { players_per_team: draft.players_per_team, current_round: draft.current_round, current_pick: draft.current_pick },
+        participants, picks, availablePlayers, adminPosition, adminParticipantId,
+      )
+    : null;
+  const participantNames = Object.fromEntries(participants.map(p => [p.id, p.team_name]));
+  const coachSeasonType = draft?.season_type === 'playoffs' ? 'playoffs' : 'regular';
+  const yourPicks = currentParticipant
+    ? picks.filter(p => p.participant_id === currentParticipant.id)
+    : [];
+
   const handlePickPlayer = async (player: Player) => {
     if (!currentParticipant || picking) return;
     setPicking(true);
@@ -680,7 +698,17 @@ export default function LiveDraftPage() {
         </div>
 
         <div className={`${mobileBoardTab !== 'players' ? 'hidden lg:flex' : 'flex'} w-full lg:w-96 shrink-0 flex-col border-t lg:border-t-0 lg:border-l border-[#141e12] bg-[#050a05]`}>
-          <div className="shrink-0 flex gap-1 p-2 border-b border-[#141e12]">
+          <div className="shrink-0 flex flex-wrap gap-1 p-2 border-b border-[#141e12]">
+            <button
+              onClick={() => setSidebarTab('coach')}
+              className={`flex-1 px-2 py-2.5 text-xs font-semibold rounded transition-colors ${
+                sidebarTab === 'coach'
+                  ? 'bg-[#4a7c59] text-[#c8d9c3]'
+                  : 'bg-[#0a0f0a] text-[#5a6b57] hover:bg-[#141e12]'
+              }`}
+            >
+              Coach
+            </button>
             <button
               onClick={() => setSidebarTab('players')}
               className={`flex-1 px-2 py-2.5 text-xs font-semibold rounded transition-colors ${
@@ -701,7 +729,30 @@ export default function LiveDraftPage() {
             >
               Teams
             </button>
+            <button
+              onClick={() => setSidebarTab('stack')}
+              className={`flex-1 px-2 py-2.5 text-xs font-semibold rounded transition-colors ${
+                sidebarTab === 'stack'
+                  ? 'bg-[#4a7c59] text-[#c8d9c3]'
+                  : 'bg-[#0a0f0a] text-[#5a6b57] hover:bg-[#141e12]'
+              }`}
+            >
+              Stack
+            </button>
           </div>
+          {sidebarTab === 'coach' && legacyState && (
+            <div className="flex-1 overflow-y-auto p-4">
+              <DraftCoach
+                draftState={legacyState}
+                availablePlayers={availablePlayers}
+                allPlayers={players}
+                onDraftPlayer={handlePickPlayer}
+                draftComplete={isDraftComplete}
+                participantNames={participantNames}
+                seasonType={coachSeasonType}
+              />
+            </div>
+          )}
           {sidebarTab === 'players' ? (
             <PlayerList
               availablePlayers={availablePlayers}
@@ -714,6 +765,21 @@ export default function LiveDraftPage() {
               showSearch={true}
               showHeader={true}
             />
+          ) : sidebarTab === 'stack' ? (
+            <div className="flex-1 overflow-y-auto p-4">
+              <TeamStackPanel
+                yourPicks={yourPicks.map(p => ({
+                  playerId: p.player_id,
+                  playerName: p.player_name,
+                  round: p.round,
+                  participantId: p.participant_id,
+                }))}
+                availablePlayers={availablePlayers}
+                allPlayers={players}
+                onDraftPlayer={handlePickPlayer}
+                draftComplete={isDraftComplete}
+              />
+            </div>
           ) : (
             <div className="flex-1 overflow-y-auto p-4">
               <TeamBrowserTab
