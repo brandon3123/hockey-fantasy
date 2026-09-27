@@ -442,21 +442,9 @@ function DraftPageInner() {
     );
   }
 
-  if (isBound && bound!.isDraftComplete && draftState) {
-    return (
-      <div className="min-h-screen bg-[#050a05] flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="text-xl font-bold text-[#c8d9c3]">{bound!.draftName} is complete</div>
-          <a
-            href={`/dashboard/drafts/${boundDraftId}`}
-            className="inline-block px-4 py-2 bg-[#4a7c59] text-[#c8d9c3] rounded-lg font-semibold hover:bg-[#3d664a] transition-colors"
-          >
-            View on Dashboard
-          </a>
-        </div>
-      </div>
-    );
-  }
+  // Bound + complete: STAY on the board in a done state — the grid and tabs
+  // remain usable; a banner (below) carries the dashboard link.
+  const showBoundComplete = isBound && bound!.isDraftComplete && !!draftState;
 
   if (!setupComplete) {
     return (
@@ -561,7 +549,9 @@ function DraftPageInner() {
 
   if (!draftState) return null;
 
-  const isDraftComplete = draftState.currentRound > draftState.playersPerTeam;
+  // Standalone: the clock passes the last round. Bound: the API reports the
+  // draft complete when the final pick lands (the clock stops advancing).
+  const isDraftComplete = draftState.currentRound > draftState.playersPerTeam || showBoundComplete;
   const currentManager = !isDraftComplete ? getCurrentManager(draftState) : null;
   const isYourTurn = !isDraftComplete && currentManager === draftState.yourPosition;
   const yourPicks = getParticipantPicks(draftState, draftState.yourParticipantId);
@@ -585,6 +575,21 @@ function DraftPageInner() {
     <div className="min-h-screen bg-[#050a05] flex flex-col">
       {/* Header - Compact with team stats */}
       <div className="px-4 py-3 border-b border-[#141e12]">
+        {isBound && (
+          <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+            <span className="text-xs text-[#5a6b57]">
+              Bound to: <span className="text-[#c8d9c3] font-semibold">{bound!.draftName}</span>
+            </span>
+            {showBoundComplete && (
+              <a
+                href={`/dashboard/drafts/${boundDraftId}`}
+                className="text-xs px-3 py-1.5 bg-[#4a7c59] text-[#c8d9c3] rounded-lg font-semibold hover:bg-[#3d664a] transition-colors"
+              >
+                View on Dashboard
+              </a>
+            )}
+          </div>
+        )}
         <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
           <div>
             <h1 className="text-lg md:text-xl font-bold text-[#c8d9c3]">Draft Board</h1>
