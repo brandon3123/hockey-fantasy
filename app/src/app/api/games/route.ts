@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
         yourPlayers: [],
       })),
       totalYourPlayers: 0,
+      hasRosterContext: false,
     });
   }
 
@@ -65,6 +66,7 @@ export async function GET(request: NextRequest) {
         yourPlayers: [],
       })),
       totalYourPlayers: 0,
+      hasRosterContext: false,
     });
   }
 
@@ -94,6 +96,7 @@ export async function GET(request: NextRequest) {
         yourPlayers: [],
       })),
       totalYourPlayers: 0,
+      hasRosterContext: false,
     });
   }
 
@@ -133,5 +136,5 @@ export async function GET(request: NextRequest) {
     };
   });
 
-  return NextResponse.json({ games, totalYourPlayers });
+  return NextResponse.json({ games, totalYourPlayers, hasRosterContext: true });
 }

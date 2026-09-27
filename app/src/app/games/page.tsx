@@ -16,6 +16,10 @@ interface Game {
 interface GamesData {
   games: Game[];
   totalYourPlayers: number;
+  // True when a completed draft resolved "your players". Without it the
+  // zero-players case is "no data", not "your players are elsewhere" — and
+  // dimming every card to 40% made the page look broken mid-draft.
+  hasRosterContext: boolean;
 }
 
 export default function GamesPage() {
@@ -78,7 +82,7 @@ export default function GamesPage() {
                 <div
                   key={`${game.away}-${game.home}-${i}`}
                   className={`bg-[#0a0f0a] border rounded-lg p-4 text-center ${
-                    hasPlayers ? 'border-[#1a2f1a]' : 'border-[#141e12] opacity-40'
+                    data.hasRosterContext && !hasPlayers ? 'border-[#141e12] opacity-40' : 'border-[#1a2f1a]'
                   }`}
                 >
                   <div className="flex items-center justify-center gap-3">
