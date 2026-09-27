@@ -450,8 +450,8 @@ export default function DraftDetailPage() {
             participantMode={draft.participant_mode === 'roster' ? 'roster' : 'invite'}
             onStart={() => {
               setShowStartModal(false);
-              // Roster drafts: the admin runs the room from /draft.
-              router.push(draft.participant_mode === 'roster' ? `/draft?draft=${draftId}` : `/draft/${draftId}/live`);
+              // Both modes run in the live draft room — it has the full tab set.
+              router.push(`/draft/${draftId}/live`);
             }}
             onClose={() => setShowStartModal(false)}
           />
