@@ -59,7 +59,7 @@ function TeamLogoInline({ team }: { team: string }) {
     <img
       src={url}
       alt={team}
-      className="w-4 h-4 object-contain inline-block"
+      className="w-5 h-5 object-contain inline-block"
       onError={(e) => {
         (e.target as HTMLImageElement).style.display = 'none';
       }}
@@ -252,20 +252,20 @@ function DraftBoardGrid({
       return (
         <div
           onClick={() => onPickClick(pick)}
-          className="cursor-pointer p-1 border border-[#141e12] bg-[#050a05] rounded hover:border-[#4a7c59] transition-all"
+          className="cursor-pointer p-2 border border-[#141e12] bg-[#050a05] rounded hover:border-[#4a7c59] transition-all"
           title="Click to replace this player"
         >
-          <div className="text-xs font-medium text-[#c8d9c3] leading-tight">
+          <div className="text-sm font-semibold text-[#c8d9c3] leading-tight">
             {pick.player_name}
           </div>
-          <div className="flex items-center justify-center gap-0.5">
+          <div className="flex items-center justify-center gap-1 mt-0.5">
             {player && <TeamLogoInline team={player.team} />}
             <span className="text-xs text-[#5a6b57]">
               {player?.position}
             </span>
           </div>
           {player && player.injury.status !== 'healthy' && (
-            <div className="flex justify-center mt-0.5">
+            <div className="flex justify-center mt-1">
               <InjuryFlag player={player} />
             </div>
           )}
