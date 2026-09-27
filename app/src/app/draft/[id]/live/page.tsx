@@ -456,11 +456,15 @@ export default function LiveDraftPage() {
     currentParticipant,
     isDraftComplete,
     refresh,
+    currentUserId,
   } = useDraftState(draftId);
 
-  // The coach panel needs the same legacy state shape the coach page builds.
-  const adminPosition = currentParticipant?.draft_position ?? 1;
-  const adminParticipantId = currentParticipant?.id ?? '';
+  // The coach coaches YOUR seat (resolved by account), not whoever happens to
+  // be on the clock — currentParticipant tracks the clock for pick entry and
+  // must not leak into the coach's "your team" analysis.
+  const adminParticipant = participants.find(p => p.user_id === currentUserId);
+  const adminPosition = adminParticipant?.draft_position ?? 1;
+  const adminParticipantId = adminParticipant?.id ?? '';
   const legacyState = draft
     ? toLegacyDraftState(
         { players_per_team: draft.players_per_team, current_round: draft.current_round, current_pick: draft.current_pick },
@@ -469,8 +473,8 @@ export default function LiveDraftPage() {
     : null;
   const participantNames = Object.fromEntries(participants.map(p => [p.id, p.team_name]));
   const coachSeasonType = draft?.season_type === 'playoffs' ? 'playoffs' : 'regular';
-  const yourPicks = currentParticipant
-    ? picks.filter(p => p.participant_id === currentParticipant.id)
+  const yourPicks = adminParticipant
+    ? picks.filter(p => p.participant_id === adminParticipant.id)
     : [];
 
   const handlePickPlayer = async (player: Player) => {
