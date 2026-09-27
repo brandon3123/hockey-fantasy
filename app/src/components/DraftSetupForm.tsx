@@ -267,7 +267,7 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
           </div>
           <div>
             <label className={labelClass}>Players Per Team</label>
-            <input type="number" value={playersPerTeam} onChange={(e) => setPlayersPerTeam(parseInt(e.target.value, 10))} min={3} max={30} className={inputClass} />
+            <input type="number" value={playersPerTeam || ''} onChange={(e) => { const v = parseInt(e.target.value, 10); setPlayersPerTeam(Number.isNaN(v) ? 0 : v); }} min={3} max={30} className={inputClass} />
           </div>
         </div>
       </div>
@@ -282,7 +282,7 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className={labelClass}>Entry Fee</label>
-              <input type="number" value={entryFee} onChange={(e) => setEntryFee(parseInt(e.target.value, 10))} min={0} className={inputClass} />
+              <input type="number" value={entryFee || ''} onChange={(e) => { const v = parseInt(e.target.value, 10); setEntryFee(Number.isNaN(v) ? 0 : v); }} min={0} className={inputClass} />
             </div>
             <div>
               <label className={labelClass}>Currency</label>
