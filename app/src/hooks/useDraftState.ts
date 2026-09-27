@@ -188,9 +188,10 @@ export function useDraftState(draftId: string) {
     }, [fetchDraftData]),
   })
 
-  // Same mapping as before, just typed: missing/garbage season_type keeps the
-  // original 'playoffs' fallback; anything other than 'playoffs' is regular.
-  const seasonTypeRaw = draft?.season_type ?? 'playoffs'
+  // Same mapping as before, just typed: a draft row that hasn't loaded yet
+  // behaves as a regular draft — defaulting to playoffs made logged-out or
+  // slow-loading states show phantom playoff filtering (stale teams.json).
+  const seasonTypeRaw = draft?.season_type ?? 'regular_season'
   const seasonType: SeasonType = seasonTypeRaw === 'playoffs' ? 'playoffs' : 'regular'
 
   const enrichedPlayers = useMemo(() => {

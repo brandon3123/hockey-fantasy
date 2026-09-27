@@ -751,7 +751,7 @@ export default function LiveDraftPage() {
                 participants={participants}
                 onDraftPlayer={handlePickPlayer}
                 isDraftComplete={isDraftComplete}
-                seasonType={draft?.season_type ?? 'playoffs'}
+                seasonType={draft?.season_type ?? 'regular_season'}
                 playoffTeams={playoffTeams}
                 loading={picking}
               />

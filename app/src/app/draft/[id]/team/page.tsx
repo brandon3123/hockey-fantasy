@@ -231,7 +231,7 @@ export default function TeamPage() {
               participants={participants}
               onDraftPlayer={isSelfDraft ? handleDraftPlayer : undefined}
               isDraftComplete={isDraftComplete}
-              seasonType={draft?.season_type ?? 'playoffs'}
+              seasonType={draft?.season_type ?? 'regular_season'}
               playoffTeams={playoffTeams}
             />
           )}
