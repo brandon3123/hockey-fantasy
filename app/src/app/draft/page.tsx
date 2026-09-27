@@ -581,12 +581,26 @@ function DraftPageInner() {
               Bound to: <span className="text-[#c8d9c3] font-semibold">{bound!.draftName}</span>
             </span>
             {showBoundComplete && (
-              <a
-                href={`/dashboard/drafts/${boundDraftId}`}
-                className="text-xs px-3 py-1.5 bg-[#4a7c59] text-[#c8d9c3] rounded-lg font-semibold hover:bg-[#3d664a] transition-colors"
-              >
-                View on Dashboard
-              </a>
+              <div className="flex gap-2">
+                <a
+                  href={`/draft/${boundDraftId}/results`}
+                  className="text-xs px-3 py-1.5 bg-[#4a7c59] text-[#c8d9c3] rounded-lg font-semibold hover:bg-[#3d664a] transition-colors"
+                >
+                  View Results
+                </a>
+                <a
+                  href={`/draft/${boundDraftId}/standings`}
+                  className="text-xs px-3 py-1.5 bg-[#0a0f0a] text-[#c8d9c3] border border-[#4a7c59] rounded-lg font-semibold hover:bg-[#141e12] transition-colors"
+                >
+                  View Standings
+                </a>
+                <a
+                  href={`/dashboard/drafts/${boundDraftId}`}
+                  className="text-xs px-3 py-1.5 bg-[#0a0f0a] text-[#5a6b57] border border-[#141e12] rounded-lg font-semibold hover:bg-[#141e12] transition-colors"
+                >
+                  Dashboard
+                </a>
+              </div>
             )}
           </div>
         )}
