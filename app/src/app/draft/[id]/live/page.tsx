@@ -17,56 +17,6 @@ import TeamLogo from '@/components/TeamLogo';
 import InjuryFlag from '@/components/InjuryFlag';
 import { Player } from '@/types/player';
 
-const teamLogos: Record<string, string> = {
-  ANA: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/ana.png',
-  BOS: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/bos.png',
-  BUF: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/buf.png',
-  CAR: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/car.png',
-  CBJ: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/cbj.png',
-  CGY: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/cgy.png',
-  CHI: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/chi.png',
-  COL: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/col.png',
-  DAL: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/dal.png',
-  DET: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/det.png',
-  EDM: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/edm.png',
-  FLA: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/fla.png',
-  LAK: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/la.png',
-  MIN: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/min.png',
-  MTL: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/mtl.png',
-  NJD: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/nj.png',
-  NSH: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/nsh.png',
-  NYI: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/nyi.png',
-  NYR: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/nyr.png',
-  OTT: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/ott.png',
-  PHI: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/phi.png',
-  PIT: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/pit.png',
-  SEA: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/sea.png',
-  SJS: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/sj.png',
-  STL: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/stl.png',
-  TBL: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/tb.png',
-  TOR: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/tor.png',
-  UTA: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/uta.png',
-  VAN: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/van.png',
-  VGK: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/vgk.png',
-  WPG: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/wpg.png',
-  WSH: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/wsh.png',
-};
-
-function TeamLogoInline({ team }: { team: string }) {
-  const url = teamLogos[team.toUpperCase()];
-  if (!url) return <span className="text-[10px] text-[#5a6b57]">{team}</span>;
-  return (
-    <img
-      src={url}
-      alt={team}
-      className="w-5 h-5 object-contain inline-block"
-      onError={(e) => {
-        (e.target as HTMLImageElement).style.display = 'none';
-      }}
-    />
-  );
-}
-
 function ReplacePickModal({
   pick,
   availablePlayers,
@@ -259,7 +209,7 @@ function DraftBoardGrid({
             {pick.player_name}
           </div>
           <div className="flex items-center justify-center gap-1 mt-0.5">
-            {player && <TeamLogoInline team={player.team} />}
+            {player && <TeamLogo team={player.team} />}
             <span className="text-xs text-[#5a6b57]">
               {player?.position}
             </span>
