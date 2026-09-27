@@ -43,8 +43,9 @@ function useBoundDraft(boundDraftId: string | null): BoundDraftSession | null {
   // Hooks run unconditionally: /draft binds and unbinds via the query param.
   const bound = useDraftState(boundDraftId ?? '00000000-0000-0000-0000-000000000000');
 
-  const { draft, participants, picks, players, availablePlayers: unclaimedPlayers, loading, refresh, playoffTeams } = bound;
+  const { draft, participants, picks, players, availablePlayers: unclaimedPlayers, loading, refresh, playoffTeams, currentUserId } = bound;
   const availablePlayers = unclaimedPlayers ?? players;
+  const adminParticipant = participants.find(p => p.user_id === currentUserId);
 
   // Memoized on data identity: the hydration effect copies these into page
   // state, and an unstable reference would loop renders forever.
@@ -55,17 +56,28 @@ function useBoundDraft(boundDraftId: string | null): BoundDraftSession | null {
       return ap - bp;
     });
 
+    // The legacy components (DraftGrid, coach logic) address seats as
+    // "manager-<index>"; hosted picks carry real participant UUIDs. Map every
+    // pick into the manager-N scheme by the seat's draft position, or the
+    // grid can never match a pick to a cell.
+    const managerIndexOfSeat = new Map(ordered.map((p, i) => [p.id, i]));
+    const mappedPicks = picks
+      .filter(p => managerIndexOfSeat.has(p.participant_id))
+      .map(p => ({ ...p, participant_id: `manager-${managerIndexOfSeat.get(p.participant_id)}` }));
+
+    const adminSeatIndex = adminParticipant ? managerIndexOfSeat.get(adminParticipant.id) ?? -1 : -1;
+
     const legacyState = draft
       ? toLegacyDraftState(
           { players_per_team: draft.players_per_team, current_round: draft.current_round, current_pick: draft.current_pick },
-          participants, picks, availablePlayers, 1, ordered[0]?.id ?? '',
+          participants, mappedPicks, availablePlayers, 1, adminSeatIndex >= 0 ? `manager-${adminSeatIndex}` : '',
         )
       : null;
 
     return {
     legacyState,
     managerNames: managerNamesFrom(participants),
-    participantNames: Object.fromEntries(participants.map(p => [p.id, p.team_name])),
+    participantNames: Object.fromEntries(ordered.map((p, i) => [`manager-${i}`, p.team_name])),
     seasonType: draft?.season_type === 'playoffs' ? 'playoffs' : 'regular',
     playoffTeams: bound.playoffTeams,
     boundPicks: picks,
