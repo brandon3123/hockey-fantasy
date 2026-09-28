@@ -12,6 +12,7 @@ import BestAvailable from '@/components/BestAvailable';
 import PositionTracker from '@/components/PositionTracker';
 import TeamCompositionVisualizer from '@/components/TeamCompositionVisualizer';
 import { toLegacyDraftState } from '@/lib/bind-draft-state';
+import { isTeamPick, teamAbbrevFromPick, teamPickEntries } from '@/lib/team-picks';
 import TeamBrowserTab from '@/components/TeamBrowserTab';
 import TeamLogo from '@/components/TeamLogo';
 import InjuryFlag from '@/components/InjuryFlag';
@@ -209,10 +210,16 @@ function DraftBoardGrid({
             {pick.player_name}
           </div>
           <div className="flex items-center justify-center gap-1 mt-0.5">
-            {player && <TeamLogo team={player.team} />}
-            <span className="text-xs text-[#5a6b57]">
-              {player?.position}
-            </span>
+            {pick && isTeamPick(pick.player_id) ? (
+              <TeamLogo team={teamAbbrevFromPick(pick.player_id)} />
+            ) : (
+              <>
+                {player && <TeamLogo team={player.team} />}
+                <span className="text-xs text-[#5a6b57]">
+                  {player?.position}
+                </span>
+              </>
+            )}
           </div>
           {player && player.injury.status !== 'healthy' && (
             <div className="flex justify-center mt-1">
@@ -695,6 +702,9 @@ export default function LiveDraftPage() {
                 currentPick={(currentRound - 1) * managers + currentPick}
                 onDraftPlayer={handlePickPlayer}
                 draftComplete={isDraftComplete}
+                teamEntries={draft.team_picks_enabled
+                  ? teamPickEntries().filter(e => !picks.some(pk => pk.player_id === e.playerId))
+                  : []}
               />
             </div>
           )}
@@ -725,6 +735,9 @@ export default function LiveDraftPage() {
               pickTimerSeconds={draft.pick_timer_seconds}
               showSearch={true}
               showHeader={true}
+              teamEntries={draft.team_picks_enabled
+                ? teamPickEntries().filter(e => !picks.some(pk => pk.player_id === e.playerId))
+                : []}
             />
           )}
           {sidebarTab === 'stack' && (

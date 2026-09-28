@@ -28,6 +28,7 @@ export interface DraftData {
   current_round: number
   current_pick: number
   pick_entry_mode: string | null
+  team_picks_enabled: boolean | null
   pick_timer_seconds: number | null
   created_at: string
 }

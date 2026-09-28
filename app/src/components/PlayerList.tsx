@@ -5,6 +5,7 @@ import { Player } from '@/types/player';
 import { ParticipantData } from '@/hooks/useDraftState';
 import TeamLogo from './TeamLogo';
 import InjuryFlag, { isPlayerPickable } from './InjuryFlag';
+import type { TeamPickEntry } from '@/lib/team-picks';
 
 interface PlayerListProps {
   availablePlayers: Player[];
@@ -17,6 +18,9 @@ interface PlayerListProps {
   showSearch?: boolean;
   showHeader?: boolean;
   maxPlayers?: number;
+  // Team picks (draft.team_picks_enabled): a block of NHL team cards above
+  // the player list. Empty = feature off for this draft.
+  teamEntries?: TeamPickEntry[];
 }
 
 export default function PlayerList({
@@ -30,6 +34,7 @@ export default function PlayerList({
   showSearch = true,
   showHeader = false,
   maxPlayers,
+  teamEntries = [],
 }: PlayerListProps) {
   const [search, setSearch] = useState('');
   const [positionFilter, setPositionFilter] = useState<string>('ALL');
@@ -113,6 +118,26 @@ export default function PlayerList({
             <div className="flex flex-col items-center gap-2">
               <div className="w-6 h-6 border-2 border-[#4a7c59] border-t-transparent rounded-full animate-spin" />
               <span className="text-xs text-[#6b9b7a]">Making pick...</span>
+            </div>
+          </div>
+        )}
+        {teamEntries.length > 0 && !isDraftComplete && (
+          <div className="p-3 border-b border-[#141e12] bg-[#0a0f0a]">
+            <div className="text-xs font-semibold text-[#5a6b57] mb-2">
+              NHL Teams — 1 pt per win, 2 pts per shutout (one per manager)
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              {teamEntries.map((entry) => (
+                <button
+                  key={entry.playerId}
+                  onClick={() => onPickPlayer?.(entry as unknown as Player)}
+                  className="flex flex-col items-center gap-1 p-2 rounded-lg bg-[#050a05] border border-[#141e12] hover:border-[#4a7c59] transition-colors"
+                  title={`Draft the ${entry.playerName}`}
+                >
+                  <TeamLogo team={entry.team} className="w-7 h-7" />
+                  <span className="text-[10px] text-[#c8d9c3] font-semibold">{entry.team}</span>
+                </button>
+              ))}
             </div>
           </div>
         )}

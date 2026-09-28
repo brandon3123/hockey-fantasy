@@ -6,6 +6,7 @@ import { cn, getAdpValue, isAdpSteal, isAdpReach, isInjured } from '@/lib/utils'
 import InjuryFlag, { isPlayerPickable } from './InjuryFlag';
 import TeamLogo from './TeamLogo';
 import WatchlistToggle from './WatchlistToggle';
+import type { TeamPickEntry } from '@/lib/team-picks';
 import { loadLines, getPlayerLine } from '@/lib/moneypuck-parser';
 
 interface BestAvailableProps {
@@ -17,6 +18,9 @@ interface BestAvailableProps {
   draftComplete?: boolean;
   // Playoff advancement odds on tiles only make sense in a playoff draft.
   seasonType?: 'regular' | 'playoffs';
+  // Team picks (draft.team_picks_enabled): a block of NHL team cards above
+  // the top-3. Empty = feature off for this draft.
+  teamEntries?: TeamPickEntry[];
 }
 
 export default function BestAvailable({
@@ -27,6 +31,7 @@ export default function BestAvailable({
   onToggleWatchlist,
   draftComplete = false,
   seasonType = 'regular',
+  teamEntries = [],
 }: BestAvailableProps) {
   const [lines, setLines] = useState<any[]>([]);
 
@@ -60,6 +65,26 @@ export default function BestAvailable({
       </div>
 
       <div className="space-y-4">
+        {teamEntries.length > 0 && !draftComplete && (
+          <div className="bg-[#0a0f0a] border border-[#141e12] rounded-lg p-3">
+            <div className="text-xs font-semibold text-[#5a6b57] mb-2">
+              NHL Teams — 1 pt per win, 2 pts per shutout (one per manager)
+            </div>
+            <div className="grid grid-cols-6 gap-2">
+              {teamEntries.map((entry) => (
+                <button
+                  key={entry.playerId}
+                  onClick={() => onDraftPlayer?.(entry as unknown as Player)}
+                  className="flex flex-col items-center gap-1 p-1.5 rounded-lg bg-[#050a05] border border-[#141e12] hover:border-[#4a7c59] transition-colors"
+                  title={`Draft the ${entry.playerName}`}
+                >
+                  <TeamLogo team={entry.team} className="w-6 h-6" />
+                  <span className="text-[9px] text-[#c8d9c3] font-semibold">{entry.team}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         {top3.map((player, index) => {
           const steal = isAdpSteal(player, currentPick);
           const reach = isAdpReach(player, currentPick);

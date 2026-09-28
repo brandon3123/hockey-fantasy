@@ -17,6 +17,7 @@ import WatchlistToggle from '@/components/WatchlistToggle';
 import DraftCoach from '@/components/DraftCoach';
 import { STRATEGIES } from '@/lib/draft-coach';
 import { enrichDisplayFields } from '@/lib/utils';
+import { teamPickEntries } from '@/lib/team-picks';
 import type { DraftStrategy } from '@/types/draft-coach';
 
 interface BoundDraftSession {
@@ -25,6 +26,7 @@ interface BoundDraftSession {
   participantNames: Record<string, string>;
   seasonType: 'regular' | 'playoffs';
   playoffTeams: string[];
+  teamPicksEnabled: boolean;
   boundPicks: DraftPickRow[];
   boundParticipants: ParticipantData[];
   draftName: string;
@@ -80,6 +82,7 @@ function useBoundDraft(boundDraftId: string | null): BoundDraftSession | null {
     participantNames: Object.fromEntries(ordered.map((p, i) => [`manager-${i}`, p.team_name])),
     seasonType: draft?.season_type === 'playoffs' ? 'playoffs' : 'regular',
     playoffTeams: bound.playoffTeams,
+    teamPicksEnabled: !!draft?.team_picks_enabled,
     boundPicks: picks,
     boundParticipants: participants,
     draftName: draft?.name ?? '',
@@ -558,6 +561,11 @@ function DraftPageInner() {
   const currentPickNumber = getCurrentPickNumber(draftState);
   const canUndo = draftState.picks.length > 0 && !isDraftComplete;
 
+  // Unpicked teams for the drafting surfaces (bound + toggle on only).
+  const teamEntries = isBound && bound!.teamPicksEnabled
+    ? teamPickEntries().filter(e => !draftState.picks.some(pk => pk.playerId === e.playerId))
+    : [];
+
   // Check for duplicate players across all teams
   const duplicateCheck: Record<string, string[]> = {};
   draftState.picks.forEach(pick => {
@@ -826,6 +834,7 @@ function DraftPageInner() {
                 onDraftPlayer={handleDraftForCurrentManager}
                 watchlist={watchlist}
                 onToggleWatchlist={handleToggleWatchlist}
+                teamEntries={teamEntries}
                 draftComplete={isDraftComplete}
               />
             )}
@@ -836,6 +845,7 @@ function DraftPageInner() {
                 onPickPlayer={handleDraftForCurrentManager}
                 isDraftComplete={isDraftComplete}
                 showSearch={true}
+                teamEntries={teamEntries}
               />
             )}
 

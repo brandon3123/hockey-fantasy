@@ -7,6 +7,7 @@ import { ActionLink } from '@/components/ActionButton';
 import { useDraftState, DraftPickRow, DraftData, ParticipantData } from '@/hooks/useDraftState';
 import { Player, DraftState, DraftPick } from '@/types/player';
 import { toLegacyDraftState } from '@/lib/bind-draft-state';
+import { teamPickEntries } from '@/lib/team-picks';
 import MyTeamTab from '@/components/MyTeamTab';
 import TeamBrowserTab from '@/components/TeamBrowserTab';
 import DraftCoach from '@/components/DraftCoach';
@@ -207,6 +208,9 @@ export default function CoachPage() {
               onDraftPlayer={handleDraftPlayer}
               draftComplete={isDraftComplete}
               seasonType={draft.season_type === 'playoffs' ? 'playoffs' : 'regular'}
+              teamEntries={draft.team_picks_enabled
+                ? teamPickEntries().filter(e => !picks.some(pk => pk.player_id === e.playerId))
+                : []}
             />
           )}
 
@@ -216,6 +220,9 @@ export default function CoachPage() {
               onPickPlayer={handleDraftPlayer}
               isDraftComplete={isDraftComplete}
               showSearch={true}
+              teamEntries={draft.team_picks_enabled
+                ? teamPickEntries().filter(e => !picks.some(pk => pk.player_id === e.playerId))
+                : []}
             />
           )}
 

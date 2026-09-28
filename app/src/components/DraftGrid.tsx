@@ -4,6 +4,7 @@ import { DraftState, DraftPick, Player } from '@/types/player';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import TeamLogo from './TeamLogo';
+import { isTeamPick, teamAbbrevFromPick } from '@/lib/team-picks';
 import InjuryFlag from './InjuryFlag';
 
 interface DraftGridProps {
@@ -161,11 +162,17 @@ export default function DraftGrid({ draftState, managerNames, availablePlayers, 
                                 {pick.playerName}
                               </div>
                               <div className="flex items-center justify-center gap-0.5">
-                                {player && <TeamLogo team={player.team} className="w-3 h-3" />}
-                                {player && (
-                                  <span className="text-xs text-[#5a6b57]">
-                                    {player.position}
-                                  </span>
+                                {isTeamPick(pick.playerId) ? (
+                                  <TeamLogo team={teamAbbrevFromPick(pick.playerId)} className="w-3 h-3" />
+                                ) : (
+                                  <>
+                                    {player && <TeamLogo team={player.team} className="w-3 h-3" />}
+                                    {player && (
+                                      <span className="text-xs text-[#5a6b57]">
+                                        {player.position}
+                                      </span>
+                                    )}
+                                  </>
                                 )}
                               </div>
                               {player && player.injury.status !== 'healthy' && (
