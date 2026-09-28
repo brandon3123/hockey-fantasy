@@ -144,7 +144,9 @@ export async function GET(request: Request) {
     if (draft.team_picks_enabled) {
       const ownedTeamIds = new Set(picks.map(p => p.player_id).filter(id => isTeamPick(id)));
       if (ownedTeamIds.size > 0) {
-        const teamRows: typeof rowsToUpsert = [];
+        // Aggregate per team: a team can play twice in one day (preseason
+        // split squads), and a duplicate conflict key in one upsert fails.
+        const teamPointsByPick = new Map<string, number>();
         for (const game of completedGames) {
           if (typeof game.awayScore !== 'number' || typeof game.homeScore !== 'number') continue;
           const sides = [
@@ -154,15 +156,16 @@ export async function GET(request: Request) {
           for (const side of sides) {
             const teamPickId = `team-${side.abbrev.toLowerCase()}`;
             if (!ownedTeamIds.has(teamPickId)) continue;
-            teamRows.push({
-              player_id: teamPickId, draft_id: draft.id,
-              season_type: draft.season_type ?? 'regular_season',
-              score_date: dateStr, goals: 0, assists: 0,
-              points: computeTeamPoints(side.won, side.shutout),
-            });
+            const pts = computeTeamPoints(side.won, side.shutout);
+            teamPointsByPick.set(teamPickId, (teamPointsByPick.get(teamPickId) ?? 0) + pts);
           }
         }
-        if (teamRows.length > 0) {
+        if (teamPointsByPick.size > 0) {
+          const teamRows = [...teamPointsByPick].map(([player_id, points]) => ({
+            player_id, draft_id: draft.id,
+            season_type: draft.season_type ?? 'regular_season',
+            score_date: dateStr, goals: 0, assists: 0, points,
+          }));
           const { error: teamUpsertError } = await adminClient
             .from('player_scores')
             .upsert(teamRows, { onConflict: 'player_id,draft_id,score_date' });
