@@ -8,6 +8,8 @@ export interface TonightGame {
   homeLogo: string;
   time: string;
   gameState: string;
+  awayScore?: number;
+  homeScore?: number;
 }
 
 export interface PlayerGameResult {
@@ -17,6 +19,7 @@ export interface PlayerGameResult {
   opponent: string;
   goals: number;
   assists: number;
+  positionCode: string;
 }
 
 export interface RosterPlayer {
@@ -82,6 +85,7 @@ interface BoxscorePlayer {
   name: { default: string };
   goals: number;
   assists: number;
+  positionCode: string;
 }
 
 interface BoxscoreResponse {
@@ -154,6 +158,8 @@ function mapGame(game: ScheduleGame): TonightGame {
     homeLogo: game.homeTeam.logo,
     time: formatTimeMT(game.startTimeUTC),
     gameState: game.gameState,
+    awayScore: game.awayTeam.score,
+    homeScore: game.homeTeam.score,
   };
 }
 
@@ -226,6 +232,7 @@ export async function fetchGameResults(
           opponent,
           goals: player.goals,
           assists: player.assists,
+          positionCode: player.positionCode,
         });
       }
     }

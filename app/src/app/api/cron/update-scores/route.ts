@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { fetchCompletedGames, fetchGameResults, buildNhlIdToNameMap, fetchTonightGames } from '@/lib/nhl-api';
 import { sendDailyEmails } from '@/lib/send-daily-email';
+import { computePlayerPoints, computeTeamPoints, isTeamPick } from '@/lib/scoring';
 
 export async function GET(request: Request) {
   if (process.env.CRON_ENABLED !== 'true') {
@@ -37,7 +38,7 @@ export async function GET(request: Request) {
 
   const { data: drafts, error: draftsError } = await adminClient
     .from('drafts')
-    .select('id, scoring_format, season_type, status')
+    .select('id, scoring_format, season_type, status, d_goal_bonus, team_picks_enabled')
     .in('status', ['complete', 'in_progress']);
 
   if (draftsError || !drafts || drafts.length === 0) {
@@ -108,9 +109,11 @@ export async function GET(request: Request) {
       const playerId = pickMap.get(fullName.toLowerCase());
       if (!playerId) { unmatchedNames.push(fullName); continue; }
 
-      const points = draft.scoring_format === '2pt_goals_1pt_assists'
-        ? result.goals * 2 + result.assists
-        : result.goals + result.assists;
+      const points = computePlayerPoints(result.goals, result.assists, {
+        scoringFormat: draft.scoring_format,
+        isDefenseman: result.positionCode === 'D',
+        dGoalBonus: !!draft.d_goal_bonus,
+      });
 
       rowsToUpsert.push({
         player_id: playerId, draft_id: draft.id,
@@ -134,6 +137,39 @@ export async function GET(request: Request) {
         .upsert(rowsToUpsert, { onConflict: 'player_id,draft_id,score_date' });
       if (upsertError) errors.push(`Upsert error: ${upsertError.message}`);
       else upserted = rowsToUpsert.length;
+    }
+
+    // Team picks: 1 pt per win, 2 for a shutout, scored from the schedule's
+    // game scores. Only owned teams get rows; the season_type matches picks.
+    if (draft.team_picks_enabled) {
+      const ownedTeamIds = new Set(picks.map(p => p.player_id).filter(id => isTeamPick(id)));
+      if (ownedTeamIds.size > 0) {
+        const teamRows: typeof rowsToUpsert = [];
+        for (const game of completedGames) {
+          if (typeof game.awayScore !== 'number' || typeof game.homeScore !== 'number') continue;
+          const sides = [
+            { abbrev: game.away, won: game.awayScore > game.homeScore, shutout: game.homeScore === 0 },
+            { abbrev: game.home, won: game.homeScore > game.awayScore, shutout: game.awayScore === 0 },
+          ];
+          for (const side of sides) {
+            const teamPickId = `team-${side.abbrev.toLowerCase()}`;
+            if (!ownedTeamIds.has(teamPickId)) continue;
+            teamRows.push({
+              player_id: teamPickId, draft_id: draft.id,
+              season_type: draft.season_type ?? 'regular_season',
+              score_date: dateStr, goals: 0, assists: 0,
+              points: computeTeamPoints(side.won, side.shutout),
+            });
+          }
+        }
+        if (teamRows.length > 0) {
+          const { error: teamUpsertError } = await adminClient
+            .from('player_scores')
+            .upsert(teamRows, { onConflict: 'player_id,draft_id,score_date' });
+          if (teamUpsertError) errors.push(`Team upsert error: ${teamUpsertError.message}`);
+          else upserted += teamRows.length;
+        }
+      }
     }
 
     if (unmatchedNames.length > 0) errors.push(`Unmatched: ${unmatchedNames.join(', ')}`);
