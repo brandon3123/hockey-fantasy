@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServerClient } from '@supabase/ssr';
 import { fetchTonightGames, fetchEspnInjuries, fetchActivePlayoffTeams } from '@/lib/nhl-api';
+import { isTeamPick, teamAbbrevFromPick } from '@/lib/scoring';
 import { isEliminatedFor } from '@/lib/elimination';
 
 export async function GET(
@@ -96,7 +97,12 @@ export async function GET(
     const participantPicks = picks.filter((p) => p.participant_id === participant.id);
 
     const roster = participantPicks.map((pick) => {
-      const playerInfo = playerMap.get(pick.player_id) || { name: pick.player_name || pick.player_id, team: '', position: '' };
+      // Team picks aren't in the players table — their logo comes from the
+      // pick id itself ('team-edm' → 'EDM').
+      const isTeam = isTeamPick(pick.player_id);
+      const playerInfo = isTeam
+        ? { name: pick.player_name || pick.player_id, team: teamAbbrevFromPick(pick.player_id), position: 'TEAM' }
+        : (playerMap.get(pick.player_id) || { name: pick.player_name || pick.player_id, team: '', position: '' });
       const playerScores = scoresByPlayer.get(pick.player_id);
 
       let totalGoals = 0;

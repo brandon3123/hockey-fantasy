@@ -4,6 +4,7 @@ import { createServerClient } from '@supabase/ssr';
 import { fetchTonightGames, fetchEspnInjuries, fetchActivePlayoffTeams } from '@/lib/nhl-api';
 import { getIsAdmin } from '@/lib/admin';
 import { isEliminatedFor } from '@/lib/elimination';
+import { isTeamPick, teamAbbrevFromPick } from '@/lib/scoring';
 
 export async function GET() {
   const supabase = await createClient();
@@ -150,8 +151,8 @@ export async function GET() {
     return {
       playerId: pick.player_id,
       playerName: player?.name || pick.player_name,
-      team: player?.team || '',
-      position: player?.position || '',
+      team: player?.team || (isTeamPick(pick.player_id) ? teamAbbrevFromPick(pick.player_id) : ''),
+      position: player?.position || (isTeamPick(pick.player_id) ? 'TEAM' : ''),
       totalPoints,
       yesterdayPoints,
     };
