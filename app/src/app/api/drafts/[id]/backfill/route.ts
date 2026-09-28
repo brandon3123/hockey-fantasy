@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createServerClient } from '@supabase/ssr';
 import { fetchCompletedGames, fetchGameResults, buildNhlIdToNameMap } from '@/lib/nhl-api';
 import { getIsAdmin } from '@/lib/admin';
+import { computePlayerPoints, computeTeamPoints, isTeamPick } from '@/lib/scoring';
 
 export async function POST(
   request: Request,
@@ -14,7 +15,7 @@ export async function POST(
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { data: draft } = await supabase
-    .from('drafts').select('scoring_format, season_type').eq('id', id).single();
+    .from('drafts').select('scoring_format, season_type, d_goal_bonus, team_picks_enabled').eq('id', id).single();
   if (!draft) return NextResponse.json({ error: 'Draft not found' }, { status: 404 });
   if (!await getIsAdmin(user.id))
     return NextResponse.json({ error: 'Admin only' }, { status: 403 });
@@ -37,6 +38,11 @@ export async function POST(
   for (const pick of picks) {
     if (pick.player_name) pickMap.set(pick.player_name.toLowerCase(), pick.player_id);
   }
+
+  // Positions for the D-goal bonus.
+  const { data: playerRows } = await adminClient
+    .from('players').select('id, position').in('id', picks.map(p => p.player_id));
+  const positionById = new Map((playerRows ?? []).map(p => [p.id, p.position]));
 
   const { data: participants } = await adminClient
     .from('draft_participants').select('id, team_name').eq('draft_id', id);
@@ -71,8 +77,11 @@ export async function POST(
       if (!fullName) continue;
       const playerId = pickMap.get(fullName.toLowerCase());
       if (!playerId) { errors.push(`Unmatched: ${fullName}`); continue; }
-      const pts = draft.scoring_format === '2pt_goals_1pt_assists'
-        ? result.goals * 2 + result.assists : result.goals + result.assists;
+      const pts = computePlayerPoints(result.goals, result.assists, {
+        scoringFormat: draft.scoring_format,
+        isDefenseman: positionById.get(playerId) === 'D',
+        dGoalBonus: !!draft.d_goal_bonus,
+      });
       rowsToUpsert.push({
         player_id: playerId, draft_id: id,
         season_type: draft.season_type ?? 'regular_season',
@@ -91,6 +100,38 @@ export async function POST(
         .from('player_scores').upsert(rowsToUpsert, { onConflict: 'player_id,draft_id,score_date' });
       if (upsertError) errors.push(`Upsert error: ${upsertError.message}`);
       else upserted = rowsToUpsert.length;
+    }
+
+    // Team picks score on backfilled dates too, so rebuilt history keeps
+    // team totals consistent with the cron's.
+    if (draft.team_picks_enabled) {
+      const ownedTeamIds = new Set(picks.map(p => p.player_id).filter(pid => isTeamPick(pid)));
+      if (ownedTeamIds.size > 0) {
+        const teamRows: typeof rowsToUpsert = [];
+        for (const game of completedGames) {
+          if (typeof game.awayScore !== 'number' || typeof game.homeScore !== 'number') continue;
+          const sides = [
+            { abbrev: game.away, won: game.awayScore > game.homeScore, shutout: game.homeScore === 0 },
+            { abbrev: game.home, won: game.homeScore > game.awayScore, shutout: game.awayScore === 0 },
+          ];
+          for (const side of sides) {
+            const teamPickId = `team-${side.abbrev.toLowerCase()}`;
+            if (!ownedTeamIds.has(teamPickId)) continue;
+            teamRows.push({
+              player_id: teamPickId, draft_id: id,
+              season_type: draft.season_type ?? 'regular_season',
+              score_date: dateStr, goals: 0, assists: 0,
+              points: computeTeamPoints(side.won, side.shutout),
+            });
+          }
+        }
+        if (teamRows.length > 0) {
+          const { error: teamUpsertError } = await adminClient
+            .from('player_scores').upsert(teamRows, { onConflict: 'player_id,draft_id,score_date' });
+          if (teamUpsertError) errors.push(`Team upsert error: ${teamUpsertError.message}`);
+          else upserted += teamRows.length;
+        }
+      }
     }
 
     const teamPointsMap = new Map<string, number>();
