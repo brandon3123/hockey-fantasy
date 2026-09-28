@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServerClient } from '@supabase/ssr';
 import { getIsAdmin } from '@/lib/admin';
+import { isTeamPick } from '@/lib/scoring';
 
 export async function GET(
   request: Request,
@@ -33,7 +34,7 @@ export async function POST(
 
   const { data: draft, error: draftError } = await supabase
     .from('drafts')
-    .select('id, status, current_round, current_pick, players_per_team, pick_entry_mode')
+    .select('id, status, current_round, current_pick, players_per_team, pick_entry_mode, team_picks_enabled')
     .eq('id', id)
     .single();
 
@@ -61,6 +62,24 @@ export async function POST(
 
   if (existingPick) {
     return NextResponse.json({ error: 'Player already drafted' }, { status: 409 });
+  }
+
+  // Team-pick rules: the mechanic must be toggled on, and a manager can hold
+  // at most one team (spec: "one of a manager's picks can be a team").
+  if (isTeamPick(player_id)) {
+    if (!draft.team_picks_enabled) {
+      return NextResponse.json({ error: 'Team picks are not enabled for this draft' }, { status: 400 });
+    }
+    const { data: existingTeamPick } = await supabase
+      .from('draft_picks')
+      .select('id')
+      .eq('draft_id', id)
+      .eq('participant_id', participant_id)
+      .like('player_id', 'team-%')
+      .maybeSingle();
+    if (existingTeamPick) {
+      return NextResponse.json({ error: 'Manager already has a team pick' }, { status: 400 });
+    }
   }
 
   const isAdmin = await getIsAdmin(user.id);
@@ -139,6 +158,23 @@ export async function POST(
   const maxPicks = managers * draft.players_per_team;
 
   if (totalPicks >= maxPicks) {
+    // Mandatory team picks (when toggled): the draft cannot complete while any
+    // manager lacks one. The clock does not advance — the admin swaps a late
+    // player pick for a team via undo/replace, then the final pick completes.
+    if (draft.team_picks_enabled) {
+      const { data: allPicks } = await adminClient
+        .from('draft_picks')
+        .select('participant_id, player_id')
+        .eq('draft_id', id);
+      const seatsWithoutTeam = new Set((allParticipants ?? []).map(p => p.id));
+      for (const p of allPicks ?? []) {
+        if (isTeamPick(p.player_id)) seatsWithoutTeam.delete(p.participant_id);
+      }
+      if (seatsWithoutTeam.size > 0) {
+        return NextResponse.json({ error: 'Every manager needs a team pick before the draft can complete' }, { status: 400 });
+      }
+    }
+
     const { error: completeError } = await adminClient
       .from('drafts')
       .update({ status: 'complete' })
