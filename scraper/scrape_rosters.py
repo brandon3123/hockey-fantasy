@@ -65,6 +65,31 @@ def roster_teams(mode: str) -> List[str]:
     return get_playoff_teams()
 
 
+# The NHL roster API omits some players — anyone starting the season on IR or
+# with a listing quirk vanishes from the board entirely. Keep them draftable.
+MANUAL_ROSTER_ADDITIONS = [
+    {"name": "Connor Bedard", "team": "CHI", "position": "C"},
+]
+
+
+def apply_roster_additions(
+    rosters: List[Dict], additions: List[Dict] = MANUAL_ROSTER_ADDITIONS
+) -> List[Dict]:
+    """Append manual additions not already present (case-insensitive on name+team)."""
+    existing = {(p["name"].lower(), p["team"].upper()) for p in rosters}
+    for add in additions:
+        key = (add["name"].lower(), add["team"].upper())
+        if key in existing:
+            continue
+        rosters.append({
+            "name": add["name"],
+            "team": add["team"],
+            "position": add["position"],
+            "injury": {"status": "healthy", "expectedReturn": None},
+        })
+    return rosters
+
+
 def scrape_rosters(season: str, mode: str) -> List[Dict]:
     """
     Scrape NHL skater rosters for the given season and draft mode.
@@ -128,7 +153,7 @@ def scrape_rosters(season: str, mode: str) -> List[Dict]:
             print(f"Warning: Failed to scrape {team_abbr} roster: {e}")
             continue
 
-    return rosters
+    return apply_roster_additions(rosters)
 
 def scrape_injury_report() -> Dict[str, Dict]:
     """
