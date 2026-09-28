@@ -83,6 +83,7 @@ export async function PATCH(
     'name', 'season_type', 'draft_date', 'draft_time', 'location',
     'entry_fee', 'currency', 'payment_method', 'payment_info',
     'notes', 'players_per_team', 'scoring_format',
+    'd_goal_bonus', 'team_picks_enabled',
     // participant_mode is fixed at creation — editing it would silently move
     // a roster draft to invites (or vice versa) and strand its seats.
   ];

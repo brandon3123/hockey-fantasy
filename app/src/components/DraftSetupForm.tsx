@@ -19,6 +19,8 @@ interface DraftSetupFormProps {
     notes?: string;
     players_per_team?: number;
     scoring_format?: string;
+    d_goal_bonus?: boolean;
+    team_picks_enabled?: boolean;
   };
   onSubmit: (data: Record<string, unknown>) => Promise<{ error?: string; draft?: Record<string, unknown> }>;
   submitLabel?: string;
@@ -42,6 +44,8 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
   const [notes, setNotes] = useState(initialData?.notes ?? '');
   const [playersPerTeam, setPlayersPerTeam] = useState(initialData?.players_per_team ?? 10);
   const [scoringFormat, setScoringFormat] = useState(initialData?.scoring_format ?? '1pt_per_goal_assist');
+  const [dGoalBonus, setDGoalBonus] = useState(initialData?.d_goal_bonus ?? false);
+  const [teamPicksEnabled, setTeamPicksEnabled] = useState(initialData?.team_picks_enabled ?? false);
   const [participantMode, setParticipantMode] = useState<'invite' | 'roster'>(
     (initialData?.participant_mode as 'invite' | 'roster') ?? 'invite'
   );
@@ -69,6 +73,8 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
       notes: notes || null,
       players_per_team: playersPerTeam,
       scoring_format: scoringFormat,
+      d_goal_bonus: dGoalBonus,
+      team_picks_enabled: teamPicksEnabled,
     };
 
     // participant_mode is frozen at creation — editing never flips it.
@@ -140,6 +146,16 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
                 <option value="2pt_goals_1pt_assists">2 pts Goals, 1 pt Assists</option>
               </select>
             </div>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            <label className="flex items-center gap-2 text-xs text-[#c8d9c3]">
+              <input type="checkbox" checked={dGoalBonus} onChange={(e) => setDGoalBonus(e.target.checked)} />
+              Defenseman goals +1 pt
+            </label>
+            <label className="flex items-center gap-2 text-xs text-[#c8d9c3]">
+              <input type="checkbox" checked={teamPicksEnabled} onChange={(e) => setTeamPicksEnabled(e.target.checked)} />
+              Include team picks (1 pt/win, 2 pts/shutout)
+            </label>
           </div>
           {!isEditing && (
             <div>

@@ -109,6 +109,8 @@ export async function POST(request: Request) {
     notes,
     players_per_team,
     scoring_format,
+    d_goal_bonus,
+    team_picks_enabled,
     participant_mode,
     participants,
     seat_me,
@@ -162,6 +164,8 @@ export async function POST(request: Request) {
       notes,
       players_per_team,
       scoring_format,
+      d_goal_bonus: !!d_goal_bonus,
+      team_picks_enabled: !!team_picks_enabled,
       admin_user_id: user.id,
     })
     .select()
