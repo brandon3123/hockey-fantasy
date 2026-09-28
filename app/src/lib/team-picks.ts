@@ -8,6 +8,10 @@ import { isTeamPick, teamAbbrevFromPick } from '@/lib/scoring';
 export const TEAM_PICK_POSITION = 'TEAM';
 
 export interface TeamPickEntry {
+  // Player-compatible: surfaces pass entries through pick handlers typed for
+  // Player, which read `name` (display) and derive/`id` (pick payload).
+  id: string;
+  name: string;
   playerId: string;
   playerName: string;
   team: string;
@@ -33,6 +37,8 @@ const TEAMS: Array<[string, string]> = [
 /** The 32 team entries, in division-ish alphabetical order by abbrev. */
 export function teamPickEntries(): TeamPickEntry[] {
   return TEAMS.map(([abbrev, name]) => ({
+    id: `team-${abbrev.toLowerCase()}`,
+    name,
     playerId: `team-${abbrev.toLowerCase()}`,
     playerName: name,
     team: abbrev,

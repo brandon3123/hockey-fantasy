@@ -23,6 +23,7 @@ check('every position is TEAM', entries.every(e => e.position === TEAM_PICK_POSI
 
 const edm = entries.find(e => e.playerId === 'team-edm');
 check('team-edm is Edmonton Oilers', edm && { name: edm.playerName, team: edm.team }, { name: 'Edmonton Oilers', team: 'EDM' });
+check('entries carry Player-compatible name + id', entries.every(e => e.name === e.playerName && e.id === e.playerId), true);
 
 check('entries are zero-safe on points', entries.every(e => e.displayPoints === 0 && e.displayGames === 0), true);
 

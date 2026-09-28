@@ -444,7 +444,7 @@ export default function LiveDraftPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           participant_id: currentParticipant.id,
-          player_id: `${player.name}-${player.team}-${player.position}`.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          player_id: player.id ?? `${player.name}-${player.team}-${player.position}`.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
           player_name: player.name,
         }),
       });
