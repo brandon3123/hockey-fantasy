@@ -180,7 +180,8 @@ export async function fetchCompletedGames(
   date: string
 ): Promise<TonightGame[]> {
   const games = await fetchScheduleByDate(date);
-  return games.filter((g) => g.gameState === "OFF");
+  // api-web marks finished games FINAL (the deprecated stats API used OFF).
+  return games.filter((g) => g.gameState === "OFF" || g.gameState === "FINAL");
 }
 
 export async function fetchTonightGames(timezone: string = 'America/Denver'): Promise<TonightGame[]> {
@@ -191,14 +192,10 @@ export async function fetchTonightGames(timezone: string = 'America/Denver'): Pr
     const res = await fetch(`${NHL_API_BASE}/v1/schedule/now`);
     if (!res.ok) return fetchScheduleByDate(todayTz);
     const data: ScheduleResponse = await res.json();
+    // No fallback to "the next day with games": showing future games as
+    // tonight is exactly the bug this avoids. Empty means empty.
     const day = data.gameWeek?.find((d) => d.date === todayTz);
-    if (!day || day.games.length === 0) {
-      for (const d of data.gameWeek ?? []) {
-        if (d.games.length > 0) return d.games.map(mapGame);
-      }
-      return [];
-    }
-    return day.games.map(mapGame);
+    return day ? day.games.map(mapGame) : [];
   } catch {
     return fetchScheduleByDate(todayTz);
   }
