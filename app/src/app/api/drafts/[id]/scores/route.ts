@@ -21,9 +21,6 @@ export async function PATCH(
 
   const { player_id, goals, assists } = await request.json();
   if (!player_id) return NextResponse.json({ error: 'player_id required' }, { status: 400 });
-  if (isTeamPick(player_id)) {
-    return NextResponse.json({ error: 'Team picks score automatically from game results' }, { status: 400 });
-  }
 
   const g = typeof goals === 'number' ? goals : 0;
   const a = typeof assists === 'number' ? assists : 0;
@@ -33,14 +30,23 @@ export async function PATCH(
     { cookies: { getAll() { return []; }, setAll() {} } }
   );
 
-  // The D bonus needs the player's position.
-  const { data: playerRow } = await adminClient
-    .from('players').select('position').eq('id', player_id).single();
-  const pts = computePlayerPoints(g, a, {
-    scoringFormat: draft.scoring_format,
-    isDefenseman: playerRow?.position === 'D',
-    dGoalBonus: !!draft.d_goal_bonus,
-  });
+  let pts: number;
+  if (isTeamPick(player_id)) {
+    // For team picks the two numbers are WINS and SHUTOUTS (the scores page
+    // labels them so). A shutout is already a win: points = wins + shutouts,
+    // i.e. a plain win = 1, a shutout win = 2. Stored in the goals/assists
+    // columns to keep the row shape.
+    pts = g + a;
+  } else {
+    // The D bonus needs the player's position.
+    const { data: playerRow } = await adminClient
+      .from('players').select('position').eq('id', player_id).single();
+    pts = computePlayerPoints(g, a, {
+      scoringFormat: draft.scoring_format,
+      isDefenseman: playerRow?.position === 'D',
+      dGoalBonus: !!draft.d_goal_bonus,
+    });
+  }
 
   const { data: existing } = await adminClient
     .from('player_scores').select('season_type').eq('draft_id', id).eq('player_id', player_id).limit(1);
