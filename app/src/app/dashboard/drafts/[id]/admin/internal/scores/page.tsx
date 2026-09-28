@@ -258,11 +258,17 @@ export default function ScoresPage() {
 
   const handleSave = async (playerId: string) => {
     setSaving(true);
-    await fetch(`/api/drafts/${draftId}/scores`, {
+    const res = await fetch(`/api/drafts/${draftId}/scores`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ player_id: playerId, goals: editGoals, assists: editAssists }),
     });
+    if (!res.ok) {
+      // Surface server rejections (FK issues, validation) — a silent failure
+      // read as "nothing gets saved".
+      const data = await res.json().catch(() => ({}));
+      alert(data.error || 'Failed to save score');
+    }
     setEditingPlayer(null);
     setSaving(false);
     fetchStandings();
