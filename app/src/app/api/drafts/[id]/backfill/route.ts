@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServerClient } from '@supabase/ssr';
-import { fetchCompletedGames, fetchGameResults, buildNhlIdToNameMap } from '@/lib/nhl-api';
+import { fetchCompletedGames, fetchGameResults, buildNhlIdToPlayerMap } from '@/lib/nhl-api';
 import { getIsAdmin } from '@/lib/admin';
 import { computePlayerPoints, computeTeamPoints, isTeamPick } from '@/lib/scoring';
 
@@ -39,10 +39,7 @@ export async function POST(
     if (pick.player_name) pickMap.set(pick.player_name.toLowerCase(), pick.player_id);
   }
 
-  // Positions for the D-goal bonus.
-  const { data: playerRows } = await adminClient
-    .from('players').select('id, position').in('id', picks.map(p => p.player_id));
-  const positionById = new Map((playerRows ?? []).map(p => [p.id, p.position]));
+  // Positions for the D-goal bonus come from the roster map (nhlIdToPlayer).
 
   const { data: participants } = await adminClient
     .from('draft_participants').select('id, team_name').eq('draft_id', id);
@@ -60,7 +57,7 @@ export async function POST(
   for (const dateStr of dates) {
     const completedGames = await fetchCompletedGames(dateStr);
     const teamAbbrevs = [...new Set(completedGames.flatMap(g => [g.away, g.home]))];
-    const nhlIdToName = await buildNhlIdToNameMap(teamAbbrevs);
+    const nhlIdToPlayer = await buildNhlIdToPlayerMap(teamAbbrevs);
 
     const allGameResults: Awaited<ReturnType<typeof fetchGameResults>> = [];
     for (const game of completedGames) {
@@ -73,13 +70,14 @@ export async function POST(
     const scorers: { playerName: string; nhlTeam: string; goals: number; assists: number; points: number; fantasyTeam: string }[] = [];
 
     for (const result of allGameResults) {
-      const fullName = nhlIdToName.get(result.nhlId);
-      if (!fullName) continue;
+      const nhlPlayer = nhlIdToPlayer.get(result.nhlId);
+      if (!nhlPlayer) continue;
+      const fullName = nhlPlayer.name;
       const playerId = pickMap.get(fullName.toLowerCase());
       if (!playerId) { errors.push(`Unmatched: ${fullName}`); continue; }
       const pts = computePlayerPoints(result.goals, result.assists, {
         scoringFormat: draft.scoring_format,
-        isDefenseman: positionById.get(playerId) === 'D',
+        isDefenseman: nhlPlayer.isDefenseman,
         dGoalBonus: !!draft.d_goal_bonus,
       });
       rowsToUpsert.push({

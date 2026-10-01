@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
-import { fetchCompletedGames, fetchGameResults, buildNhlIdToNameMap, fetchTonightGames } from '@/lib/nhl-api';
+import { fetchCompletedGames, fetchGameResults, buildNhlIdToPlayerMap, fetchTonightGames } from '@/lib/nhl-api';
 import { sendDailyEmails } from '@/lib/send-daily-email';
 import { computePlayerPoints, computeTeamPoints, isTeamPick } from '@/lib/scoring';
 
@@ -50,7 +50,7 @@ export async function GET(request: Request) {
 
   const completedGames = await fetchCompletedGames(dateStr);
   const teamAbbrevs = [...new Set(completedGames.flatMap((g) => [g.away, g.home]))];
-  const nhlIdToName = await buildNhlIdToNameMap(teamAbbrevs);
+  const nhlIdToPlayer = await buildNhlIdToPlayerMap(teamAbbrevs);
 
   const allResults: Awaited<ReturnType<typeof fetchGameResults>> = [];
   for (const game of completedGames) {
@@ -104,14 +104,17 @@ export async function GET(request: Request) {
     const scorers: { playerName: string; nhlTeam: string; goals: number; assists: number; points: number; fantasyTeam: string }[] = [];
 
     for (const result of allResults) {
-      const fullName = nhlIdToName.get(result.nhlId);
-      if (!fullName) continue;
+      const nhlPlayer = nhlIdToPlayer.get(result.nhlId);
+      if (!nhlPlayer) continue;
+      const fullName = nhlPlayer.name;
       const playerId = pickMap.get(fullName.toLowerCase());
       if (!playerId) { unmatchedNames.push(fullName); continue; }
 
+      // isDefenseman comes from the roster (the boxscore's positionCode is
+      // unreliable/null for some players).
       const points = computePlayerPoints(result.goals, result.assists, {
         scoringFormat: draft.scoring_format,
-        isDefenseman: result.positionCode === 'D',
+        isDefenseman: nhlPlayer.isDefenseman,
         dGoalBonus: !!draft.d_goal_bonus,
       });
 

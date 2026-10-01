@@ -76,7 +76,9 @@ interface ScheduleResponse {
 
 interface BoxscoreTeamStats {
   forwards: BoxscorePlayer[];
-  defensemen: BoxscorePlayer[];
+  // The boxscore has used both keys for the defense group across seasons.
+  defensemen?: BoxscorePlayer[];
+  defense?: BoxscorePlayer[];
   goalies: BoxscorePlayer[];
 }
 
@@ -85,7 +87,7 @@ interface BoxscorePlayer {
   name: { default: string };
   goals: number;
   assists: number;
-  positionCode: string;
+  positionCode: string | null;
 }
 
 interface BoxscoreResponse {
@@ -219,8 +221,13 @@ export async function fetchGameResults(
   ];
 
   for (const { stats, team, opponent } of sides) {
-    for (const pos of ["forwards", "defensemen", "goalies"] as const) {
-      for (const player of stats[pos] ?? []) {
+    // The defense group has been keyed both "defensemen" and "defense" across
+    // API versions — read both, deduped, or every defenseman vanishes.
+    const seenIds = new Set<number>();
+    for (const group of ["forwards", "defensemen", "defense", "goalies"] as const) {
+      for (const player of stats[group] ?? []) {
+        if (seenIds.has(player.playerId)) continue;
+        seenIds.add(player.playerId);
         if (player.goals === 0 && player.assists === 0) continue;
         results.push({
           nhlId: player.playerId,
@@ -229,7 +236,7 @@ export async function fetchGameResults(
           opponent,
           goals: player.goals,
           assists: player.assists,
-          positionCode: player.positionCode,
+          positionCode: player.positionCode ?? "",
         });
       }
     }
@@ -266,17 +273,17 @@ export async function fetchTeamRoster(
   return players;
 }
 
-export async function buildNhlIdToNameMap(
+export async function buildNhlIdToPlayerMap(
   teamAbbrevs: string[]
-): Promise<Map<number, string>> {
-  const nameMap = new Map<number, string>();
+): Promise<Map<number, { name: string; isDefenseman: boolean }>> {
+  const playerMap = new Map<number, { name: string; isDefenseman: boolean }>();
   for (const team of teamAbbrevs) {
     const players = await fetchTeamRoster(team);
     for (const p of players) {
-      nameMap.set(p.nhlId, p.fullName);
+      playerMap.set(p.nhlId, { name: p.fullName, isDefenseman: p.position === "D" });
     }
   }
-  return nameMap;
+  return playerMap;
 }
 
 export async function fetchEspnInjuries(): Promise<Map<string, InjuryInfo>> {
