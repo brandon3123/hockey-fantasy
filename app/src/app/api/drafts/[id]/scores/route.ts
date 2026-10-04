@@ -61,7 +61,7 @@ export async function PATCH(
   const today = new Date().toISOString().slice(0, 10);
   const { data, error } = await adminClient.from('player_scores').insert({
     player_id, draft_id: id, score_date: today, season_type: seasonType,
-    goals: g, assists: a, points: pts,
+    goals: g, assists: a, points: pts, gwg: gwgCount,
   }).select().single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

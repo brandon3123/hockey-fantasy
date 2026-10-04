@@ -25,6 +25,7 @@ interface RosterPlayer {
   goals: number;
   assists: number;
   points: number;
+  gwg: number;
   gamesPlayed: number;
   injuryStatus: "healthy" | "day-to-day" | "week-to-week" | "out indefinitely" | "out for playoffs";
   injuryDescription: string | null;
@@ -331,6 +332,11 @@ export default function StandingsPage() {
                                     <span className={`font-medium ${p.isEliminated ? "text-[#fca5a5] line-through decoration-[#fca5a5] decoration-2" : "text-[#c8d9c3]"}`}>
                                       {p.playerName}
                                     </span>
+                                    {(p.gwg ?? 0) > 0 && (
+                                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#1a3d1a] text-[#6b9b7a] border border-[#4a7c59]" title="Game-winning goals">
+                                        {p.gwg} GWG
+                                      </span>
+                                    )}
                                     <span className="text-[#5a6b57]">{p.position}</span>
                                     <InjuryBadge status={p.injuryStatus} description={p.injuryDescription} size="xs" />
                                   </div>

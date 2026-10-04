@@ -108,7 +108,7 @@ export async function GET(request: Request) {
       }
     }
 
-    const rowsToUpsert: { player_id: string; draft_id: string; season_type: string; score_date: string; goals: number; assists: number; points: number }[] = [];
+    const rowsToUpsert: { player_id: string; draft_id: string; season_type: string; score_date: string; goals: number; assists: number; points: number; gwg: number }[] = [];
     const unmatchedNames: string[] = [];
     const scorers: { playerName: string; nhlTeam: string; goals: number; assists: number; points: number; fantasyTeam: string }[] = [];
 
@@ -121,11 +121,12 @@ export async function GET(request: Request) {
 
       // isDefenseman comes from the roster (the boxscore's positionCode is
       // unreliable/null for some players).
+      const gameWinningGoals = draft.gwg_bonus && gwgScorerByGame.get(result.gameId) === result.nhlId ? 1 : 0;
       const points = computePlayerPoints(result.goals, result.assists, {
         scoringFormat: draft.scoring_format,
         isDefenseman: nhlPlayer.isDefenseman,
         dGoalBonus: !!draft.d_goal_bonus,
-        gameWinningGoals: draft.gwg_bonus && gwgScorerByGame.get(result.gameId) === result.nhlId ? 1 : 0,
+        gameWinningGoals,
         gwgBonus: !!draft.gwg_bonus,
       });
 
@@ -133,6 +134,7 @@ export async function GET(request: Request) {
         player_id: playerId, draft_id: draft.id,
         season_type: draft.season_type ?? 'regular_season',
         score_date: dateStr, goals: result.goals, assists: result.assists, points,
+        gwg: gameWinningGoals,
       });
 
       scorers.push({
@@ -188,6 +190,7 @@ export async function GET(request: Request) {
             goals: winsByKey.get(player_id) ?? 0,
             assists: shutoutsByKey.get(player_id) ?? 0,
             points,
+            gwg: 0,
           }));
           const { error: teamUpsertError } = await adminClient
             .from('player_scores')

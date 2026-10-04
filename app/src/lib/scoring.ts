@@ -45,13 +45,15 @@ export interface ScoreRow {
   goals: number;
   assists: number;
   points: number;
+  gwg: number;
 }
 
 /**
  * Merge score rows that share a conflict key (player_id + draft_id +
  * score_date). A player can appear in TWO games on one date (preseason
  * split-squad doubleheaders), and duplicate keys in a single upsert fail the
- * whole batch — so same-day lines are summed into one row.
+ * whole batch — so same-day lines are summed into one row, including gwg
+ * counts.
  */
 export function aggregatePlayerRows(rows: ScoreRow[]): ScoreRow[] {
   const merged = new Map<string, ScoreRow>();
@@ -64,6 +66,7 @@ export function aggregatePlayerRows(rows: ScoreRow[]): ScoreRow[] {
     existing.goals += row.goals;
     existing.assists += row.assists;
     existing.points += row.points;
+    existing.gwg += row.gwg;
   }
   return [...merged.values()];
 }

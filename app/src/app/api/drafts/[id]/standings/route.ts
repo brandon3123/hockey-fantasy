@@ -41,7 +41,7 @@ export async function GET(
   const [picksResult, participantsResult, scoresResult, playersResult] = await Promise.all([
     adminClient.from('draft_picks').select('*').eq('draft_id', id).order('round', { ascending: true }),
     adminClient.from('draft_participants').select('id, team_name, draft_position, user_id').eq('draft_id', id),
-    adminClient.from('player_scores').select('player_id, score_date, goals, assists, points').eq('draft_id', id),
+    adminClient.from('player_scores').select('player_id, score_date, goals, assists, points, gwg').eq('draft_id', id),
     adminClient.from('players').select('id, name, team, position'),
   ]);
 
@@ -63,12 +63,12 @@ export async function GET(
     isPlayoffsDraft ? fetchActivePlayoffTeams() : Promise.resolve(new Set<string>()),
   ]);
 
-  const scoresByPlayer = new Map<string, Map<string, { goals: number; assists: number; points: number }>>();
+  const scoresByPlayer = new Map<string, Map<string, { goals: number; assists: number; points: number; gwg: number }>>();
   for (const s of scores) {
     if (!scoresByPlayer.has(s.player_id)) {
       scoresByPlayer.set(s.player_id, new Map());
     }
-    scoresByPlayer.get(s.player_id)!.set(s.score_date, { goals: s.goals, assists: s.assists, points: s.points });
+    scoresByPlayer.get(s.player_id)!.set(s.score_date, { goals: s.goals, assists: s.assists, points: s.points, gwg: s.gwg ?? 0 });
   }
 
   const parts = new Intl.DateTimeFormat("en-US", {
@@ -108,6 +108,7 @@ export async function GET(
       let totalGoals = 0;
       let totalAssists = 0;
       let totalPoints = 0;
+      let totalGwg = 0;
       let gamesPlayed = 0;
 
       if (playerScores) {
@@ -115,6 +116,7 @@ export async function GET(
           totalGoals += score.goals;
           totalAssists += score.assists;
           totalPoints += score.points;
+          totalGwg += score.gwg ?? 0;
           gamesPlayed++;
         }
       }
@@ -132,6 +134,7 @@ export async function GET(
         assists: totalAssists,
         points: totalPoints,
         gamesPlayed,
+        gwg: totalGwg,
         injuryStatus: injuryInfo?.status ?? "healthy",
         injuryDescription: injuryInfo?.description ?? null,
         isEliminated,

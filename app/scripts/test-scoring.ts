@@ -53,15 +53,15 @@ check('GWG goal also counted in base', computePlayerPoints(2, 0, { scoringFormat
 // DO UPDATE command cannot affect row a second time").
 check('merge sums two rows for the same player', (() => {
   const merged = aggregatePlayerRows([
-    { player_id: 'p1', draft_id: 'd', season_type: 'regular_season', score_date: '2026-10-03', goals: 2, assists: 0, points: 2 },
-    { player_id: 'p1', draft_id: 'd', season_type: 'regular_season', score_date: '2026-10-03', goals: 1, assists: 1, points: 2 },
+    { player_id: 'p1', draft_id: 'd', season_type: 'regular_season', score_date: '2026-10-03', goals: 2, assists: 0, points: 2, gwg: 1 },
+    { player_id: 'p1', draft_id: 'd', season_type: 'regular_season', score_date: '2026-10-03', goals: 1, assists: 1, points: 2, gwg: 0 },
   ]);
-  return merged.length === 1 && merged[0].goals === 3 && merged[0].assists === 1 && merged[0].points === 4;
+  return merged.length === 1 && merged[0].goals === 3 && merged[0].assists === 1 && merged[0].points === 4 && merged[0].gwg === 1;
 })(), true);
 check('different players stay separate rows', (() => {
   const merged = aggregatePlayerRows([
-    { player_id: 'p1', draft_id: 'd', season_type: 'regular_season', score_date: '2026-10-03', goals: 1, assists: 0, points: 1 },
-    { player_id: 'p2', draft_id: 'd', season_type: 'regular_season', score_date: '2026-10-03', goals: 1, assists: 0, points: 1 },
+    { player_id: 'p1', draft_id: 'd', season_type: 'regular_season', score_date: '2026-10-03', goals: 1, assists: 0, points: 1, gwg: 0 },
+    { player_id: 'p2', draft_id: 'd', season_type: 'regular_season', score_date: '2026-10-03', goals: 1, assists: 0, points: 1, gwg: 0 },
   ]);
   return merged.length === 2;
 })(), true);
