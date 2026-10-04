@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { fetchCompletedGames, fetchGameResults, buildNhlIdToPlayerMap, fetchTonightGames } from '@/lib/nhl-api';
 import { sendDailyEmails } from '@/lib/send-daily-email';
-import { computePlayerPoints, computeTeamPoints, isTeamPick } from '@/lib/scoring';
+import { computePlayerPoints, computeTeamPoints, aggregatePlayerRows, isTeamPick } from '@/lib/scoring';
 
 export async function GET(request: Request) {
   if (process.env.CRON_ENABLED !== 'true') {
@@ -137,7 +137,7 @@ export async function GET(request: Request) {
     if (rowsToUpsert.length > 0) {
       const { error: upsertError } = await adminClient
         .from('player_scores')
-        .upsert(rowsToUpsert, { onConflict: 'player_id,draft_id,score_date' });
+        .upsert(aggregatePlayerRows(rowsToUpsert), { onConflict: 'player_id,draft_id,score_date' });
       if (upsertError) errors.push(`Upsert error: ${upsertError.message}`);
       else upserted = rowsToUpsert.length;
     }
@@ -150,6 +150,8 @@ export async function GET(request: Request) {
         // Aggregate per team: a team can play twice in one day (preseason
         // split squads), and a duplicate conflict key in one upsert fails.
         const teamPointsByPick = new Map<string, number>();
+        const winsByKey = new Map<string, number>();
+        const shutoutsByKey = new Map<string, number>();
         for (const game of completedGames) {
           if (typeof game.awayScore !== 'number' || typeof game.homeScore !== 'number') continue;
           const sides = [
@@ -161,13 +163,20 @@ export async function GET(request: Request) {
             if (!ownedTeamIds.has(teamPickId)) continue;
             const pts = computeTeamPoints(side.won, side.shutout);
             teamPointsByPick.set(teamPickId, (teamPointsByPick.get(teamPickId) ?? 0) + pts);
+            // Store the per-game win/shutout counts so standings show them.
+            const key = teamPickId;
+            winsByKey.set(key, (winsByKey.get(key) ?? 0) + (side.won ? 1 : 0));
+            shutoutsByKey.set(key, (shutoutsByKey.get(key) ?? 0) + (side.shutout ? 1 : 0));
           }
         }
         if (teamPointsByPick.size > 0) {
           const teamRows = [...teamPointsByPick].map(([player_id, points]) => ({
             player_id, draft_id: draft.id,
             season_type: draft.season_type ?? 'regular_season',
-            score_date: dateStr, goals: 0, assists: 0, points,
+            score_date: dateStr,
+            goals: winsByKey.get(player_id) ?? 0,
+            assists: shutoutsByKey.get(player_id) ?? 0,
+            points,
           }));
           const { error: teamUpsertError } = await adminClient
             .from('player_scores')
@@ -197,7 +206,7 @@ export async function GET(request: Request) {
 
     if (draft.status === 'complete') {
       const { data: draftDetails } = await adminClient
-        .from('drafts').select('id, name, scoring_format, season_type').eq('id', draft.id).single();
+        .from('drafts').select('id, name, scoring_format, season_type, admin_user_id').eq('id', draft.id).single();
       const { data: participants } = await adminClient
         .from('draft_participants').select('id, team_name, user_id').eq('draft_id', draft.id);
 
@@ -206,9 +215,21 @@ export async function GET(request: Request) {
         const emailMap = new Map<string, string>();
         for (const u of authUsers ?? []) { if (u.email) emailMap.set(u.id, u.email); }
 
-        const participantsWithEmail = participants
+        let participantsWithEmail = participants
           .map((p) => ({ email: emailMap.get(p.user_id) ?? '', participantId: p.id, teamName: p.team_name }))
           .filter((p) => p.email.length > 0);
+
+        // Roster drafts: name-only seats have no accounts and no emails. The
+        // commissioner runs the room, so the nightly recap falls back to the
+        // draft admin (digest mode — full standings, no personal roster).
+        if (participantsWithEmail.length === 0) {
+          const adminEmail = emailMap.get(draftDetails.admin_user_id) ?? '';
+          if (adminEmail) {
+            participantsWithEmail = [{
+              email: adminEmail, participantId: '', teamName: 'Commissioner (digest)',
+            }];
+          }
+        }
 
         if (participantsWithEmail.length > 0) {
           const { data: draftPicks } = await adminClient.from('draft_picks').select('player_id, player_name, participant_id, round').eq('draft_id', draft.id);

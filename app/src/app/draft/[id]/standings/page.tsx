@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import TeamLogo from '@/components/TeamLogo';
+import { isTeamPick } from '@/lib/scoring';
 import InjuryBadge from '@/components/InjuryBadge';
 import { ActionLink } from '@/components/ActionButton';
 
@@ -335,8 +336,8 @@ export default function StandingsPage() {
                                   </div>
                                   <div className="flex items-center gap-3">
                                     <span className="text-[#6b9b7a] font-bold">{p.points.toFixed(1)}</span>
-                                    <span className="text-[#5a6b57] w-6 text-right">{p.goals}G</span>
-                                    <span className="text-[#5a6b57] w-6 text-right">{p.assists}A</span>
+                                    <span className="text-[#5a6b57] w-6 text-right">{p.goals}{isTeamPick(p.playerId) ? 'W' : 'G'}</span>
+                                    <span className="text-[#5a6b57] w-6 text-right">{p.assists}{isTeamPick(p.playerId) ? 'SO' : 'A'}</span>
                                     <span className="text-[#2d3c28] w-6 text-right">{p.gamesPlayed}GP</span>
                                   </div>
                                 </div>

@@ -33,10 +33,10 @@ export async function PATCH(
   let pts: number;
   if (isTeamPick(player_id)) {
     // For team picks the two numbers are WINS and SHUTOUTS (the scores page
-    // labels them so). A shutout is already a win: points = wins + shutouts,
-    // i.e. a plain win = 1, a shutout win = 2. Stored in the goals/assists
-    // columns to keep the row shape.
-    pts = g + a;
+    // labels them so). Points = wins × 1 + shutouts × 2 — a shutout is worth
+    // 2 on its own, no win point needed. Stored in the goals/assists columns
+    // to keep the row shape.
+    pts = g + a * 2;
   } else {
     // The D bonus needs the player's position.
     const { data: playerRow } = await adminClient
