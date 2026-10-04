@@ -423,7 +423,7 @@ export default function ScoresPage() {
                                           <input type="number" min={0} value={editAssists} onChange={e => setEditAssists(parseInt(e.target.value) || 0)} className="w-12 px-2 py-1 text-center text-sm bg-[#050a05] border border-[#4a7c59] rounded text-[#c8d9c3] focus:outline-none" />
                                           <span className="text-[#5a6b57] text-xs">{isTeamPick(p.playerId) ? 'SO' : 'A'}</span>
                                         </div>
-                                        <span className="text-[#6b9b7a] font-bold w-10 text-center text-sm">{isTeamPick(p.playerId) ? editGoals + editAssists : draft.scoring_format === '2pt_goals_1pt_assists' ? editGoals * 2 + editAssists : editGoals + editAssists}</span>
+                                        <span className="text-[#6b9b7a] font-bold w-10 text-center text-sm">{isTeamPick(p.playerId) ? editGoals + editAssists * 2 : draft.scoring_format === '2pt_goals_1pt_assists' ? editGoals * 2 + editAssists : editGoals + editAssists}</span>
                                         <div className="flex gap-1.5">
                                           <button onClick={() => handleSave(p.playerId)} disabled={saving} className="text-[#6b9b7a] hover:text-[#c8d9c3] disabled:opacity-50 text-base p-1">{'\u2713'}</button>
                                           <button onClick={() => setEditingPlayer(null)} className="text-[#f87171] hover:text-red-300 text-base p-1">{'\u2715'}</button>
