@@ -31,6 +31,37 @@ export function computeTeamPoints(won: boolean, shutout: boolean): number {
   return shutout ? 2 : 1;
 }
 
+export interface ScoreRow {
+  player_id: string;
+  draft_id: string;
+  season_type: string;
+  score_date: string;
+  goals: number;
+  assists: number;
+  points: number;
+}
+
+/**
+ * Merge score rows that share a conflict key (player_id + draft_id +
+ * score_date). A player can appear in TWO games on one date (preseason
+ * split-squad doubleheaders), and duplicate keys in a single upsert fail the
+ * whole batch — so same-day lines are summed into one row.
+ */
+export function aggregatePlayerRows(rows: ScoreRow[]): ScoreRow[] {
+  const merged = new Map<string, ScoreRow>();
+  for (const row of rows) {
+    const existing = merged.get(row.player_id);
+    if (!existing) {
+      merged.set(row.player_id, { ...row });
+      continue;
+    }
+    existing.goals += row.goals;
+    existing.assists += row.assists;
+    existing.points += row.points;
+  }
+  return [...merged.values()];
+}
+
 /** Team picks use ids like 'team-edm'. */
 export function isTeamPick(playerId: string): boolean {
   return playerId.startsWith('team-');
