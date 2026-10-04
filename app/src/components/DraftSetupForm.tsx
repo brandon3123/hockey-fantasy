@@ -21,6 +21,7 @@ interface DraftSetupFormProps {
     scoring_format?: string;
     d_goal_bonus?: boolean;
     team_picks_enabled?: boolean;
+    gwg_bonus?: boolean;
   };
   onSubmit: (data: Record<string, unknown>) => Promise<{ error?: string; draft?: Record<string, unknown> }>;
   submitLabel?: string;
@@ -46,6 +47,7 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
   const [scoringFormat, setScoringFormat] = useState(initialData?.scoring_format ?? '1pt_per_goal_assist');
   const [dGoalBonus, setDGoalBonus] = useState(initialData?.d_goal_bonus ?? false);
   const [teamPicksEnabled, setTeamPicksEnabled] = useState(initialData?.team_picks_enabled ?? false);
+  const [gwgBonus, setGwgBonus] = useState(initialData?.gwg_bonus ?? false);
   const [participantMode, setParticipantMode] = useState<'invite' | 'roster'>(
     (initialData?.participant_mode as 'invite' | 'roster') ?? 'invite'
   );
@@ -75,6 +77,7 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
       scoring_format: scoringFormat,
       d_goal_bonus: dGoalBonus,
       team_picks_enabled: teamPicksEnabled,
+      gwg_bonus: gwgBonus,
     };
 
     // participant_mode is frozen at creation — editing never flips it.
@@ -151,6 +154,10 @@ export default function DraftSetupForm({ initialData, onSubmit, submitLabel = 'C
             <label className="flex items-center gap-2 text-xs text-[#c8d9c3]">
               <input type="checkbox" checked={dGoalBonus} onChange={(e) => setDGoalBonus(e.target.checked)} />
               Defenseman goals +1 pt
+            </label>
+            <label className="flex items-center gap-2 text-xs text-[#c8d9c3]">
+              <input type="checkbox" checked={gwgBonus} onChange={(e) => setGwgBonus(e.target.checked)} />
+              Game-winning goals +1 pt
             </label>
             <label className="flex items-center gap-2 text-xs text-[#c8d9c3]">
               <input type="checkbox" checked={teamPicksEnabled} onChange={(e) => setTeamPicksEnabled(e.target.checked)} />

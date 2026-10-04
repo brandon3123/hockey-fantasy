@@ -14,12 +14,12 @@ export async function PATCH(
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { data: draft } = await supabase
-    .from('drafts').select('scoring_format, season_type, d_goal_bonus').eq('id', id).single();
+    .from('drafts').select('scoring_format, season_type, d_goal_bonus, gwg_bonus').eq('id', id).single();
   if (!draft) return NextResponse.json({ error: 'Draft not found' }, { status: 404 });
   if (!await getIsAdmin(user.id))
     return NextResponse.json({ error: 'Admin only' }, { status: 403 });
 
-  const { player_id, goals, assists } = await request.json();
+  const { player_id, goals, assists, gwg } = await request.json();
   if (!player_id) return NextResponse.json({ error: 'player_id required' }, { status: 400 });
 
   const g = typeof goals === 'number' ? goals : 0;
@@ -29,6 +29,8 @@ export async function PATCH(
     process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { cookies: { getAll() { return []; }, setAll() {} } }
   );
+
+  const gwgCount = typeof gwg === 'number' && !isTeamPick(player_id) ? gwg : 0;
 
   let pts: number;
   if (isTeamPick(player_id)) {
@@ -45,6 +47,8 @@ export async function PATCH(
       scoringFormat: draft.scoring_format,
       isDefenseman: playerRow?.position === 'D',
       dGoalBonus: !!draft.d_goal_bonus,
+      gameWinningGoals: gwgCount,
+      gwgBonus: !!draft.gwg_bonus,
     });
   }
 

@@ -15,7 +15,7 @@ export async function GET(
 
   const { data: draft, error } = await supabase
     .from('drafts')
-    .select('id, name, season_type, players_per_team, scoring_format, status')
+    .select('id, name, season_type, players_per_team, scoring_format, status, d_goal_bonus, gwg_bonus')
     .eq('id', id)
     .single();
 

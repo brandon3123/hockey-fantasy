@@ -29,6 +29,7 @@ interface Draft {
   scoring_format: string;
   d_goal_bonus: boolean;
   team_picks_enabled: boolean;
+  gwg_bonus: boolean;
 }
 
 interface Participant {
@@ -324,6 +325,7 @@ export default function DraftDetailPage() {
                 scoring_format: draft.scoring_format ?? undefined,
                 d_goal_bonus: draft.d_goal_bonus ?? false,
                 team_picks_enabled: draft.team_picks_enabled ?? false,
+                gwg_bonus: draft.gwg_bonus ?? false,
               }}
               onSubmit={handleUpdateDraft}
               submitLabel="Save Changes"

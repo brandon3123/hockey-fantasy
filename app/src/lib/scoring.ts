@@ -11,9 +11,12 @@ export interface PlayerScoringOpts {
   scoringFormat: string;
   isDefenseman: boolean;
   dGoalBonus: boolean;
+  /** How of the player's goals were game-winners (0 or 1 per game). */
+  gameWinningGoals: number;
+  gwgBonus: boolean;
 }
 
-/** Player points: base format math, plus +1 per goal when the D bonus is on. */
+/** Player points: base format math, plus +1 per goal when the D bonus is on, plus +1 per game-winning goal when the GWG bonus is on. */
 export function computePlayerPoints(
   goals: number,
   assists: number,
@@ -22,7 +25,10 @@ export function computePlayerPoints(
   const base = opts.scoringFormat === '2pt_goals_1pt_assists'
     ? goals * 2 + assists
     : goals + assists;
-  return opts.dGoalBonus && opts.isDefenseman ? base + goals : base;
+  let points = base;
+  if (opts.dGoalBonus && opts.isDefenseman) points += goals;
+  if (opts.gwgBonus) points += opts.gameWinningGoals;
+  return points;
 }
 
 /** Team pick points: win 1, shutout 2 total, anything else 0. */

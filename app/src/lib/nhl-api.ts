@@ -13,6 +13,7 @@ export interface TonightGame {
 }
 
 export interface PlayerGameResult {
+  gameId: number;
   nhlId: number;
   playerName: string;
   team: string;
@@ -230,6 +231,7 @@ export async function fetchGameResults(
         seenIds.add(player.playerId);
         if (player.goals === 0 && player.assists === 0) continue;
         results.push({
+          gameId,
           nhlId: player.playerId,
           playerName: player.name.default,
           team,
@@ -284,6 +286,43 @@ export async function buildNhlIdToPlayerMap(
     }
   }
   return playerMap;
+}
+
+/**
+ * The scorer of the game-winning goal, resolved from the landing endpoint's
+ * chronological goal list: the winning team's (loser goals + 1)th goal.
+ * Shootout-decided games have no such goal (the SO winner isn't a goal stat)
+ * and return null.
+ */
+export async function fetchGameWinningGoalScorer(gameId: number): Promise<number | null> {
+  const res = await fetch(`${NHL_API_BASE}/v1/gamecenter/${gameId}/landing`);
+  if (!res.ok) return null;
+  const data = await res.json();
+  const periods = data?.summary?.scoring ?? [];
+
+  const goals: Array<{ team: string; playerId: number }> = [];
+  for (const period of periods) {
+    for (const g of period.goals ?? []) {
+      const team = g.teamAbbrev?.default ?? "";
+      if (!team || !g.playerId) continue;
+      goals.push({ team, playerId: g.playerId });
+    }
+  }
+
+  const count = (team: string) => goals.filter(g => g.team === team).length;
+  const winner = count("away") > count("home")
+    ? (goals.find(g => g.team === "away")?.team ?? null)
+    : (goals.find(g => g.team === "home")?.team ?? null);
+  if (!winner) return null;
+
+  const loserGoals = count(winner === "away" ? "home" : "away");
+  let winnerGoals = 0;
+  for (const g of goals) {
+    if (g.team !== winner) continue;
+    winnerGoals += 1;
+    if (winnerGoals === loserGoals + 1) return g.playerId;
+  }
+  return null;
 }
 
 export async function fetchEspnInjuries(): Promise<Map<string, InjuryInfo>> {

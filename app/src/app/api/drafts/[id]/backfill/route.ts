@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServerClient } from '@supabase/ssr';
-import { fetchCompletedGames, fetchGameResults, buildNhlIdToPlayerMap } from '@/lib/nhl-api';
+import { fetchCompletedGames, fetchGameResults, buildNhlIdToPlayerMap, fetchGameWinningGoalScorer } from '@/lib/nhl-api';
 import { getIsAdmin } from '@/lib/admin';
-import { computePlayerPoints, computeTeamPoints, isTeamPick } from '@/lib/scoring';
+import { computePlayerPoints, computeTeamPoints, aggregatePlayerRows, isTeamPick } from '@/lib/scoring';
 
 export async function POST(
   request: Request,
@@ -15,7 +15,7 @@ export async function POST(
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { data: draft } = await supabase
-    .from('drafts').select('scoring_format, season_type, d_goal_bonus, team_picks_enabled').eq('id', id).single();
+    .from('drafts').select('scoring_format, season_type, d_goal_bonus, team_picks_enabled, gwg_bonus').eq('id', id).single();
   if (!draft) return NextResponse.json({ error: 'Draft not found' }, { status: 404 });
   if (!await getIsAdmin(user.id))
     return NextResponse.json({ error: 'Admin only' }, { status: 403 });
@@ -65,6 +65,14 @@ export async function POST(
       allGameResults.push(...gameResults);
     }
 
+    const gwgScorerByGame = new Map<number, number>();
+    if (draft.gwg_bonus) {
+      for (const game of completedGames) {
+        const gwgScorer = await fetchGameWinningGoalScorer(game.gameId);
+        if (gwgScorer !== null) gwgScorerByGame.set(game.gameId, gwgScorer);
+      }
+    }
+
     const rowsToUpsert: any[] = [];
     const errors: string[] = [];
     const scorers: { playerName: string; nhlTeam: string; goals: number; assists: number; points: number; fantasyTeam: string }[] = [];
@@ -79,6 +87,8 @@ export async function POST(
         scoringFormat: draft.scoring_format,
         isDefenseman: nhlPlayer.isDefenseman,
         dGoalBonus: !!draft.d_goal_bonus,
+        gameWinningGoals: draft.gwg_bonus && gwgScorerByGame.get(result.gameId) === result.nhlId ? 1 : 0,
+        gwgBonus: !!draft.gwg_bonus,
       });
       rowsToUpsert.push({
         player_id: playerId, draft_id: id,
@@ -95,7 +105,7 @@ export async function POST(
     let upserted = 0;
     if (rowsToUpsert.length > 0) {
       const { error: upsertError } = await adminClient
-        .from('player_scores').upsert(rowsToUpsert, { onConflict: 'player_id,draft_id,score_date' });
+        .from('player_scores').upsert(aggregatePlayerRows(rowsToUpsert), { onConflict: 'player_id,draft_id,score_date' });
       if (upsertError) errors.push(`Upsert error: ${upsertError.message}`);
       else upserted = rowsToUpsert.length;
     }

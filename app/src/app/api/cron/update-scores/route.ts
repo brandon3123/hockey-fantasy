@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
-import { fetchCompletedGames, fetchGameResults, buildNhlIdToPlayerMap, fetchTonightGames } from '@/lib/nhl-api';
+import { fetchCompletedGames, fetchGameResults, buildNhlIdToPlayerMap, fetchTonightGames, fetchGameWinningGoalScorer } from '@/lib/nhl-api';
 import { sendDailyEmails } from '@/lib/send-daily-email';
 import { computePlayerPoints, computeTeamPoints, aggregatePlayerRows, isTeamPick } from '@/lib/scoring';
 
@@ -38,7 +38,7 @@ export async function GET(request: Request) {
 
   const { data: drafts, error: draftsError } = await adminClient
     .from('drafts')
-    .select('id, scoring_format, season_type, status, d_goal_bonus, team_picks_enabled')
+    .select('id, scoring_format, season_type, status, d_goal_bonus, team_picks_enabled, gwg_bonus')
     .in('status', ['complete', 'in_progress']);
 
   if (draftsError || !drafts || drafts.length === 0) {
@@ -63,6 +63,15 @@ export async function GET(request: Request) {
       date: dateStr, games: completedGames.length, results: allResults.length,
       upserted: 0, emailsSent: 0, emailErrors: [] as string[], dryRun: true,
     });
+  }
+
+  const gwgScorerByGame = new Map<number, number>();
+  const anyDraftUsesGwg = (drafts ?? []).some(d => d.gwg_bonus);
+  if (anyDraftUsesGwg) {
+    for (const game of completedGames) {
+      const scorer = await fetchGameWinningGoalScorer(game.gameId);
+      if (scorer !== null) gwgScorerByGame.set(game.gameId, scorer);
+    }
   }
 
   let totalUpserted = 0;
@@ -116,6 +125,8 @@ export async function GET(request: Request) {
         scoringFormat: draft.scoring_format,
         isDefenseman: nhlPlayer.isDefenseman,
         dGoalBonus: !!draft.d_goal_bonus,
+        gameWinningGoals: draft.gwg_bonus && gwgScorerByGame.get(result.gameId) === result.nhlId ? 1 : 0,
+        gwgBonus: !!draft.gwg_bonus,
       });
 
       rowsToUpsert.push({
