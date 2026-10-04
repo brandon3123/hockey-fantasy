@@ -314,7 +314,7 @@ export default function StandingsPage() {
                       <div className="bg-[#030803] border-t border-[#0d150d] border-b border-[#1a2f1a] px-4 py-3">
                         <div className="space-y-1">
                           {s.roster
-                            .sort((a, b) => a.round - b.round)
+                            .sort((a, b) => b.points - a.points || a.round - b.round)
                             .map((p) => {
                               const isOut = p.injuryStatus === "out indefinitely" || p.injuryStatus === "out for playoffs";
                               const isInactive = isOut || p.isEliminated;
