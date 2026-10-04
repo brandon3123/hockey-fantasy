@@ -207,6 +207,13 @@ export default function HomePage() {
               {globalIsAdmin && (
                 <>
                   <ActionLink
+                    href={`/dashboard/drafts/${draft.id}`}
+                    variant="secondary"
+                    className="px-3 py-1.5 text-xs"
+                  >
+                    Configure
+                  </ActionLink>
+                  <ActionLink
                     href={`/dashboard/drafts/${draft.id}/admin/internal/scores`}
                     variant="amber"
                     className="px-3 py-1.5 text-xs"
