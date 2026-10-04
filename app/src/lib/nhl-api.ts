@@ -1,4 +1,5 @@
 const NHL_API_BASE = "https://api-web.nhle.com";
+import { deriveGameWinningGoal } from "@/lib/scoring";
 
 export interface TonightGame {
   gameId: number;
@@ -298,31 +299,11 @@ export async function fetchGameWinningGoalScorer(gameId: number): Promise<number
   const res = await fetch(`${NHL_API_BASE}/v1/gamecenter/${gameId}/landing`);
   if (!res.ok) return null;
   const data = await res.json();
-  const periods = data?.summary?.scoring ?? [];
-
-  const goals: Array<{ team: string; playerId: number }> = [];
-  for (const period of periods) {
-    for (const g of period.goals ?? []) {
-      const team = g.teamAbbrev?.default ?? "";
-      if (!team || !g.playerId) continue;
-      goals.push({ team, playerId: g.playerId });
-    }
-  }
-
-  const count = (team: string) => goals.filter(g => g.team === team).length;
-  const winner = count("away") > count("home")
-    ? (goals.find(g => g.team === "away")?.team ?? null)
-    : (goals.find(g => g.team === "home")?.team ?? null);
-  if (!winner) return null;
-
-  const loserGoals = count(winner === "away" ? "home" : "away");
-  let winnerGoals = 0;
-  for (const g of goals) {
-    if (g.team !== winner) continue;
-    winnerGoals += 1;
-    if (winnerGoals === loserGoals + 1) return g.playerId;
-  }
-  return null;
+  return deriveGameWinningGoal(
+    data?.summary?.scoring ?? [],
+    data?.awayTeam?.abbrev ?? '',
+    data?.homeTeam?.abbrev ?? '',
+  );
 }
 
 export async function fetchEspnInjuries(): Promise<Map<string, InjuryInfo>> {

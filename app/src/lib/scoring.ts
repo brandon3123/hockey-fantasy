@@ -3,7 +3,46 @@
  * backfill). Keeping the math in one place is the point: the three paths
  * cannot drift.
  */
-import type { DraftPick } from '@/types/player';
+
+/**
+ * Credit the game-winning goal: the winning team's (loser goals + 1)th goal,
+ * walked chronologically through the landing endpoint's periods.
+ * Equal goal totals (shootout-decided) credit nobody.
+ */
+export function deriveGameWinningGoal(
+  scoringPeriods: Array<{
+    goals?: Array<{
+      teamAbbrev?: { default?: string };
+      playerId?: number;
+    }>;
+  }>,
+  awayAbbrev: string,
+  homeAbbrev: string,
+): number | null {
+  const goals: Array<{ team: string; playerId: number }> = [];
+  for (const period of scoringPeriods ?? []) {
+    for (const g of period.goals ?? []) {
+      const team = g.teamAbbrev?.default ?? '';
+      if (!team || !g.playerId) continue;
+      goals.push({ team, playerId: g.playerId });
+    }
+  }
+
+  const count = (team: string) => goals.filter(g => g.team === team).length;
+  const awayCount = count(awayAbbrev);
+  const homeCount = count(homeAbbrev);
+  if (awayCount === homeCount) return null;
+  const winner = awayCount > homeCount ? awayAbbrev : homeAbbrev;
+  const loserGoals = awayCount > homeCount ? homeCount : awayCount;
+
+  let winnerGoals = 0;
+  for (const g of goals) {
+    if (g.team !== winner) continue;
+    winnerGoals += 1;
+    if (winnerGoals === loserGoals + 1) return g.playerId;
+  }
+  return null;
+}
 
 export type ScoringFormat = '1pt_per_goal_assist' | '2pt_goals_1pt_assists';
 

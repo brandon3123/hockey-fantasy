@@ -3,7 +3,7 @@
  *
  * Run from app/: npx tsx scripts/test-scoring.ts
  */
-import { aggregatePlayerRows, computePlayerPoints, computeTeamPoints, isTeamPick, teamAbbrevFromPick } from '../src/lib/scoring';
+import { aggregatePlayerRows, computePlayerPoints, computeTeamPoints, deriveGameWinningGoal, isTeamPick, teamAbbrevFromPick } from '../src/lib/scoring';
 
 let failures = 0;
 
@@ -66,6 +66,31 @@ check('different players stay separate rows', (() => {
   return merged.length === 2;
 })(), true);
 check('merge handles an empty batch', aggregatePlayerRows([]).length, 0);
+
+// GWG derivation: the winning team's (loser goals + 1)th goal.
+// Real fixtures from the landing endpoint's summary.scoring.
+const checkDerive = (label: string, merged: number | null, expected: number | null) => check(label, merged, expected);
+
+const vanEdmPeriods = [
+  { goals: [{ teamAbbrev: { default: 'VAN' }, playerId: 8481032 }, { teamAbbrev: { default: 'EDM' }, playerId: 8480803 }] },
+  { goals: [{ teamAbbrev: { default: 'VAN' }, playerId: 8482079 }, { teamAbbrev: { default: 'EDM' }, playerId: 8480803 }] },
+  { goals: [{ teamAbbrev: { default: 'VAN' }, playerId: 8483476 }, { teamAbbrev: { default: 'VAN' }, playerId: 8484136 }, { teamAbbrev: { default: 'VAN' }, playerId: 8480012 }, { teamAbbrev: { default: 'EDM' }, playerId: 8481617 }, { teamAbbrev: { default: 'EDM' }, playerId: 8480803 }, { teamAbbrev: { default: 'EDM' }, playerId: 8481617 }] },
+  { goals: [{ teamAbbrev: { default: 'VAN' }, playerId: 8481032 }] },
+];
+checkDerive('VAN@EDM 6-5 OT → Cotter', deriveGameWinningGoal(vanEdmPeriods, 'VAN', 'EDM'), 8481032);
+
+const utaCbjPeriods = [
+  { goals: [{ teamAbbrev: { default: 'UTA' }, playerId: 8479410 }, { teamAbbrev: { default: 'UTA' }, playerId: 8477951 }, { teamAbbrev: { default: 'CBJ' }, playerId: 8485000 }, { teamAbbrev: { default: 'UTA' }, playerId: 8482699 }, { teamAbbrev: { default: 'UTA' }, playerId: 8477951 }] },
+];
+checkDerive('UTA@CBJ 4-1 → Schmaltz', deriveGameWinningGoal(utaCbjPeriods, 'UTA', 'CBJ'), 8477951);
+
+checkDerive('equal goals (shootout) → no GWG credited', deriveGameWinningGoal([
+  { goals: [{ teamAbbrev: { default: 'A' }, playerId: 1 }, { teamAbbrev: { default: 'B' }, playerId: 2 }] },
+], 'A', 'B'), null);
+
+checkDerive('3-0 shutout → the first goal stands', deriveGameWinningGoal([
+  { goals: [{ teamAbbrev: { default: 'A' }, playerId: 11 }] },
+], 'A', 'B'), 11);
 
 console.log(failures === 0 ? '\nALL CHECKS PASSED' : `\n${failures} CHECK(S) FAILED`);
 process.exit(failures === 0 ? 0 : 1);
