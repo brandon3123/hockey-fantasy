@@ -1,0 +1,2 @@
+ALTER TABLE drafts
+  ADD COLUMN gwg_bonus BOOLEAN NOT NULL DEFAULT false;
