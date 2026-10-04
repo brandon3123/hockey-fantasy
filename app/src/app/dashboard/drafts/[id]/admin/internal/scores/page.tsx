@@ -6,11 +6,12 @@ import { useAuth } from '@/context/auth-context';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
 import TeamLogo from '@/components/TeamLogo';
 import InjuryBadge from '@/components/InjuryBadge';
-import { isTeamPick } from '@/lib/scoring';
+import { isTeamPick, computePlayerPoints } from '@/lib/scoring';
 
 interface RosterPlayer {
   playerId: string;
   playerName: string;
+  gameWinningGoals?: number;
   team: string;
   position: string;
   round: number;
@@ -65,6 +66,8 @@ interface DraftInfo {
   season_type: string;
   players_per_team: number;
   scoring_format: string;
+  d_goal_bonus: boolean;
+  gwg_bonus: boolean;
 }
 
 const TABS = ['scores', 'cron-log', 'backfill'] as const;
@@ -180,6 +183,7 @@ export default function ScoresPage() {
   const [editingPlayer, setEditingPlayer] = useState<string | null>(null);
   const [editGoals, setEditGoals] = useState(0);
   const [editAssists, setEditAssists] = useState(0);
+  const [editGwg, setEditGwg] = useState(0);
   const [saving, setSaving] = useState(false);
 
   const [cronRuns, setCronRuns] = useState<CronRun[]>([]);
@@ -261,7 +265,7 @@ export default function ScoresPage() {
     const res = await fetch(`/api/drafts/${draftId}/scores`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ player_id: playerId, goals: editGoals, assists: editAssists }),
+      body: JSON.stringify({ player_id: playerId, goals: editGoals, assists: editAssists, gwg: editGwg }),
     });
     if (!res.ok) {
       // Surface server rejections (FK issues, validation) — a silent failure
@@ -423,7 +427,13 @@ export default function ScoresPage() {
                                           <input type="number" min={0} value={editAssists} onChange={e => setEditAssists(parseInt(e.target.value) || 0)} className="w-12 px-2 py-1 text-center text-sm bg-[#050a05] border border-[#4a7c59] rounded text-[#c8d9c3] focus:outline-none" />
                                           <span className="text-[#5a6b57] text-xs">{isTeamPick(p.playerId) ? 'SO' : 'A'}</span>
                                         </div>
-                                        <span className="text-[#6b9b7a] font-bold w-10 text-center text-sm">{isTeamPick(p.playerId) ? editGoals + editAssists * 2 : draft.scoring_format === '2pt_goals_1pt_assists' ? editGoals * 2 + editAssists : editGoals + editAssists}</span>
+                                        {!isTeamPick(p.playerId) && draft.gwg_bonus && (
+                                          <div className="flex items-center gap-1">
+                                            <input type="number" min={0} max={1} value={editGwg} onChange={e => setEditGwg(parseInt(e.target.value) || 0)} className="w-10 px-2 py-1 text-center text-sm bg-[#050a05] border border-[#4a7c59] rounded text-[#c8d9c3] focus:outline-none" />
+                                            <span className="text-[#5a6b57] text-xs">GWG</span>
+                                          </div>
+                                        )}
+                                        <span className="text-[#6b9b7a] font-bold w-10 text-center text-sm">{isTeamPick(p.playerId) ? editGoals + editAssists * 2 : computePlayerPoints(editGoals, editAssists, { scoringFormat: draft.scoring_format, isDefenseman: p.position === 'D', dGoalBonus: !!draft.d_goal_bonus, gameWinningGoals: editGwg, gwgBonus: !!draft.gwg_bonus })}</span>
                                         <div className="flex gap-1.5">
                                           <button onClick={() => handleSave(p.playerId)} disabled={saving} className="text-[#6b9b7a] hover:text-[#c8d9c3] disabled:opacity-50 text-base p-1">{'\u2713'}</button>
                                           <button onClick={() => setEditingPlayer(null)} className="text-[#f87171] hover:text-red-300 text-base p-1">{'\u2715'}</button>
@@ -434,7 +444,7 @@ export default function ScoresPage() {
                                         <span className="text-[#5a6b57] text-right w-7">{p.goals}{isTeamPick(p.playerId) ? 'W' : 'G'}</span>
                                         <span className="text-[#5a6b57] text-right w-7">{p.assists}{isTeamPick(p.playerId) ? 'SO' : 'A'}</span>
                                         <span className="text-[#6b9b7a] font-bold">{p.points}</span>
-                                        <button onClick={() => { setEditingPlayer(p.playerId); setEditGoals(p.goals); setEditAssists(p.assists); }} className="text-[#6b9b7a] hover:text-[#c8d9c3] text-base p-1">{'\u270E'}</button>
+                                        <button onClick={() => { setEditingPlayer(p.playerId); setEditGoals(p.goals); setEditAssists(p.assists); setEditGwg(p.gameWinningGoals ?? 0); }} className="text-[#6b9b7a] hover:text-[#c8d9c3] text-base p-1">{'\u270E'}</button>
                                       </>
                                     )}
                                   </div>

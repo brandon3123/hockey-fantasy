@@ -51,11 +51,16 @@ export async function sendDailyEmails(
 
   for (const participant of participantsWithEmail) {
     try {
-      const standing = standings.find(s => s.participantId === participant.participantId);
-      if (!standing) {
-        errors.push(`No standing found for participant ${participant.participantId}`);
-        continue;
-      }
+      const standing = standings.find(s => s.participantId === participant.participantId)
+        // Digest recipients (no seat) get the standings + games without a
+        // personal roster instead of an error.
+        ?? {
+          participantId: participant.participantId,
+          teamName: participant.teamName,
+          totalPoints: 0,
+          yesterdayPoints: 0,
+          roster: [],
+        };
 
       const rank = standings.findIndex(s => s.participantId === participant.participantId) + 1;
 

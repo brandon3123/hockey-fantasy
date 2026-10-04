@@ -111,6 +111,7 @@ export async function POST(request: Request) {
     scoring_format,
     d_goal_bonus,
     team_picks_enabled,
+    gwg_bonus,
     participant_mode,
     participants,
     seat_me,
@@ -166,6 +167,7 @@ export async function POST(request: Request) {
       scoring_format,
       d_goal_bonus: !!d_goal_bonus,
       team_picks_enabled: !!team_picks_enabled,
+      gwg_bonus: !!gwg_bonus,
       admin_user_id: user.id,
     })
     .select()
