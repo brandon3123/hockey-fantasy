@@ -73,7 +73,7 @@ export function computePlayerPoints(
 /** Team pick points: win 1, shutout 2 total, anything else 0. */
 export function computeTeamPoints(won: boolean, shutout: boolean): number {
   if (!won) return 0;
-  return shutout ? 2 : 1;
+  return shutout ? 3 : 1;
 }
 
 export interface ScoreRow {

@@ -125,11 +125,14 @@ export async function POST(
           for (const side of sides) {
             const teamPickId = `team-${side.abbrev.toLowerCase()}`;
             if (!ownedTeamIds.has(teamPickId)) continue;
+            // Store per-game W/SO counts like the cron does, so standings
+            // W/SO labels stay correct on backfilled dates.
+            const won = side.won, shutout = side.shutout;
             teamRows.push({
               player_id: teamPickId, draft_id: id,
               season_type: draft.season_type ?? 'regular_season',
-              score_date: dateStr, goals: 0, assists: 0,
-              points: computeTeamPoints(side.won, side.shutout),
+              score_date: dateStr, goals: won ? 1 : 0, assists: shutout ? 1 : 0,
+              points: computeTeamPoints(won, shutout),
             });
           }
         }

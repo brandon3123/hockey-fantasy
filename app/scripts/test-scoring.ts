@@ -29,7 +29,7 @@ check('D assists never bonus', computePlayerPoints(0, 2, { scoringFormat: twoPt,
 check('two D goals + assist = 5', computePlayerPoints(2, 1, { scoringFormat: onePt, isDefenseman: true, dGoalBonus: true, gameWinningGoals: 0, gwgBonus: false }), 5);
 
 // Team points: win 1, shutout 2 total, loss 0.
-check('shutout win = 2 total', computeTeamPoints(true, true), 2);
+check('shutout win = 3 total (stacks: 1 win + 2 shutout)', computeTeamPoints(true, true), 3);
 check('plain win = 1', computeTeamPoints(true, false), 1);
 check('loss = 0', computeTeamPoints(false, false), 0);
 check('shutout loss = 0', computeTeamPoints(false, true), 0);
