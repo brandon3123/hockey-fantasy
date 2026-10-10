@@ -172,7 +172,7 @@ export default function StandingsPage() {
               </h2>
               <div className="h-px flex-1 bg-[#1a2f1a]" />
             </div>
-            <div className="flex gap-3 overflow-x-auto pb-2 justify-center">
+            <div className="flex gap-3 overflow-x-auto pb-2 justify-[safe_center]">
               {tonightGames.map((game) => {
                 const draftedPlayers = getDraftedPlayersForGame(game, standings, data.currentUserId);
                 const hasPlayers = game.hasDraftedPlayers && draftedPlayers.length > 0;
