@@ -83,17 +83,19 @@ export async function POST(
       const fullName = nhlPlayer.name;
       const playerId = pickMap.get(fullName.toLowerCase());
       if (!playerId) { errors.push(`Unmatched: ${fullName}`); continue; }
+      const gameWinningGoals = draft.gwg_bonus && gwgScorerByGame.get(result.gameId) === result.nhlId ? 1 : 0;
       const pts = computePlayerPoints(result.goals, result.assists, {
         scoringFormat: draft.scoring_format,
         isDefenseman: nhlPlayer.isDefenseman,
         dGoalBonus: !!draft.d_goal_bonus,
-        gameWinningGoals: draft.gwg_bonus && gwgScorerByGame.get(result.gameId) === result.nhlId ? 1 : 0,
+        gameWinningGoals,
         gwgBonus: !!draft.gwg_bonus,
       });
       rowsToUpsert.push({
         player_id: playerId, draft_id: id,
         season_type: draft.season_type ?? 'regular_season',
         score_date: dateStr, goals: result.goals, assists: result.assists, points: pts,
+        gwg: gameWinningGoals,
       });
       scorers.push({
         playerName: fullName, nhlTeam: result.team,

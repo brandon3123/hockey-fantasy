@@ -296,14 +296,24 @@ export async function buildNhlIdToPlayerMap(
  * and return null.
  */
 export async function fetchGameWinningGoalScorer(gameId: number): Promise<number | null> {
-  const res = await fetch(`${NHL_API_BASE}/v1/gamecenter/${gameId}/landing`);
-  if (!res.ok) return null;
-  const data = await res.json();
-  return deriveGameWinningGoal(
-    data?.summary?.scoring ?? [],
-    data?.awayTeam?.abbrev ?? '',
-    data?.homeTeam?.abbrev ?? '',
-  );
+  // The landing endpoint occasionally hiccups (rate limits, transient 5xx).
+  // A single-shot null silently zeroes the GWG for a game forever, so retry.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    if (attempt > 0) await new Promise(r => setTimeout(r, 800 * attempt));
+    try {
+      const res = await fetch(`${NHL_API_BASE}/v1/gamecenter/${gameId}/landing`);
+      if (!res.ok) continue;
+      const data = await res.json();
+      return deriveGameWinningGoal(
+        data?.summary?.scoring ?? [],
+        data?.awayTeam?.abbrev ?? '',
+        data?.homeTeam?.abbrev ?? '',
+      );
+    } catch {
+      continue;
+    }
+  }
+  return null;
 }
 
 export async function fetchEspnInjuries(): Promise<Map<string, InjuryInfo>> {
