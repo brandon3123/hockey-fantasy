@@ -76,6 +76,7 @@ export async function GET(request: Request) {
 
   let totalUpserted = 0;
   const allErrors: string[] = [];
+  const emailResults: Array<{ draftId: string; status: string; recipients: number; sent: number; errors: string[] }> = [];
 
   for (const draft of drafts) {
     const { data: picks } = await adminClient
@@ -217,6 +218,7 @@ export async function GET(request: Request) {
 
     let emailsSent = 0;
     const emailErrors: string[] = [];
+    let emailRecipients = 0;
 
     if (draft.status === 'complete') {
       const { data: draftDetails } = await adminClient
@@ -283,7 +285,12 @@ export async function GET(request: Request) {
           emailsSent = result.sent;
           emailErrors.push(...result.errors);
         }
+        emailResults.push({ draftId: draft.id, status: 'skipped_or_sent', recipients: emailRecipients, sent: emailsSent, errors: emailErrors });
+      } else {
+        emailResults.push({ draftId: draft.id, status: 'no_participants', recipients: 0, sent: 0, errors: [] });
       }
+    } else {
+      emailResults.push({ draftId: draft.id, status: 'draft_not_complete', recipients: 0, sent: 0, errors: [] });
     }
 
     await adminClient.from('cron_runs').insert({
@@ -298,5 +305,6 @@ export async function GET(request: Request) {
   return NextResponse.json({
     date: dateStr, games: completedGames.length, results: allResults.length,
     upserted: totalUpserted, errors: allErrors, dryRun: false,
+    emails: emailResults,
   });
 }
